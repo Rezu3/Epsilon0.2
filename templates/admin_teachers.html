@@ -112,7 +112,7 @@
             <div class="table-header">
                 <div class="table-actions">
                     <input type="text" id="searchTeacher" placeholder="Search teachers..." class="search-input">
-                    <button class="add-btn" onclick="window.location.href='{{ url_for('teacher_register') }}'">
+                    <button class="add-btn" onclick="window.location.href='{{ url_for() }}'">
                         <i class="fas fa-chalkboard-teacher"></i> Add Teacher
                     </button>
                 </div>
@@ -171,7 +171,7 @@
                                 <td colspan="6" class="empty-row">
                                     <i class="fas fa-chalkboard-teacher"></i>
                                     <p>No teachers registered yet</p>
-                                    <button class="empty-add-btn" onclick="window.location.href='{{ url_for('teacher_register') }}'">
+                                    <button class="empty-add-btn" onclick="window.location.href='{{ url_for() }}'">
                                         <i class="fas fa-chalkboard-teacher"></i> Add First Teacher
                                     </button>
                                 </td>
