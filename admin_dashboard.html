@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="nav-item active">
+                <i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_students') }}" class="nav-item">
+                <i class="fas fa-user-graduate"></i>
+                <span>All Students</span>
+            </a>
+            <a href="{{ url_for('admin_teachers') }}" class="nav-item">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>All Teachers</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Fees Management</span>
+            </a>
+            <a href="{{ url_for('exam') }}" class="nav-item">
+                <i class="fas fa-pencil-alt"></i>
+                <span>Exams</span>
+            </a>
+            <a href="{{ url_for('results') }}" class="nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>Results</span>
+            </a>
+            <a href="{{ url_for('rank') }}" class="nav-item">
+                <i class="fas fa-trophy"></i>
+                <span>Rank</span>
+            </a>
+            <a href="{{ url_for('logout') }}" class="nav-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="admin-info">
+                <div class="admin-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="admin-details">
+                    <h4>{{ session.get('username', 'Admin') }}</h4>
+                    <p>Administrator</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-btn" id="menuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="brand">
+                    <h1>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h1>
+                    <span class="subtitle">Learning Management System</span>
+                </div>
+            </div>
+            <div class="top-bar-right">
+                <div class="date-time" id="dateTime">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="currentDateTime"></span>
+                </div>
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="admin-profile">
+                    <span class="admin-name">{{ session.get('username', 'Admin') }}</span>
+                    <img src="https://ui-avatars.com/api/?name={{ session.get('username', 'Admin') }}&background=667eea&color=fff&size=40" alt="Admin" class="profile-img">
+                </div>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Quick Action Cards - 7 Icons -->
+        <div class="quick-actions">
+            <!-- 1. Views All Records -->
+            <a href="{{ url_for('admin_students') }}" class="action-card">
+                <div class="action-icon view-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="action-info">
+                    <h4>Views All Records</h4>
+                    <p>View all students & teachers</p>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </a>
+
+            <!-- 2. Fees Details -->
+            <a href="#" class="action-card" onclick="viewFeesDetails(event)">
+                <div class="action-icon fees-icon">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <div class="action-info">
+                    <h4>Fees Details</h4>
+                    <p>Check fees collection & dues</p>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </a>
+
+            <!-- 3. Add New Student -->
+            <a href="{{ url_for('student_register') }}" class="action-card">
+                <div class="action-icon student-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="action-info">
+                    <h4>Add New Student</h4>
+                    <p>Register a new student</p>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </a>
+
+            <!-- 4. Add New Teacher -->
+            <a href="{{ url_for('teacher_register') }}" class="action-card">
+                <div class="action-icon teacher-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="action-info">
+                    <h4>Add New Teacher</h4>
+                    <p>Register a new teacher</p>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </a>
+
+            <!-- 5. Exam -->
+            <a href="{{ url_for('exam') }}" class="action-card">
+                <div class="action-icon exam-icon">
+                    <i class="fas fa-pencil-alt"></i>
+                </div>
+                <div class="action-info">
+                    <h4>Exam</h4>
+                    <p>Manage exams & schedule</p>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </a>
+
+            <!-- 6. Result -->
+            <a href="{{ url_for('results') }}" class="action-card">
+                <div class="action-icon result-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="action-info">
+                    <h4>Result</h4>
+                    <p>View & publish results</p>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </a>
+
+            <!-- 7. Rank -->
+            <a href="{{ url_for('rank') }}" class="action-card">
+                <div class="action-icon rank-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="action-info">
+                    <h4>Rank</h4>
+                    <p>View student rankings</p>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </a>
+        </div>
+
+        <!-- Welcome Message at Bottom -->
+        <div class="welcome-footer">
+            <div class="welcome-content">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>Welcome to 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h3>
+                <p>Manage your tution center efficiently with our smart dashboard</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin_dashboard.js') }}"></script>
+</body>
+</html>
