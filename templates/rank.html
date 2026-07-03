@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - Rank Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/rank.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar - user_type অনুযায়ী ভিন্ন -->
+    {% if user_type == 'admin' %}
+    <!-- Admin Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="nav-item">
+                <i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_students') }}" class="nav-item">
+                <i class="fas fa-user-graduate"></i>
+                <span>All Students</span>
+            </a>
+            <a href="{{ url_for('admin_teachers') }}" class="nav-item">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>All Teachers</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Fees Management</span>
+            </a>
+            <a href="{{ url_for('exam') }}" class="nav-item">
+                <i class="fas fa-pencil-alt"></i>
+                <span>Exams</span>
+            </a>
+            <a href="{{ url_for('results') }}" class="nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>Results</span>
+            </a>
+            <a href="{{ url_for('rank') }}" class="nav-item active">
+                <i class="fas fa-trophy"></i>
+                <span>Rank</span>
+            </a>
+            <a href="{{ url_for('logout') }}" class="nav-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="admin-info">
+                <div class="admin-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="admin-details">
+                    <h4>{{ session.get('username', 'Admin') }}</h4>
+                    <p>Administrator</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% elif user_type == 'teacher' %}
+    <!-- Teacher Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('teacher_home') }}" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="showMyStudents()">
+                <i class="fas fa-user-graduate"></i>
+                <span>My Students</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="showSchedule()">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Schedule</span>
+            </a>
+            <a href="{{ url_for('exam') }}" class="nav-item">
+                <i class="fas fa-pencil-alt"></i>
+                <span>Exams</span>
+            </a>
+            <a href="{{ url_for('results') }}" class="nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>Results</span>
+            </a>
+            <a href="{{ url_for('rank') }}" class="nav-item active">
+                <i class="fas fa-trophy"></i>
+                <span>Rank</span>
+            </a>
+            <a href="{{ url_for('logout') }}" class="nav-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="teacher-info">
+                <div class="teacher-avatar">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="teacher-details">
+                    <h4>{{ session.get('username', 'Teacher') }}</h4>
+                    <p>Teacher</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Student Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('student_dashboard') }}" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>My Results</span>
+            </a>
+            <a href="{{ url_for('rank') }}" class="nav-item active">
+                <i class="fas fa-trophy"></i>
+                <span>Rank</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-question-circle"></i>
+                <span>Quiz</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-bullhorn"></i>
+                <span>Notice</span>
+            </a>
+            <a href="{{ url_for('logout') }}" class="nav-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="student-info">
+                <div class="student-avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="student-details">
+                    <h4>{{ session.get('username', 'Student') }}</h4>
+                    <p>Student</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-btn" id="menuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="brand">
+                    <h1>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h1>
+                    <span class="subtitle">Rank Management</span>
+                </div>
+            </div>
+            <div class="top-bar-right">
+                <div class="date-time" id="dateTime">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="currentDateTime"></span>
+                </div>
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="admin-profile">
+                    <span class="admin-name">{{ session.get('username') }}</span>
+                    <img src="https://ui-avatars.com/api/?name={{ session.get('username') }}&background=667eea&color=fff&size=40" alt="User" class="profile-img">
+                </div>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Rank Header -->
+        <div class="rank-header">
+            <div class="rank-header-content">
+                <h2><i class="fas fa-trophy"></i> Rank Management</h2>
+                <p>Select Exam, Subject & Class to view student rankings</p>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label><i class="fas fa-pencil-alt"></i> Select Exam</label>
+                    <select id="examSelect" onchange="filterRank()">
+                        <option value="">Choose Exam...</option>
+                        {% for exam in exams %}
+                            <option value="{{ exam.id }}" data-subject="{{ exam.subject }}" data-fullmarks="{{ exam.full_marks }}">
+                                {{ exam.exam_name }} - {{ exam.subject }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label><i class="fas fa-book"></i> Subject</label>
+                    <select id="subjectSelect" onchange="filterRank()">
+                        <option value="">Choose Subject...</option>
+                        {% for exam in exams %}
+                            <option value="{{ exam.subject }}">{{ exam.subject }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label><i class="fas fa-graduation-cap"></i> Select Class</label>
+                    <select id="classSelect" onchange="filterRank()">
+                        <option value="">Choose Class...</option>
+                        {% for class in classes %}
+                            <option value="{{ class.class }}">Class {{ class.class }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rank List -->
+        <div class="rank-container">
+            <div class="rank-actions">
+                <button class="download-pdf-btn" onclick="downloadPDF()" style="display:none;" id="downloadBtn">
+                    <i class="fas fa-file-pdf"></i> Download PDF
+                </button>
+            </div>
+            <div id="rankListContainer">
+                <div class="empty-state">
+                    <i class="fas fa-trophy"></i>
+                    <h3>Select Exam & Class</h3>
+                    <p>Please select an exam and class to view rankings</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/rank.js') }}"></script>
+    <script>
+        // Teacher sidebar functions
+        function showMyStudents() {
+            alert('👨‍🎓 My Students\n\nYou can view:\n• All students list\n• Student details\n• Performance data\n• Attendance records');
+        }
+        function showSchedule() {
+            alert('📅 Class Schedule\n\nYou can view:\n• Today\'s classes\n• Weekly schedule\n• Class timings\n• Subject details');
+        }
+        function showQuiz() {
+            alert('🧠 Quiz Management\n\nYou can:\n• Create new quizzes\n• Manage quiz questions\n• Set quiz timings\n• View quiz results');
+        }
+    </script>
+</body>
+</html>

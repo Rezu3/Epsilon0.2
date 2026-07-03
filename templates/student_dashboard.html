@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - Student Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/student_dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('student_dashboard') }}" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>My Results</span>
+            </a>
+            <a href="{{ url_for('rank') }}" class="nav-item">
+                <i class="fas fa-trophy"></i>
+                <span>Rank</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-question-circle"></i>
+                <span>Quiz</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-bullhorn"></i>
+                <span>Notice</span>
+            </a>
+            <a href="{{ url_for('logout') }}" class="nav-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="student-info">
+                <div class="student-avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="student-details">
+                    <h4>{{ session.get('username', 'Student') }}</h4>
+                    <p>Student</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-btn" id="menuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="brand">
+                    <h1>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h1>
+                    <span class="subtitle">Student Dashboard</span>
+                </div>
+            </div>
+            <div class="top-bar-right">
+                <div class="date-time" id="dateTime">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="currentDateTime"></span>
+                </div>
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">2</span>
+                </div>
+                <div class="student-profile">
+                    <span class="student-name">{{ session.get('username', 'Student') }}</span>
+                    <img src="https://ui-avatars.com/api/?name={{ session.get('username', 'Student') }}&background=4facfe&color=fff&size=40" alt="Student" class="profile-img">
+                </div>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="welcome-text">
+                <h2>Welcome, {{ session.get('username', 'Student') }}! 🎓</h2>
+                <p>Keep learning and growing. Your journey to success starts here!</p>
+            </div>
+            <div class="student-profile-card">
+                <div class="profile-detail">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Class: {{ student.class if student else 'N/A' }}</span>
+                </div>
+                <div class="profile-detail">
+                    <i class="fas fa-school"></i>
+                    <span>{{ student.school if student else 'N/A' }}</span>
+                </div>
+                <div class="profile-detail">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ student.phone if student else 'N/A' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rank Showcase - Big Display -->
+        <div class="rank-showcase">
+            <div class="rank-card-big">
+                <div class="rank-big-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="rank-big-number">
+                    <span class="rank-number">{{ student_rank if student_rank else 'N/A' }}</span>
+                    <span class="rank-label">Rank</span>
+                </div>
+                <div class="rank-big-stats">
+                    <div class="rank-stat-item">
+                        <span class="stat-value">{{ total_students }}</span>
+                        <span class="stat-label">Total Students</span>
+                    </div>
+                    <div class="rank-stat-item">
+                        <span class="stat-value">{{ class_rank if class_rank else 'N/A' }}</span>
+                        <span class="stat-label">Class Rank</span>
+                    </div>
+                    <div class="rank-stat-item">
+                        <span class="stat-value">{{ total_exams_taken }}</span>
+                        <span class="stat-label">Exams Taken</span>
+                    </div>
+                </div>
+                <div class="rank-progress-big">
+                    <div class="rank-progress-label">
+                        <span>Top {{ rank_percentage }}%</span>
+                        <span>{{ student_rank if student_rank else 0 }} / {{ total_students }}</span>
+                    </div>
+                    <div class="rank-progress-bar-big">
+                        {% set progress_width = 100 - (rank_percentage|float if rank_percentage else 0) %}
+                        <div class="rank-progress-fill-big" style="width: {{ progress_width }}%;"></div>
+                    </div>
+                </div>
+                <div class="rank-badge-big">
+                    {% if student_rank and student_rank == 1 %}
+                        🏆 Rank 1 - Outstanding Performance
+                    {% elif student_rank and student_rank <= 3 %}
+                        🌟 Excellent Performance
+                    {% elif student_rank and student_rank <= 10 %}
+                        ⭐ Very Good Performance
+                    {% elif student_rank and student_rank <= 20 %}
+                        👍 Good Performance
+                    {% else %}
+                        📚 Keep Improving
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- My Results Section - Dynamic from Database -->
+        <div class="results-section">
+            <div class="section-header">
+                <h2><i class="fas fa-file-alt"></i> My Results</h2>
+                <button class="view-all-btn" onclick="viewMyResults()">View All</button>
+            </div>
+            <div class="results-list">
+                {% if student_results %}
+                    {% for result in student_results %}
+                    <div class="result-item">
+                        <div class="result-info">
+                            <h4>{{ result.exam_name }}</h4>
+                            <p>{{ result.subject }} - {{ result.exam_date if result.exam_date else 'N/A' }}</p>
+                        </div>
+                        <div class="result-score">
+                            <span class="score">{{ result.marks }}/{{ result.full_marks }}</span>
+                            <span class="grade 
+                                {% if result.grade == 'A+' %}grade-a-plus
+                                {% elif result.grade == 'A' %}grade-a
+                                {% elif result.grade == 'A-' %}grade-a-minus
+                                {% elif result.grade == 'B' %}grade-b
+                                {% elif result.grade == 'C' %}grade-c
+                                {% elif result.grade == 'D' %}grade-d
+                                {% elif result.grade == 'F' %}grade-f
+                                {% else %}grade-default{% endif %}">
+                                {{ result.grade if result.grade else '-' }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-results">
+                        <i class="fas fa-file-alt"></i>
+                        <p>No results available yet</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/student_dashboard.js') }}"></script>
+</body>
+</html>

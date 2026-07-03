@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - Teacher Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/teacher_dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('teacher_home') }}" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="showMyStudents()">
+                <i class="fas fa-user-graduate"></i>
+                <span>My Students</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="showSchedule()">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Schedule</span>
+            </a>
+            <a href="{{ url_for('exam') }}" class="nav-item">
+                <i class="fas fa-pencil-alt"></i>
+                <span>Exams</span>
+            </a>
+            <a href="{{ url_for('results') }}" class="nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>Results</span>
+            </a>
+            <a href="{{ url_for('rank') }}" class="nav-item">
+                <i class="fas fa-trophy"></i>
+                <span>Rank</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="showQuiz()">
+                <i class="fas fa-question-circle"></i>
+                <span>Quiz</span>
+            </a>
+            <a href="{{ url_for('logout') }}" class="nav-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="teacher-info">
+                <div class="teacher-avatar">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="teacher-details">
+                    <h4>{{ session.get('username', 'Teacher') }}</h4>
+                    <p>Teacher</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-btn" id="menuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="brand">
+                    <h1>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h1>
+                    <span class="subtitle">Teacher Home</span>
+                </div>
+            </div>
+            <div class="top-bar-right">
+                <div class="date-time" id="dateTime">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="currentDateTime"></span>
+                </div>
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </div>
+                <div class="teacher-profile">
+                    <span class="teacher-name">{{ session.get('username', 'Teacher') }}</span>
+                    <img src="https://ui-avatars.com/api/?name={{ session.get('username', 'Teacher') }}&background=f093fb&color=fff&size=40" alt="Teacher" class="profile-img">
+                </div>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Quick Action Cards - 6 Icons -->
+        <div class="quick-actions">
+            <!-- 1. My Students -->
+            <div class="action-card" onclick="showMyStudents()">
+                <div class="action-icon student-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="action-info">
+                    <h4>My Students</h4>
+                    <p>View all your students list</p>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </div>
+
+            <!-- 2. Schedule -->
+            <div class="action-card" onclick="showSchedule()">
+                <div class="action-icon schedule-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="action-info">
+                    <h4>Schedule</h4>
+                    <p>View your class schedule</p>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </div>
+
+            <!-- 3. Exams -->
+            <a href="{{ url_for('exam') }}" class="action-card">
+                <div class="action-icon exam-icon">
+                    <i class="fas fa-pencil-alt"></i>
+                </div>
+                <div class="action-info">
+                    <h4>Exams</h4>
+                    <p>Manage exams & schedule</p>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </a>
+
+            <!-- 4. Results -->
+            <a href="{{ url_for('results') }}" class="action-card">
+                <div class="action-icon result-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="action-info">
+                    <h4>Results</h4>
+                    <p>View & publish results</p>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </a>
+
+            <!-- 5. Rank -->
+            <a href="{{ url_for('rank') }}" class="action-card">
+                <div class="action-icon rank-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="action-info">
+                    <h4>Rank</h4>
+                    <p>View student rankings</p>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </a>
+
+            <!-- 6. Quiz -->
+            <div class="action-card" onclick="showQuiz()">
+                <div class="action-icon quiz-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <div class="action-info">
+                    <h4>Quiz</h4>
+                    <p>Create & manage quizzes</p>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </div>
+        </div>
+
+        <!-- Students Section -->
+        <div class="students-section" id="studentsSection">
+            <div class="section-header">
+                <h2><i class="fas fa-user-graduate"></i> My Students</h2>
+                <div class="section-actions">
+                    <input type="text" id="searchStudent" placeholder="Search students..." class="search-input">
+                    <span class="total-count">Total: {{ students|length }} Students</span>
+                </div>
+            </div>
+            
+            <div class="students-grid" id="studentsGrid">
+                {% if students %}
+                    {% for student in students %}
+                    <div class="student-card" data-name="{{ student.name|lower }}">
+                        <div class="student-avatar">
+                            <span class="avatar-text">{{ student.name[0]|upper }}</span>
+                            <span class="student-status online"></span>
+                        </div>
+                        <div class="student-info">
+                            <h4>{{ student.name }}</h4>
+                            <p><i class="fas fa-graduation-cap"></i> Class {{ student.class }}</p>
+                            <p><i class="fas fa-school"></i> {{ student.school }}</p>
+                            <p><i class="fas fa-phone"></i> {{ student.phone }}</p>
+                        </div>
+                        <div class="student-actions">
+                            <button class="action-btn view-btn" title="View Details" onclick="viewStudent('{{ student.id }}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn message-btn" title="Send Message" onclick="sendMessage('{{ student.id }}')">
+                                <i class="fas fa-envelope"></i>
+                            </button>
+                            <button class="action-btn result-btn" title="View Results" onclick="viewStudentResult('{{ student.id }}')">
+                                <i class="fas fa-file-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h3>No Students Yet</h3>
+                        <p>Students will appear here once they are registered</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/teacher_home.js') }}"></script>
+</body>
+</html>

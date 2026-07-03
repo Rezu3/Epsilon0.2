@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Students - My Tution</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_students.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>My Tution</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="nav-item">
+                <i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_students') }}" class="nav-item active">
+                <i class="fas fa-user-graduate"></i>
+                <span>All Students</span>
+            </a>
+            <a href="{{ url_for('admin_teachers') }}" class="nav-item">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>All Teachers</span>
+            </a>
+            <a href="#" class="nav-item" onclick="openRegistrationModal()">
+                <i class="fas fa-user-plus"></i>
+                <span>New Registration</span>
+            </a>
+            <a href="{{ url_for('logout') }}" class="nav-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="admin-info">
+                <div class="admin-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="admin-details">
+                    <h4>{{ session.get('username', 'Admin') }}</h4>
+                    <p>Administrator</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-btn" id="menuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>All Students</h1>
+            </div>
+            <div class="top-bar-right">
+                <div class="date-time" id="dateTime">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="currentDateTime"></span>
+                </div>
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Students Table -->
+        <div class="students-container">
+            <div class="table-header">
+                <div class="table-actions">
+                    <input type="text" id="searchStudent" placeholder="Search students..." class="search-input">
+                    <button class="add-btn" onclick="openRegistrationModal('student')">
+                        <i class="fas fa-user-plus"></i> Add Student
+                    </button>
+                </div>
+                <div class="table-info">
+                    <span>Total: <strong>{{ students|length }}</strong> students</span>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="students-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>School</th>
+                            <th>Phone</th>
+                            <th>Registered</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if students %}
+                            {% for student in students %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    <div class="student-name">
+                                        <span class="avatar">{{ student.name[0]|upper }}</span>
+                                        {{ student.name }}
+                                    </div>
+                                </td>
+                                <td>{{ student.class }}</td>
+                                <td>{{ student.school }}</td>
+                                <td>{{ student.phone }}</td>
+                                <td>{{ student.created_at[:10] if student.created_at else 'N/A' }}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-btn view-btn" onclick="viewStudent('{{ student.id }}')" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="action-btn edit-btn" onclick="editStudent('{{ student.id }}')" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form method="POST" action="{{ url_for('delete_student', student_id=student.id) }}" style="display: inline;" onsubmit="return confirmDelete()">
+                                            <button type="submit" class="action-btn delete-btn" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="empty-row">
+                                    <i class="fas fa-users"></i>
+                                    <p>No students registered yet</p>
+                                    <button class="empty-add-btn" onclick="openRegistrationModal('student')">
+                                        <i class="fas fa-user-plus"></i> Add First Student
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin_students.js') }}"></script>
+</body>
+</html>

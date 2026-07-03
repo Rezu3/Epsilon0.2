@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - All Teachers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_teachers.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="nav-item">
+                <i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_students') }}" class="nav-item">
+                <i class="fas fa-user-graduate"></i>
+                <span>All Students</span>
+            </a>
+            <a href="{{ url_for('admin_teachers') }}" class="nav-item active">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>All Teachers</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Fees Management</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Exams</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-trophy"></i>
+                <span>Results</span>
+            </a>
+            <a href="{{ url_for('logout') }}" class="nav-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="admin-info">
+                <div class="admin-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="admin-details">
+                    <h4>{{ session.get('username', 'Admin') }}</h4>
+                    <p>Administrator</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-btn" id="menuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="brand">
+                    <h1>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h1>
+                    <span class="subtitle">All Teachers</span>
+                </div>
+            </div>
+            <div class="top-bar-right">
+                <div class="date-time" id="dateTime">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="currentDateTime"></span>
+                </div>
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="admin-profile">
+                    <span class="admin-name">{{ session.get('username', 'Admin') }}</span>
+                    <img src="https://ui-avatars.com/api/?name={{ session.get('username', 'Admin') }}&background=667eea&color=fff&size=40" alt="Admin" class="profile-img">
+                </div>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Teachers Table -->
+        <div class="teachers-container">
+            <div class="table-header">
+                <div class="table-actions">
+                    <input type="text" id="searchTeacher" placeholder="Search teachers..." class="search-input">
+                    <button class="add-btn" onclick="window.location.href='{{ url_for('teacher_register') }}'">
+                        <i class="fas fa-chalkboard-teacher"></i> Add Teacher
+                    </button>
+                </div>
+                <div class="table-info">
+                    <span>Total: <strong>{{ teachers|length }}</strong> teachers</span>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="teachers-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Registered</th>
+                            <th>Students</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if teachers %}
+                            {% for teacher in teachers %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    <div class="teacher-name">
+                                        <span class="avatar">{{ teacher.name[0]|upper }}</span>
+                                        {{ teacher.name }}
+                                    </div>
+                                </td>
+                                <td>{{ teacher.phone }}</td>
+                                <td>{{ teacher.created_at[:10] if teacher.created_at else 'N/A' }}</td>
+                                <td>
+                                    <span class="student-count">12</span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-btn view-btn" onclick="viewTeacher('{{ teacher.id }}')" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="action-btn message-btn" onclick="sendMessage('{{ teacher.id }}')" title="Message">
+                                            <i class="fas fa-envelope"></i>
+                                        </button>
+                                        <form method="POST" action="{{ url_for('delete_teacher', teacher_id=teacher.id) }}" style="display: inline;" onsubmit="return confirmDelete()">
+                                            <button type="submit" class="action-btn delete-btn" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="empty-row">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                    <p>No teachers registered yet</p>
+                                    <button class="empty-add-btn" onclick="window.location.href='{{ url_for('teacher_register') }}'">
+                                        <i class="fas fa-chalkboard-teacher"></i> Add First Teacher
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin_teachers.js') }}"></script>
+</body>
+</html>
