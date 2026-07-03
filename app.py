@@ -1,16 +1,25 @@
-from flask import Flask, render_template, request, redirect, session, flash, url_for, jsonify
+from flask import Flask, render_template, request, redirect, session, flash, url_for, jsonify, send_from_directory
 import sqlite3
 import os
 from datetime import datetime
 
-app = Flask(__name__)
-app.secret_key = "tution_management_secret_key_2026"
+app = Flask(__name__, static_folder='static', static_url_path='/static')
+app.secret_key = os.environ.get('SECRET_KEY', 'tution_management_secret_key_2026')
 
 # ------------------------
 # Database configuration
 # ------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "tution.db")
+
+# Render Persistent Disk চেক করুন
+if os.path.exists('/opt/render/project/src'):
+    DB_PATH = '/opt/render/project/src/tution.db'
+    print("✅ Using Render Persistent Disk")
+else:
+    DB_PATH = os.path.join(BASE_DIR, "tution.db")
+    print("✅ Using Local Database")
+
+print(f"📁 Database path: {DB_PATH}")
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
@@ -19,93 +28,120 @@ def get_db_connection():
 
 def init_database():
     """Initialize database with all required tables"""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    # Admin table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS admin (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL
-        )
-    ''')
-    
-    # Teachers table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS teachers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            phone TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    # Students table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS students (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            class TEXT NOT NULL,
-            school TEXT NOT NULL,
-            phone TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            fees_total REAL DEFAULT 0,
-            fees_paid REAL DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    # Exams table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS exams (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            exam_name TEXT NOT NULL,
-            teacher_name TEXT NOT NULL,
-            subject TEXT NOT NULL,
-            full_marks INTEGER NOT NULL,
-            exam_date DATE NOT NULL,
-            status TEXT DEFAULT 'Upcoming',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    # Results table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS results (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            exam_id INTEGER NOT NULL,
-            student_id INTEGER NOT NULL,
-            marks REAL DEFAULT 0,
-            grade TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (exam_id) REFERENCES exams(id),
-            FOREIGN KEY (student_id) REFERENCES students(id)
-        )
-    ''')
-    
-    # Quizzes table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS quizzes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            quiz_name TEXT NOT NULL,
-            subject TEXT NOT NULL,
-            total_marks INTEGER DEFAULT 10,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    # Insert default admin
-    cursor.execute('SELECT * FROM admin WHERE username = ?', ('admin',))
-    if not cursor.fetchone():
-        cursor.execute('INSERT INTO admin (username, password) VALUES (?, ?)', 
-                      ('admin', 'admin123'))
-    
-    conn.commit()
-    conn.close()
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Admin table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS admin (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL
+            )
+        ''')
+        
+        # Teachers table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS teachers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                phone TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Students table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS students (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                class TEXT NOT NULL,
+                school TEXT NOT NULL,
+                phone TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                fees_total REAL DEFAULT 0,
+                fees_paid REAL DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Exams table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS exams (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                exam_name TEXT NOT NULL,
+                teacher_name TEXT NOT NULL,
+                subject TEXT NOT NULL,
+                full_marks INTEGER NOT NULL,
+                exam_date DATE NOT NULL,
+                status TEXT DEFAULT 'Upcoming',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Results table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS results (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                exam_id INTEGER NOT NULL,
+                student_id INTEGER NOT NULL,
+                marks REAL DEFAULT 0,
+                grade TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (exam_id) REFERENCES exams(id),
+                FOREIGN KEY (student_id) REFERENCES students(id)
+            )
+        ''')
+        
+        # Quizzes table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS quizzes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                quiz_name TEXT NOT NULL,
+                subject TEXT NOT NULL,
+                total_marks INTEGER DEFAULT 10,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Insert default admin
+        cursor.execute('SELECT * FROM admin WHERE username = ?', ('admin',))
+        if not cursor.fetchone():
+            cursor.execute('INSERT INTO admin (username, password) VALUES (?, ?)', 
+                          ('admin', 'admin123'))
+        
+        # Insert sample quizzes if none exist
+        cursor.execute('SELECT COUNT(*) as count FROM quizzes')
+        if cursor.fetchone()['count'] == 0:
+            sample_quizzes = [
+                ('Math Quiz 1', 'Mathematics', 10),
+                ('English Quiz 1', 'English', 10),
+                ('Science Quiz 1', 'Science', 10),
+                ('Bangla Quiz 1', 'Bangla', 10),
+                ('Physics Quiz 1', 'Physics', 10),
+                ('Chemistry Quiz 1', 'Chemistry', 10),
+                ('Biology Quiz 1', 'Biology', 10),
+                ('History Quiz 1', 'History', 10)
+            ]
+            cursor.executemany('INSERT INTO quizzes (quiz_name, subject, total_marks) VALUES (?, ?, ?)', sample_quizzes)
+        
+        conn.commit()
+        conn.close()
+        print("✅ Database initialized successfully!")
+    except Exception as e:
+        print(f"❌ Database initialization error: {e}")
 
+# Initialize database on startup
 init_database()
+
+# ------------------------
+# Static Files Route (Render এর জন্য)
+# ------------------------
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('static', path)
 
 # ------------------------
 # Login Page
@@ -325,7 +361,7 @@ def student_dashboard():
     cursor.execute('SELECT COUNT(*) as count FROM students')
     total_students = cursor.fetchone()['count']
     
-    # Get student's rank based on TOTAL marks (SUM of all marks)
+    # Get student's rank
     cursor.execute('''
         SELECT student_id, SUM(marks) as total_marks
         FROM results
@@ -344,7 +380,7 @@ def student_dashboard():
                 rank_percentage = round((student_rank / total_students) * 100, 1)
             break
     
-    # Get class rank based on TOTAL marks
+    # Get class rank
     if student:
         cursor.execute('''
             SELECT s.id, SUM(r.marks) as total_marks
