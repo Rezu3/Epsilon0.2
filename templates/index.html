@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuition Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+
+    <div class="welcome-container">
+        <h1 class="tuition-title">Dynamic Tuition Center</h1>
+        <p class="tuition-subtitle">Manage, Learn, and Grow Together</p>
+
+        <div class="portal-grid">
+            <!-- Admin Card (সরাসরি HTML লিংক ব্যবহার করা হয়েছে) -->
+            <a href="/login/admin" class="portal-card-link">
+                <div class="portal-card">
+                    <div class="icon-box admin-icon">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h3>Admin Login</h3>
+                    <p>Full control & management portal</p>
+                </div>
+            </a>
+
+            <!-- Teacher Card -->
+            <a href="/login/teacher" class="portal-card-link">
+                <div class="portal-card">
+                    <div class="icon-box teacher-icon">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    </div>
+                    <h3>Teacher Portal</h3>
+                    <p>Manage classes & student updates</p>
+                </div>
+            </a>
+
+            <!-- Student Card -->
+            <a href="/login/student" class="portal-card-link">
+                <div class="portal-card">
+                    <div class="icon-box student-icon">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <h3>Student Portal</h3>
+                    <p>Check due fees & academic records</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
