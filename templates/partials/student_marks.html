@@ -1,0 +1,63 @@
+<!-- templates/partials/student_marks.html -->
+<form id="marksForm">
+    <input type="hidden" name="exam_id" value="{{ exam.id if exam else '' }}">
+    <div class="table-responsive">
+        <table class="marks-table">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">#</th>
+                    <th>Student Name</th>
+                    <th>Class</th>
+                    <th>School</th>
+                    <th>Marks <span style="font-weight:400;">(Out of {{ exam.full_marks if exam else 0 }})</span></th>
+                    <th style="width: 80px;">Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if students %}
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <div class="student-name">
+                                <span class="avatar">{{ student.name[0]|upper }}</span>
+                                {{ student.name }}
+                            </div>
+                        </td>
+                        <td><span class="class-badge">Class {{ student.class }}</span></td>
+                        <td>{{ student.school }}</td>
+                        <td>
+                            <input type="hidden" name="student_id[]" value="{{ student.id }}">
+                            {% set full_marks_value = exam.full_marks if exam else 100 %}
+                            <input type="number" name="marks[]" class="marks-input" 
+                                   placeholder="Marks" min="0" max="{{ full_marks_value }}" 
+                                   step="0.5" oninput="calculateGrade(this)" 
+                                   value="{{ student.marks if student.marks is defined and student.marks != '' else '' }}">
+                        </td>
+                        <td>
+                            <span class="grade-badge grade-default" id="grade-{{ student.id }}">
+                                {% if student.grade is defined and student.grade %}
+                                    {{ student.grade }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="empty-row">
+                            <i class="fas fa-users"></i>
+                            <p>No students found in this class</p>
+                            <p style="font-size:13px; color:#a0aec0;">
+                                <i class="fas fa-info-circle"></i> 
+                                Make sure students are registered with this class
+                            </p>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</form>
