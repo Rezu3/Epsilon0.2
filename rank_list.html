@@ -1,0 +1,76 @@
+<!-- templates/partials/rank_list.html -->
+<div class="rank-table-responsive">
+    <table class="rank-table">
+        <thead>
+            <tr>
+                <th style="width: 60px;">Rank</th>
+                <th>Student Name</th>
+                <th>Class</th>
+                <th>School</th>
+                <th>Marks (Out of {{ exam.full_marks if exam else 0 }})</th>
+                <th style="width: 80px;">Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if students %}
+                {% for student in students %}
+                <tr>
+                    <td>
+                        <span class="rank-badge 
+                            {% if loop.index == 1 %}gold
+                            {% elif loop.index == 2 %}silver
+                            {% elif loop.index == 3 %}bronze
+                            {% else %}normal{% endif %}">
+                            #{{ loop.index }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="student-name-cell">
+                            <span class="avatar-small">{{ student.name[0]|upper }}</span>
+                            {{ student.name }}
+                        </div>
+                    </td>
+                    <td>Class {{ student.class }}</td>
+                    <td>{{ student.school }}</td>
+                    <td>
+                        <strong>
+                            {% if student.marks is not none %}
+                                {{ student.marks }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </strong>
+                        {% if student.marks is not none and exam %}
+                            ({{ "%.1f"|format((student.marks / exam.full_marks) * 100) }}%)
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="grade-badge 
+                            {% if student.grade == 'A+' %}grade-a-plus
+                            {% elif student.grade == 'A' %}grade-a
+                            {% elif student.grade == 'A-' %}grade-a-minus
+                            {% elif student.grade == 'B' %}grade-b
+                            {% elif student.grade == 'C' %}grade-c
+                            {% elif student.grade == 'D' %}grade-d
+                            {% elif student.grade == 'F' %}grade-f
+                            {% else %}grade-default{% endif %}">
+                            {{ student.grade if student.grade else '-' }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="empty-row">
+                        <i class="fas fa-users"></i>
+                        <p>No results found for this exam and class</p>
+                        <p style="font-size:13px; color:#a0aec0;">
+                            <i class="fas fa-info-circle"></i> 
+                            Make sure results are published for this exam
+                        </p>
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
