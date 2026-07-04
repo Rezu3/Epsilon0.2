@@ -710,3 +710,82 @@ body {
         font-size: 15px;
     }
 }
+
+
+/* static/css/login.css - এই অংশ যোগ করুন */
+
+/* Database Download Section */
+.db-download-section {
+    margin: 20px 0 30px;
+    text-align: center;
+}
+
+.db-download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 25px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    backdrop-filter: blur(10px);
+    width: 100%;
+    justify-content: center;
+}
+
+.db-download-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.db-download-btn i {
+    font-size: 18px;
+}
+
+.db-download-btn i:first-child {
+    color: #4facfe;
+}
+
+.db-download-btn i:last-child {
+    color: #48bb78;
+}
+
+.db-hint {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-top: 6px;
+    color: rgba(255, 255, 255, 0.8);
+    letter-spacing: 0.5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .db-download-btn {
+        padding: 10px 18px;
+        font-size: 13px;
+    }
+    
+    .db-hint {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .db-download-btn {
+        padding: 8px 14px;
+        font-size: 12px;
+        gap: 8px;
+    }
+    
+    .db-download-btn i {
+        font-size: 14px;
+    }
+}
