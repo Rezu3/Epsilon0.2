@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, flash, url_for, jsonify
+from flask import Flask, render_template, request, redirect, session, flash, url_for, jsonify, send_file
 import sqlite3
 import os
 from datetime import datetime
@@ -106,6 +106,22 @@ def init_database():
     conn.close()
 
 init_database()
+
+# ------------------------
+# Database Download Route
+# ------------------------
+@app.route("/download_database")
+def download_database():
+    """Download the database file"""
+    try:
+        if os.path.exists(DB_PATH):
+            return send_file(DB_PATH, as_attachment=True, download_name='tution.db')
+        else:
+            flash('Database file not found!', 'error')
+            return redirect(url_for('login'))
+    except Exception as e:
+        flash('Error downloading database: ' + str(e), 'error')
+        return redirect(url_for('login'))
 
 # ------------------------
 # Login Page
