@@ -390,11 +390,53 @@ def admin_students():
     
     conn = get_db_connection()
     cursor = conn.cursor()
+    
+    # Get all students
     cursor.execute('SELECT * FROM students ORDER BY created_at DESC')
     students = cursor.fetchall()
+    
+    # Get results for each student
+    student_results = {}
+    student_ranks = {}
+    
+    # Get all results
+    cursor.execute('''
+        SELECT r.student_id, r.marks, r.grade, e.exam_name, e.full_marks
+        FROM results r
+        JOIN exams e ON r.exam_id = e.id
+        ORDER BY r.created_at DESC
+    ''')
+    all_results = cursor.fetchall()
+    
+    for result in all_results:
+        student_id = result['student_id']
+        if student_id not in student_results:
+            student_results[student_id] = []
+        student_results[student_id].append({
+            'exam_name': result['exam_name'],
+            'marks': result['marks'],
+            'full_marks': result['full_marks'],
+            'grade': result['grade']
+        })
+    
+    # Get ranks for each student
+    cursor.execute('''
+        SELECT student_id, SUM(marks) as total_marks,
+               RANK() OVER (ORDER BY SUM(marks) DESC) as rank_position
+        FROM results
+        GROUP BY student_id
+    ''')
+    rank_data = cursor.fetchall()
+    
+    for rank in rank_data:
+        student_ranks[rank['student_id']] = rank['rank_position']
+    
     conn.close()
     
-    return render_template('admin_students.html', students=students)
+    return render_template('admin_students.html', 
+                         students=students,
+                         student_results=student_results,
+                         student_ranks=student_ranks)
 
 @app.route("/admin/teachers")
 def admin_teachers():
@@ -439,6 +481,68 @@ def delete_teacher(teacher_id):
     
     flash('Teacher deleted successfully!', 'success')
     return redirect(url_for('admin_teachers'))
+
+# ------------------------
+# Edit Student Route
+# ------------------------
+@app.route("/edit_student", methods=["POST"])
+def edit_student():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        flash('Unauthorized access!', 'error')
+        return redirect(url_for('login'))
+    
+    student_id = request.form.get('student_id')
+    name = request.form.get('name')
+    class_name = request.form.get('class')
+    school = request.form.get('school')
+    phone = request.form.get('phone')
+    password = request.form.get('password')
+    
+    if not all([student_id, name, class_name, school, phone]):
+        flash('All fields are required!', 'error')
+        return redirect(url_for('admin_students'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        if password and len(password) >= 6:
+            cursor.execute('''UPDATE students 
+                          SET name = ?, class = ?, school = ?, phone = ?, password = ?
+                          WHERE id = ?''',
+                          (name, class_name, school, phone, password, student_id))
+        else:
+            cursor.execute('''UPDATE students 
+                          SET name = ?, class = ?, school = ?, phone = ?
+                          WHERE id = ?''',
+                          (name, class_name, school, phone, student_id))
+        
+        conn.commit()
+        flash('Student updated successfully!', 'success')
+    except sqlite3.IntegrityError:
+        flash('Phone number already exists!', 'error')
+    except Exception as e:
+        flash('Error updating student: ' + str(e), 'error')
+    finally:
+        conn.close()
+    
+    return redirect(url_for('admin_students'))
+
+@app.route("/get_student_data/<int:student_id>")
+def get_student_data(student_id):
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM students WHERE id = ?', (student_id,))
+    student = cursor.fetchone()
+    conn.close()
+    
+    if student:
+        return jsonify(dict(student))
+    else:
+        return jsonify({'error': 'Student not found'}), 404
 
 # ------------------------
 # Exam Routes
@@ -738,4 +842,4 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)  
+    app.run(debug=True, host='0.0.0.0', port=5000)
