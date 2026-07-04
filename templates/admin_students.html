@@ -38,13 +38,17 @@
                 <i class="fas fa-money-bill-wave"></i>
                 <span>Fees Management</span>
             </a>
-            <a href="#" class="nav-item">
-                <i class="fas fa-calendar-alt"></i>
+            <a href="{{ url_for('exam') }}" class="nav-item">
+                <i class="fas fa-pencil-alt"></i>
                 <span>Exams</span>
             </a>
-            <a href="#" class="nav-item">
-                <i class="fas fa-trophy"></i>
+            <a href="{{ url_for('results') }}" class="nav-item">
+                <i class="fas fa-file-alt"></i>
                 <span>Results</span>
+            </a>
+            <a href="{{ url_for('rank') }}" class="nav-item">
+                <i class="fas fa-trophy"></i>
+                <span>Rank</span>
             </a>
             <a href="{{ url_for('logout') }}" class="nav-item logout">
                 <i class="fas fa-sign-out-alt"></i>
@@ -130,14 +134,17 @@
                             <th>Class</th>
                             <th>School</th>
                             <th>Phone</th>
-                            <th>Registered</th>
+                            <th>Password</th>
+                            <th>Exam Results</th>
+                            <th>Rank</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% if students %}
                             {% for student in students %}
-                            <tr>
+                            {% set student_id = student.id|string %}
+                            <tr id="student-row-{{ student.id }}">
                                 <td>{{ loop.index }}</td>
                                 <td>
                                     <div class="student-name">
@@ -148,7 +155,31 @@
                                 <td>{{ student.class }}</td>
                                 <td>{{ student.school }}</td>
                                 <td>{{ student.phone }}</td>
-                                <td>{{ student.created_at[:10] if student.created_at else 'N/A' }}</td>
+                                <td>
+                                    <span class="password-dots" id="password-dots-{{ student.id }}">••••••</span>
+                                    <span class="password-text" id="password-text-{{ student.id }}" style="display: none;">{{ student.password }}</span>
+                                    <button class="show-password-btn" onclick="togglePassword('{{ student.id }}')" title="Show/Hide Password">
+                                        <i class="fas fa-eye" id="password-icon-{{ student.id }}"></i>
+                                    </button>
+                                </td>
+                                <td>
+                                    <div class="exam-results">
+                                        {% if student_results and student_id in student_results %}
+                                            {% for result in student_results[student_id] %}
+                                                <span class="exam-badge">{{ result.exam_name }}: {{ result.marks }}/{{ result.full_marks }} ({{ result.grade }})</span>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="no-data">No exams taken</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if student_ranks and student_id in student_ranks %}
+                                        <span class="rank-badge">#{{ student_ranks[student_id] }}</span>
+                                    {% else %}
+                                        <span class="no-data">N/A</span>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <div class="action-buttons">
                                         <button class="action-btn view-btn" onclick="viewStudent('{{ student.id }}')" title="View">
@@ -168,7 +199,7 @@
                             {% endfor %}
                         {% else %}
                             <tr>
-                                <td colspan="7" class="empty-row">
+                                <td colspan="9" class="empty-row">
                                     <i class="fas fa-users"></i>
                                     <p>No students registered yet</p>
                                     <a href="{{ url_for('student_register') }}" class="empty-add-btn">
@@ -179,6 +210,50 @@
                         {% endif %}
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div class="modal" id="editStudentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Edit Student</h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editStudentForm" method="POST" action="{{ url_for('edit_student') }}">
+                    <input type="hidden" id="edit_student_id" name="student_id">
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" id="edit_name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-graduation-cap"></i> Class</label>
+                        <input type="text" id="edit_class" name="class" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-school"></i> School</label>
+                        <input type="text" id="edit_school" name="school" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Phone Number</label>
+                        <input type="tel" id="edit_phone" name="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Password</label>
+                        <input type="text" id="edit_password" name="password" placeholder="Leave blank to keep current password">
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-save"></i> Update Student
+                    </button>
+                </form>
             </div>
         </div>
     </div>
