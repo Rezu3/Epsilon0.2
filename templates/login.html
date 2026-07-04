@@ -19,6 +19,17 @@
                     </div>
                     <h1 class="brand-name">𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h1>
                     <p class="brand-tagline">Smart Learning Management System</p>
+                    
+                    <!-- Database Download Button -->
+                    <div class="db-download-section">
+                        <button onclick="downloadDatabase()" class="db-download-btn" title="Download Database">
+                            <i class="fas fa-database"></i>
+                            <span>Download Database</span>
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <p class="db-hint">Download your database backup</p>
+                    </div>
+
                     <div class="brand-features">
                         <div class="feature">
                             <i class="fas fa-user-graduate"></i>
@@ -150,5 +161,34 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+    <script>
+        // Database Download Function
+        function downloadDatabase() {
+            fetch('/download_database')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'tution.db';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                    
+                    // Show success message
+                    alert('✅ Database downloaded successfully!\nFile: tution.db');
+                })
+                .catch(error => {
+                    console.error('Error downloading database:', error);
+                    alert('❌ Error downloading database. Please try again.');
+                });
+        }
+    </script>
 </body>
 </html>
