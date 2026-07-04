@@ -135,15 +135,12 @@
                             <th>School</th>
                             <th>Phone</th>
                             <th>Password</th>
-                            <th>Exam Results</th>
-                            <th>Rank</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% if students %}
                             {% for student in students %}
-                            {% set student_id = student.id|string %}
                             <tr id="student-row-{{ student.id }}">
                                 <td>{{ loop.index }}</td>
                                 <td>
@@ -161,24 +158,6 @@
                                     <button class="show-password-btn" onclick="togglePassword('{{ student.id }}')" title="Show/Hide Password">
                                         <i class="fas fa-eye" id="password-icon-{{ student.id }}"></i>
                                     </button>
-                                </td>
-                                <td>
-                                    <div class="exam-results">
-                                        {% if student_results and student_id in student_results %}
-                                            {% for result in student_results[student_id] %}
-                                                <span class="exam-badge">{{ result.exam_name }}: {{ result.marks }}/{{ result.full_marks }} ({{ result.grade }})</span>
-                                            {% endfor %}
-                                        {% else %}
-                                            <span class="no-data">No exams taken</span>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                                <td>
-                                    {% if student_ranks and student_id in student_ranks %}
-                                        <span class="rank-badge">#{{ student_ranks[student_id] }}</span>
-                                    {% else %}
-                                        <span class="no-data">N/A</span>
-                                    {% endif %}
                                 </td>
                                 <td>
                                     <div class="action-buttons">
@@ -199,7 +178,7 @@
                             {% endfor %}
                         {% else %}
                             <tr>
-                                <td colspan="9" class="empty-row">
+                                <td colspan="7" class="empty-row">
                                     <i class="fas fa-users"></i>
                                     <p>No students registered yet</p>
                                     <a href="{{ url_for('student_register') }}" class="empty-add-btn">
