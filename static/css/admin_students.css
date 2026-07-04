@@ -16,7 +16,7 @@ body {
 /* Sidebar */
 .sidebar {
     width: 280px;
-    background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
     color: white;
     display: flex;
     flex-direction: column;
@@ -41,13 +41,21 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
 }
 
 .logo i {
     font-size: 28px;
-    color: #667eea;
+    color: #f093fb;
+}
+
+.logo span {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 20px;
 }
 
 .sidebar-toggle {
@@ -84,9 +92,9 @@ body {
 }
 
 .nav-item.active {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #f093fb, #f5576c);
     color: white;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
 }
 
 .nav-item i {
@@ -119,7 +127,7 @@ body {
 .admin-avatar {
     width: 45px;
     height: 45px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #f093fb, #f5576c);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -172,10 +180,21 @@ body {
     cursor: pointer;
 }
 
-.top-bar-left h1 {
-    font-size: 24px;
-    font-weight: 600;
-    color: #2d3748;
+.brand h1 {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+.brand .subtitle {
+    font-size: 12px;
+    color: #718096;
+    display: block;
+    margin-top: 2px;
 }
 
 .top-bar-right {
@@ -212,6 +231,25 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.admin-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2d3748;
+}
+
+.profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #f093fb;
 }
 
 /* Flash Messages */
@@ -291,13 +329,13 @@ body {
 
 .search-input:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    border-color: #f093fb;
+    box-shadow: 0 0 0 4px rgba(245, 87, 108, 0.1);
 }
 
 .add-btn {
     padding: 10px 20px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #f093fb, #f5576c);
     color: white;
     border: none;
     border-radius: 10px;
@@ -309,11 +347,12 @@ body {
     align-items: center;
     gap: 8px;
     white-space: nowrap;
+    text-decoration: none;
 }
 
 .add-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
 }
 
 .table-info {
@@ -346,12 +385,14 @@ body {
     font-weight: 600;
     color: #2d3748;
     border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
 }
 
 .students-table td {
     padding: 12px 15px;
     border-bottom: 1px solid #e2e8f0;
     color: #4a5568;
+    vertical-align: middle;
 }
 
 .students-table tbody tr:hover {
@@ -367,7 +408,7 @@ body {
 .avatar {
     width: 35px;
     height: 35px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #f093fb, #f5576c);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -376,6 +417,62 @@ body {
     font-weight: 600;
     font-size: 14px;
     flex-shrink: 0;
+}
+
+/* Password */
+.password-dots {
+    font-weight: 600;
+    color: #718096;
+    letter-spacing: 2px;
+}
+
+.show-password-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #667eea;
+    font-size: 14px;
+    padding: 4px 8px;
+    transition: all 0.3s ease;
+}
+
+.show-password-btn:hover {
+    color: #f093fb;
+}
+
+/* Exam Results */
+.exam-results {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.exam-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #e8f0fe;
+    color: #667eea;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.no-data {
+    color: #a0aec0;
+    font-size: 12px;
+    font-style: italic;
+}
+
+/* Rank Badge */
+.rank-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: linear-gradient(135deg, #f6ad55, #ed8936);
+    color: white;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 /* Action Buttons */
@@ -447,7 +544,7 @@ body {
 
 .empty-add-btn {
     padding: 10px 25px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #f093fb, #f5576c);
     color: white;
     border: none;
     border-radius: 10px;
@@ -458,11 +555,135 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    text-decoration: none;
 }
 
 .empty-add-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    max-width: 550px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+    padding: 25px 30px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.modal-header h2 i {
+    margin-right: 12px;
+    color: #f093fb;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+    color: #a0aec0;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #f56565;
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    color: #2d3748;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.form-group label i {
+    color: #f093fb;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #f093fb;
+    box-shadow: 0 0 0 4px rgba(245, 87, 108, 0.1);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245, 87, 108, 0.3);
 }
 
 /* Animations */
@@ -474,6 +695,26 @@ body {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
     }
 }
 
@@ -542,8 +783,8 @@ body {
         padding: 8px 10px;
     }
     
-    .action-buttons {
-        flex-wrap: wrap;
+    .exam-results {
+        max-width: 150px;
     }
 }
 
@@ -568,4 +809,43 @@ body {
         height: 28px;
         font-size: 12px;
     }
+    
+    .brand h1 {
+        font-size: 18px;
+    }
+    
+    .exam-badge {
+        font-size: 10px;
+        padding: 1px 6px;
+    }
+}
+/* static/css/admin_students.css - Password স্টাইল */
+
+.password-dots {
+    font-weight: 600;
+    color: #718096;
+    letter-spacing: 2px;
+}
+
+.password-text {
+    font-weight: 600;
+    color: #2d3748;
+    letter-spacing: 1px;
+    font-family: 'Courier New', monospace;
+}
+
+.show-password-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #667eea;
+    font-size: 14px;
+    padding: 4px 8px;
+    transition: all 0.3s ease;
+    margin-left: 5px;
+}
+
+.show-password-btn:hover {
+    color: #f093fb;
+    transform: scale(1.1);
 }
