@@ -26,21 +26,25 @@
                 <i class="fas fa-home"></i>
                 <span>Home</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="#" class="nav-item" onclick="showClassNotes()">
+                <i class="fas fa-book"></i>
+                <span>Class Notes</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showResults()">
                 <i class="fas fa-file-alt"></i>
                 <span>My Results</span>
             </a>
-            <a href="{{ url_for('rank') }}" class="nav-item">
+            <a href="#" class="nav-item" onclick="showRank()">
                 <i class="fas fa-trophy"></i>
                 <span>Rank</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="#" class="nav-item" onclick="showQuiz()">
                 <i class="fas fa-question-circle"></i>
                 <span>Quiz</span>
             </a>
-            <a href="#" class="nav-item">
-                <i class="fas fa-bullhorn"></i>
-                <span>Notice</span>
+            <a href="#" class="nav-item" onclick="showWhatsApp()">
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp Group</span>
             </a>
             <a href="{{ url_for('logout') }}" class="nav-item logout">
                 <i class="fas fa-sign-out-alt"></i>
@@ -54,7 +58,7 @@
                     <i class="fas fa-user-graduate"></i>
                 </div>
                 <div class="student-details">
-                    <h4>{{ session.get('username', 'Student') }}</h4>
+                    <h4>{{ student.name if student else 'Student' }}</h4>
                     <p>Student</p>
                 </div>
             </div>
@@ -84,8 +88,8 @@
                     <span class="badge">2</span>
                 </div>
                 <div class="student-profile">
-                    <span class="student-name">{{ session.get('username', 'Student') }}</span>
-                    <img src="https://ui-avatars.com/api/?name={{ session.get('username', 'Student') }}&background=4facfe&color=fff&size=40" alt="Student" class="profile-img">
+                    <span class="student-name">{{ student.name if student else 'Student' }}</span>
+                    <img src="https://ui-avatars.com/api/?name={{ student.name if student else 'Student' }}&background=4facfe&color=fff&size=40" alt="Student" class="profile-img">
                 </div>
             </div>
         </header>
@@ -106,7 +110,7 @@
         <!-- Welcome Section -->
         <div class="welcome-section">
             <div class="welcome-text">
-                <h2>Welcome, {{ session.get('username', 'Student') }}! 🎓</h2>
+                <h2>Welcome, {{ student.name if student else 'Student' }}! 🎓</h2>
                 <p>Keep learning and growing. Your journey to success starts here!</p>
             </div>
             <div class="student-profile-card">
@@ -125,8 +129,39 @@
             </div>
         </div>
 
+        <!-- WhatsApp Group Section -->
+        <div class="whatsapp-section" id="whatsappSection">
+            <div class="whatsapp-card">
+                <div class="whatsapp-icon">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
+                <h3>Join Our WhatsApp Group</h3>
+                <p>Connect with your classmates and teachers</p>
+                
+                <div class="gender-form" id="genderForm">
+                    <div class="gender-options">
+                        <button class="gender-btn male" onclick="selectGender('male')">
+                            <i class="fas fa-male"></i>
+                            Male
+                        </button>
+                        <button class="gender-btn female" onclick="selectGender('female')">
+                            <i class="fas fa-female"></i>
+                            Female
+                        </button>
+                    </div>
+                    <div id="whatsappLinkContainer" style="display: none; margin-top: 20px;">
+                        <a href="#" id="whatsappLink" target="_blank" class="whatsapp-join-btn">
+                            <i class="fab fa-whatsapp"></i>
+                            Join WhatsApp Group
+                        </a>
+                        <p class="whatsapp-hint">Click the button above to join the group</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Rank Showcase - Big Display -->
-        <div class="rank-showcase">
+        <div class="rank-showcase" id="rankSection">
             <div class="rank-card-big">
                 <div class="rank-big-icon">
                     <i class="fas fa-trophy"></i>
@@ -151,12 +186,12 @@
                 </div>
                 <div class="rank-progress-big">
                     <div class="rank-progress-label">
-                        <span>Top {{ rank_percentage }}%</span>
+                        <span>Top {{ rank_percentage|default(0) }}%</span>
                         <span>{{ student_rank if student_rank else 0 }} / {{ total_students }}</span>
                     </div>
                     <div class="rank-progress-bar-big">
                         {% set progress_width = 100 - (rank_percentage|float if rank_percentage else 0) %}
-                        <div class="rank-progress-fill-big" style="width:  progress_width  ; "></div>
+                        <div class="rank-progress-fill-big" id="rankProgressFill" data-progress="{{ progress_width|default(0) }}"></div>
                     </div>
                 </div>
                 <div class="rank-badge-big">
@@ -175,11 +210,55 @@
             </div>
         </div>
 
-        <!-- My Results Section - Dynamic from Database -->
-        <div class="results-section">
+        <!-- Class Notes Section -->
+        <div class="class-notes-section" id="classNotesSection" style="display: none;">
+            <div class="section-header">
+                <h2><i class="fas fa-book"></i> Class Notes</h2>
+                <span class="total-count">{{ class_notes|length }} Notes</span>
+            </div>
+            
+            <div class="notes-list">
+                {% if class_notes %}
+                    {% for note in class_notes %}
+                    <div class="note-item">
+                        <div class="note-icon">
+                            {% if note.file_type in ['pdf', 'PDF'] %}
+                                <i class="fas fa-file-pdf" style="color: #f56565;"></i>
+                            {% elif note.file_type in ['jpg', 'jpeg', 'png'] %}
+                                <i class="fas fa-file-image" style="color: #48bb78;"></i>
+                            {% elif note.file_type in ['doc', 'docx'] %}
+                                <i class="fas fa-file-word" style="color: #4facfe;"></i>
+                            {% else %}
+                                <i class="fas fa-file" style="color: #a0aec0;"></i>
+                            {% endif %}
+                        </div>
+                        <div class="note-info">
+                            <h4>{{ note.topic }}</h4>
+                            <p><strong>Subject:</strong> {{ note.subject }} | <strong>Uploaded by:</strong> {{ note.uploaded_by }}</p>
+                            <p><small>{{ note.created_at[:10] if note.created_at else 'N/A' }}</small></p>
+                        </div>
+                        <div class="note-actions">
+                            <a href="{{ url_for('download_material', material_id=note.id) }}" class="download-note-btn">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-book"></i>
+                        <h3>No Notes Available</h3>
+                        <p>Your teacher will upload notes soon</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- My Results Section -->
+        <div class="results-section" id="resultsSection">
             <div class="section-header">
                 <h2><i class="fas fa-file-alt"></i> My Results</h2>
-                <button class="view-all-btn" onclick="viewMyResults()">View All</button>
+                <button class="view-all-btn" onclick="showResults()">View All</button>
             </div>
             <div class="results-list">
                 {% if student_results %}
