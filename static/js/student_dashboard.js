@@ -43,13 +43,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Animate rank progress on load
     setTimeout(function() {
-        const rankFill = document.querySelector('.rank-progress-fill-big');
+        const rankFill = document.getElementById('rankProgressFill');
         if (rankFill) {
-            const width = rankFill.style.width;
+            const progressWidth = rankFill.getAttribute('data-progress') || 0;
             rankFill.style.width = '0%';
+            rankFill.style.transition = 'width 1.5s ease';
             setTimeout(function() {
-                rankFill.style.transition = 'width 1.5s ease';
-                rankFill.style.width = width;
+                rankFill.style.width = progressWidth + '%';
             }, 300);
         }
     }, 500);
@@ -86,34 +86,120 @@ function updateDateTime() {
     }
 }
 
-// View My Results
-function viewMyResults() {
-    alert('📄 My Results\n\nYou can view all your exam results here.');
-    // window.location.href = '/student_results';
+// Select Gender for WhatsApp
+function selectGender(gender) {
+    const maleBtn = document.querySelector('.gender-btn.male');
+    const femaleBtn = document.querySelector('.gender-btn.female');
+    const linkContainer = document.getElementById('whatsappLinkContainer');
+    const link = document.getElementById('whatsappLink');
+    
+    if (!maleBtn || !femaleBtn || !linkContainer || !link) return;
+    
+    maleBtn.classList.remove('selected');
+    femaleBtn.classList.remove('selected');
+    
+    if (gender === 'male') {
+        maleBtn.classList.add('selected');
+        link.href = 'https://chat.whatsapp.com/Kbpkt2u9A3rC2Ggs49u5tC';
+    } else {
+        femaleBtn.classList.add('selected');
+        link.href = 'https://chat.whatsapp.com/LAaHt6NR0lzAqrcDPUlSt8';
+    }
+    
+    linkContainer.style.display = 'block';
 }
 
-// View My Rank
-function viewMyRank() {
-    alert('🏆 My Rank\n\nCheck your position among all students.');
-    // window.location.href = '/student_rank';
+// Show Class Notes
+function showClassNotes() {
+    const notesSection = document.getElementById('classNotesSection');
+    const resultsSection = document.getElementById('resultsSection');
+    const rankSection = document.getElementById('rankSection');
+    const whatsappSection = document.getElementById('whatsappSection');
+    
+    if (notesSection) {
+        notesSection.style.display = 'block';
+        notesSection.scrollIntoView({ behavior: 'smooth' });
+        notesSection.style.transition = 'all 0.3s ease';
+        notesSection.style.boxShadow = '0 0 0 3px #4facfe';
+        setTimeout(() => {
+            notesSection.style.boxShadow = 'none';
+        }, 2000);
+    }
+    
+    if (resultsSection) resultsSection.style.display = 'none';
+    if (rankSection) rankSection.style.display = 'none';
+    if (whatsappSection) whatsappSection.style.display = 'none';
 }
 
-// Start Quiz
-function startQuiz() {
+// Show Results
+function showResults() {
+    const resultsSection = document.getElementById('resultsSection');
+    const notesSection = document.getElementById('classNotesSection');
+    const rankSection = document.getElementById('rankSection');
+    const whatsappSection = document.getElementById('whatsappSection');
+    
+    if (resultsSection) {
+        resultsSection.style.display = 'block';
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+        resultsSection.style.transition = 'all 0.3s ease';
+        resultsSection.style.boxShadow = '0 0 0 3px #4facfe';
+        setTimeout(() => {
+            resultsSection.style.boxShadow = 'none';
+        }, 2000);
+    }
+    
+    if (notesSection) notesSection.style.display = 'none';
+    if (rankSection) rankSection.style.display = 'none';
+    if (whatsappSection) whatsappSection.style.display = 'none';
+}
+
+// Show Rank
+function showRank() {
+    const rankSection = document.getElementById('rankSection');
+    const resultsSection = document.getElementById('resultsSection');
+    const notesSection = document.getElementById('classNotesSection');
+    const whatsappSection = document.getElementById('whatsappSection');
+    
+    if (rankSection) {
+        rankSection.style.display = 'block';
+        rankSection.scrollIntoView({ behavior: 'smooth' });
+        rankSection.style.transition = 'all 0.3s ease';
+        rankSection.style.boxShadow = '0 0 0 3px #f6ad55';
+        setTimeout(() => {
+            rankSection.style.boxShadow = 'none';
+        }, 2000);
+    }
+    
+    if (resultsSection) resultsSection.style.display = 'none';
+    if (notesSection) notesSection.style.display = 'none';
+    if (whatsappSection) whatsappSection.style.display = 'none';
+}
+
+// Show WhatsApp
+function showWhatsApp() {
+    const whatsappSection = document.getElementById('whatsappSection');
+    const resultsSection = document.getElementById('resultsSection');
+    const notesSection = document.getElementById('classNotesSection');
+    const rankSection = document.getElementById('rankSection');
+    
+    if (whatsappSection) {
+        whatsappSection.style.display = 'block';
+        whatsappSection.scrollIntoView({ behavior: 'smooth' });
+        whatsappSection.style.transition = 'all 0.3s ease';
+        whatsappSection.style.boxShadow = '0 0 0 3px #25D366';
+        setTimeout(() => {
+            whatsappSection.style.boxShadow = 'none';
+        }, 2000);
+    }
+    
+    if (resultsSection) resultsSection.style.display = 'none';
+    if (notesSection) notesSection.style.display = 'none';
+    if (rankSection) rankSection.style.display = 'none';
+}
+
+// Show Quiz
+function showQuiz() {
     alert('🧠 Quiz\n\nTake interactive quizzes to test your knowledge.');
-    // window.location.href = '/student_quiz';
-}
-
-// View Fees
-function viewFees() {
-    alert('💰 Fees\n\nView your fees details and payment history.');
-    // window.location.href = '/student_fees';
-}
-
-// View Notice
-function viewNotice() {
-    alert('📢 Notice\n\nView all latest notices and announcements.');
-    // window.location.href = '/student_notice';
 }
 
 // Close sidebar on escape key
@@ -127,8 +213,9 @@ document.addEventListener('keydown', function(e) {
 });
 
 // Make functions globally available
-window.viewMyResults = viewMyResults;
-window.viewMyRank = viewMyRank;
-window.startQuiz = startQuiz;
-window.viewFees = viewFees;
-window.viewNotice = viewNotice;
+window.showClassNotes = showClassNotes;
+window.showResults = showResults;
+window.showRank = showRank;
+window.showQuiz = showQuiz;
+window.showWhatsApp = showWhatsApp;
+window.selectGender = selectGender;
