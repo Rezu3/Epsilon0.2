@@ -96,6 +96,21 @@ def init_database():
         )
     ''')
     
+    # Study Materials table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS study_materials (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            class TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            topic TEXT NOT NULL,
+            filename TEXT NOT NULL,
+            file_path TEXT NOT NULL,
+            file_type TEXT NOT NULL,
+            uploaded_by TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
     # Insert default admin
     cursor.execute('SELECT * FROM admin WHERE username = ?', ('admin',))
     if not cursor.fetchone():
@@ -304,12 +319,225 @@ def teacher_home():
     conn = get_db_connection()
     cursor = conn.cursor()
     
+    # Get all students
     cursor.execute('SELECT * FROM students ORDER BY created_at DESC')
     students = cursor.fetchall()
     
+    # Get unique classes count
+    cursor.execute('SELECT COUNT(DISTINCT class) as count FROM students')
+    class_count = cursor.fetchone()['count']
+    
+    # Get total exams count
+    cursor.execute('SELECT COUNT(*) as count FROM exams')
+    total_exams = cursor.fetchone()['count']
+    
+    # Get study materials
+    cursor.execute('SELECT * FROM study_materials ORDER BY created_at DESC')
+    study_materials = cursor.fetchall()
+    
     conn.close()
     
-    return render_template('teacher_home.html', students=students)
+    return render_template('teacher_home.html', 
+                         students=students,
+                         class_count=class_count,
+                         total_exams=total_exams,
+                         study_materials=study_materials)
+
+# ------------------------
+# View Student Dashboard as Teacher (without password)
+# ------------------------
+@app.route("/student_dashboard_as_teacher/<int:student_id>")
+def student_dashboard_as_teacher(student_id):
+    if 'user_type' not in session or session['user_type'] != 'teacher':
+        flash('Please login as teacher first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Get student info
+    cursor.execute('SELECT * FROM students WHERE id = ?', (student_id,))
+    student = cursor.fetchone()
+    
+    if not student:
+        flash('Student not found!', 'error')
+        return redirect(url_for('teacher_home'))
+    
+    # Get student's results
+    cursor.execute('''
+        SELECT r.*, e.exam_name, e.subject, e.full_marks, e.exam_date
+        FROM results r
+        JOIN exams e ON r.exam_id = e.id
+        WHERE r.student_id = ?
+        ORDER BY r.created_at DESC
+    ''', (student_id,))
+    student_results = cursor.fetchall()
+    
+    # Get total students count
+    cursor.execute('SELECT COUNT(*) as count FROM students')
+    total_students = cursor.fetchone()['count']
+    
+    # Get student's rank
+    cursor.execute('''
+        SELECT student_id, SUM(marks) as total_marks
+        FROM results
+        GROUP BY student_id
+        ORDER BY total_marks DESC
+    ''')
+    all_ranks = cursor.fetchall()
+    
+    student_rank = None
+    rank_percentage = 0
+    
+    for idx, row in enumerate(all_ranks):
+        if row['student_id'] == student_id:
+            student_rank = idx + 1
+            if total_students > 0:
+                rank_percentage = round((student_rank / total_students) * 100, 1)
+            break
+    
+    # Get class rank
+    if student:
+        cursor.execute('''
+            SELECT s.id, SUM(r.marks) as total_marks
+            FROM results r
+            JOIN students s ON r.student_id = s.id
+            WHERE s.class = ?
+            GROUP BY r.student_id
+            ORDER BY total_marks DESC
+        ''', (student['class'],))
+        class_ranks = cursor.fetchall()
+        
+        class_rank = None
+        for idx, row in enumerate(class_ranks):
+            if row['id'] == student_id:
+                class_rank = idx + 1
+                break
+    else:
+        class_rank = None
+    
+    # Get total exams taken
+    cursor.execute('SELECT COUNT(*) as count FROM results WHERE student_id = ?', (student_id,))
+    total_exams_taken = cursor.fetchone()['count']
+    
+    # Get class notes
+    cursor.execute('''
+        SELECT * FROM study_materials 
+        WHERE class = ? 
+        ORDER BY created_at DESC
+    ''', (student['class'],))
+    class_notes = cursor.fetchall()
+    
+    conn.close()
+    
+    return render_template('student_dashboard.html', 
+                         student=student,
+                         student_results=student_results,
+                         total_students=total_students,
+                         student_rank=student_rank,
+                         class_rank=class_rank,
+                         rank_percentage=rank_percentage,
+                         total_exams_taken=total_exams_taken,
+                         class_notes=class_notes)
+
+# ------------------------
+# Study Material Routes
+# ------------------------
+@app.route("/upload_study_material", methods=["POST"])
+def upload_study_material():
+    if 'user_type' not in session or session['user_type'] != 'teacher':
+        flash('Unauthorized access!', 'error')
+        return redirect(url_for('login'))
+    
+    class_name = request.form.get('class')
+    subject = request.form.get('subject')
+    topic = request.form.get('topic')
+    file = request.files.get('file')
+    
+    if not all([class_name, subject, topic, file]):
+        flash('All fields are required!', 'error')
+        return redirect(url_for('teacher_home'))
+    
+    # Create study_materials directory if not exists
+    upload_dir = os.path.join(BASE_DIR, 'static', 'study_materials')
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+    
+    # Save file
+    filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{file.filename}"
+    file_path = os.path.join(upload_dir, filename)
+    file.save(file_path)
+    
+    # Get file extension
+    file_ext = file.filename.split('.')[-1].lower()
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('''
+            INSERT INTO study_materials (class, subject, topic, filename, file_path, file_type, uploaded_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (class_name, subject, topic, file.filename, filename, file_ext, session['username']))
+        
+        conn.commit()
+        flash('Study material uploaded successfully!', 'success')
+    except Exception as e:
+        flash('Error uploading: ' + str(e), 'error')
+    finally:
+        conn.close()
+    
+    return redirect(url_for('teacher_home'))
+
+@app.route("/download_material/<int:material_id>")
+def download_material(material_id):
+    if 'user_type' not in session:
+        flash('Please login first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM study_materials WHERE id = ?', (material_id,))
+    material = cursor.fetchone()
+    conn.close()
+    
+    if not material:
+        flash('Material not found!', 'error')
+        return redirect(url_for('teacher_home'))
+    
+    file_path = os.path.join(BASE_DIR, 'static', 'study_materials', material['file_path'])
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True, download_name=material['filename'])
+    else:
+        flash('File not found!', 'error')
+        return redirect(url_for('teacher_home'))
+
+@app.route("/delete_material/<int:material_id>", methods=["POST"])
+def delete_material(material_id):
+    if 'user_type' not in session or session['user_type'] != 'teacher':
+        flash('Unauthorized access!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM study_materials WHERE id = ?', (material_id,))
+    material = cursor.fetchone()
+    
+    if material:
+        # Delete file from disk
+        file_path = os.path.join(BASE_DIR, 'static', 'study_materials', material['file_path'])
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        
+        # Delete from database
+        cursor.execute('DELETE FROM study_materials WHERE id = ?', (material_id,))
+        conn.commit()
+        flash('Material deleted successfully!', 'success')
+    else:
+        flash('Material not found!', 'error')
+    
+    conn.close()
+    return redirect(url_for('teacher_home'))
 
 # ------------------------
 # Student Dashboard
@@ -327,6 +555,10 @@ def student_dashboard():
     cursor.execute('SELECT * FROM students WHERE id = ?', (session['user_id'],))
     student = cursor.fetchone()
     
+    if not student:
+        flash('Student not found!', 'error')
+        return redirect(url_for('login'))
+    
     # Get student's results
     cursor.execute('''
         SELECT r.*, e.exam_name, e.subject, e.full_marks, e.exam_date
@@ -341,7 +573,7 @@ def student_dashboard():
     cursor.execute('SELECT COUNT(*) as count FROM students')
     total_students = cursor.fetchone()['count']
     
-    # Get student's rank based on TOTAL marks (SUM of all marks)
+    # Get student's rank
     cursor.execute('''
         SELECT student_id, SUM(marks) as total_marks
         FROM results
@@ -360,7 +592,7 @@ def student_dashboard():
                 rank_percentage = round((student_rank / total_students) * 100, 1)
             break
     
-    # Get class rank based on TOTAL marks
+    # Get class rank
     if student:
         cursor.execute('''
             SELECT s.id, SUM(r.marks) as total_marks
@@ -384,6 +616,14 @@ def student_dashboard():
     cursor.execute('SELECT COUNT(*) as count FROM results WHERE student_id = ?', (session['user_id'],))
     total_exams_taken = cursor.fetchone()['count']
     
+    # Get class notes
+    cursor.execute('''
+        SELECT * FROM study_materials 
+        WHERE class = ? 
+        ORDER BY created_at DESC
+    ''', (student['class'],))
+    class_notes = cursor.fetchall()
+    
     conn.close()
     
     return render_template('student_dashboard.html', 
@@ -393,7 +633,8 @@ def student_dashboard():
                          student_rank=student_rank,
                          class_rank=class_rank,
                          rank_percentage=rank_percentage,
-                         total_exams_taken=total_exams_taken)
+                         total_exams_taken=total_exams_taken,
+                         class_notes=class_notes)
 
 # ------------------------
 # Admin - Students & Teachers
@@ -411,25 +652,33 @@ def admin_students():
     cursor.execute('SELECT * FROM students ORDER BY created_at DESC')
     students = cursor.fetchall()
     
-    # Get results for each student
+    # Dictionary to store results for each student
     student_results = {}
     student_ranks = {}
     
-    # Get all results
+    # Get all results with exam details
     cursor.execute('''
-        SELECT r.student_id, r.marks, r.grade, e.exam_name, e.full_marks
+        SELECT 
+            r.student_id, 
+            r.marks, 
+            r.grade, 
+            e.exam_name, 
+            e.full_marks,
+            e.subject
         FROM results r
         JOIN exams e ON r.exam_id = e.id
         ORDER BY r.created_at DESC
     ''')
     all_results = cursor.fetchall()
     
+    # Group results by student_id
     for result in all_results:
         student_id = result['student_id']
         if student_id not in student_results:
             student_results[student_id] = []
         student_results[student_id].append({
             'exam_name': result['exam_name'],
+            'subject': result['subject'],
             'marks': result['marks'],
             'full_marks': result['full_marks'],
             'grade': result['grade']
@@ -437,8 +686,10 @@ def admin_students():
     
     # Get ranks for each student
     cursor.execute('''
-        SELECT student_id, SUM(marks) as total_marks,
-               RANK() OVER (ORDER BY SUM(marks) DESC) as rank_position
+        SELECT 
+            student_id, 
+            SUM(marks) as total_marks,
+            RANK() OVER (ORDER BY SUM(marks) DESC) as rank_position
         FROM results
         GROUP BY student_id
     ''')
