@@ -667,3 +667,232 @@ body {
         font-size: 20px;
     }
 }
+
+
+
+
+
+
+/* static/css/rank.css - PDF স্টাইল যোগ করুন */
+
+/* PDF Download Button */
+.download-pdf-btn {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #f56565, #e53e3e);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.download-pdf-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
+}
+
+.download-pdf-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* PDF Print Styles */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #rankTableContainer, #rankTableContainer * {
+        visibility: visible;
+    }
+    #rankTableContainer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+}
+
+/* PDF Content Styles */
+.pdf-content {
+    padding: 20px;
+    background: white;
+}
+
+.pdf-header {
+    text-align: center;
+    border-bottom: 3px solid #2d3748;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.pdf-header h1 {
+    font-size: 28px;
+    color: #2d3748;
+    margin-bottom: 5px;
+}
+
+.pdf-header p {
+    color: #718096;
+    font-size: 14px;
+}
+
+.pdf-footer {
+    text-align: center;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 15px;
+    margin-top: 20px;
+    color: #a0aec0;
+    font-size: 12px;
+}
+
+/* Table Styles for PDF */
+.rank-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.rank-table th {
+    background: #f7fafc;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #2d3748;
+    border: 1px solid #e2e8f0;
+}
+
+.rank-table td {
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+}
+
+.rank-table tbody tr:nth-child(1) {
+    background: #fffbeb;
+}
+
+.rank-table tbody tr:nth-child(2) {
+    background: #f7fafc;
+}
+
+.rank-table tbody tr:nth-child(3) {
+    background: #fef3e8;
+}
+
+.rank-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rank-badge.gold {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.rank-badge.silver {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.rank-badge.bronze {
+    background: #fef3e8;
+    color: #92400e;
+}
+
+.rank-badge.normal {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.student-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar-small {
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, #f6ad55, #ed8936);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.grade-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.grade-a-plus {
+    background: #d4edda;
+    color: #155724;
+}
+
+.grade-a {
+    background: #d4edda;
+    color: #155724;
+}
+
+.grade-a-minus {
+    background: #d4edda;
+    color: #155724;
+}
+
+.grade-b {
+    background: #d4edda;
+    color: #155724;
+}
+
+.grade-c {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.grade-d {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.grade-f {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.grade-default {
+    background: #e2e8f0;
+    color: #718096;
+}
+
+.empty-row {
+    text-align: center;
+    padding: 40px 20px !important;
+}
+
+.empty-row i {
+    font-size: 40px;
+    color: #cbd5e0;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.empty-row p {
+    color: #718096;
+}
