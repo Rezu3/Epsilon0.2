@@ -1,6 +1,6 @@
 <!-- templates/partials/rank_list.html -->
-<div class="rank-table-responsive">
-    <table class="rank-table">
+<div class="rank-table-responsive" id="rankTableContainer">
+    <table class="rank-table" id="rankTable">
         <thead>
             <tr>
                 <th style="width: 60px;">Rank</th>
@@ -34,14 +34,14 @@
                     <td>{{ student.school }}</td>
                     <td>
                         <strong>
-                            {% if student.marks is not none %}
+                            {% if student.marks is not none and student.marks != '' %}
                                 {{ student.marks }}
                             {% else %}
                                 -
                             {% endif %}
                         </strong>
-                        {% if student.marks is not none and exam %}
-                            ({{ "%.1f"|format((student.marks / exam.full_marks) * 100) }}%)
+                        {% if student.marks is not none and student.marks != '' and exam %}
+                            ({{ "%.1f"|format((student.marks|float / exam.full_marks|float) * 100) }}%)
                         {% endif %}
                     </td>
                     <td>
