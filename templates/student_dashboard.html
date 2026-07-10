@@ -30,6 +30,10 @@
                 <i class="fas fa-book"></i>
                 <span>Class Notes</span>
             </a>
+            <a href="#" class="nav-item" onclick="showMyExams()">
+                <i class="fas fa-pencil-alt"></i>
+                <span>Online Test</span>
+            </a>
             <a href="#" class="nav-item" onclick="showResults()">
                 <i class="fas fa-file-alt"></i>
                 <span>My Results</span>
@@ -234,7 +238,8 @@
                         </div>
                         <div class="note-info">
                             <h4>{{ note.topic }}</h4>
-                            <p><strong>Subject:</strong> {{ note.subject }} | <strong>Uploaded by:</strong> {{ note.uploaded_by }}</p>
+                            <p><strong>Subject:</strong> {{ note.subject }} | <strong>Class:</strong> {{ note.class }}</p>
+                            <p><strong>Uploaded by:</strong> {{ note.uploaded_by }}</p>
                             <p><small>{{ note.created_at[:10] if note.created_at else 'N/A' }}</small></p>
                         </div>
                         <div class="note-actions">
@@ -249,6 +254,62 @@
                         <i class="fas fa-book"></i>
                         <h3>No Notes Available</h3>
                         <p>Your teacher will upload notes soon</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- My Exams / Online Test Section -->
+        <div class="my-exams-section" id="myExamsSection" style="display: none;">
+            <div class="section-header">
+                <h2><i class="fas fa-pencil-alt"></i> Online Test</h2>
+                <span class="total-count">{{ my_exams|length }} Tests</span>
+            </div>
+            
+            <!-- Debug Info (শুধু টেস্টের জন্য) -->
+            {% if my_exams|length == 0 %}
+                <div style="background: #fef3e8; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 13px; border-left: 4px solid #ed8936;">
+                    <p><strong>🔍 Debug Info:</strong></p>
+                    <p>Your Class: <strong>{{ student.class if student else 'N/A' }}</strong></p>
+                    <p>Total Online Tests: <strong>{{ my_exams|length }}</strong></p>
+                </div>
+            {% endif %}
+            
+            <div class="exams-list">
+                {% if my_exams %}
+                    {% for exam in my_exams %}
+                    <div class="exam-item" id="exam-item-{{ exam.id }}">
+                        <div class="exam-icon">
+                            <i class="fas fa-globe" style="color: #4facfe;"></i>
+                        </div>
+                        <div class="exam-info">
+                            <h4>{{ exam.exam_name }}</h4>
+                            <p><strong>Subject:</strong> {{ exam.subject }} | <strong>Teacher:</strong> {{ exam.teacher_name }}</p>
+                            <p><strong>Date:</strong> {{ exam.exam_date }} | <strong>Time:</strong> {{ exam.exam_time }} | <strong>Duration:</strong> {{ exam.duration }} mins</p>
+                            <p><strong>Full Marks:</strong> {{ exam.full_marks }} | <strong>Class:</strong> {{ exam.class }}</p>
+                        </div>
+                        <div class="exam-actions" id="exam-actions-{{ exam.id }}">
+                            <div class="exam-timer" id="exam-timer-{{ exam.id }}">
+                                <div class="timer-display" id="timer-display-{{ exam.id }}">
+                                    <i class="fas fa-clock"></i>
+                                    <span id="timer-text-{{ exam.id }}">Loading...</span>
+                                </div>
+                                <button class="start-exam-btn" id="start-btn-{{ exam.id }}" style="display: none;" onclick="startOnlineExam('{{ exam.id }}')">
+                                    <i class="fas fa-play"></i> Start Test
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-pencil-alt"></i>
+                        <h3>No Tests Available</h3>
+                        <p>Your teacher will schedule tests soon</p>
+                        <p style="font-size: 13px; color: #a0aec0; margin-top: 5px;">
+                            <i class="fas fa-info-circle"></i> 
+                            Your Class: <strong>{{ student.class if student else 'N/A' }}</strong>
+                        </p>
                     </div>
                 {% endif %}
             </div>
