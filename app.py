@@ -941,6 +941,9 @@ def submit_online_test():
 # ------------------------
 # Student Dashboard
 # ------------------------
+# ------------------------
+# Student Dashboard
+# ------------------------
 @app.route("/student_dashboard")
 def student_dashboard():
     if 'user_type' not in session or session['user_type'] != 'student':
@@ -1031,46 +1034,35 @@ def student_dashboard():
     class_notes = cursor.fetchall()
     
     # =============================================
-    # GET ONLINE EXAMS FOR STUDENT'S CLASS
+    # 🔥 FIXED: শুধু Student এর Class এর Online Exam দেখাবে
     # =============================================
     
-    # সব Online Exam বের করুন (class filter ছাড়া)
+    student_class = str(student['class']) if student['class'] is not None else ''
+    print(f"🔍 Student Class: '{student_class}'")
+    
+    # ✅ শুধুমাত্র Student এর Class এর Exam (যা Taken না)
     cursor.execute('''
         SELECT * FROM exams 
-        WHERE exam_type = 'online'
+        WHERE exam_type = 'online' 
+        AND class = ?
+        AND status = 'Upcoming'
         ORDER BY created_at DESC
-    ''')
-    all_online_exams = cursor.fetchall()
+    ''', (student_class,))
+    all_class_exams = cursor.fetchall()
     
-    print(f"📚 Total Online Exams Found: {len(all_online_exams)}")
-    for exam in all_online_exams:
-        print(f"   - {exam['exam_name']} (Class: {exam['class']}, Status: {exam['status']})")
-    
-    # Student এর Class এর সাথে মিলান
-    my_exams = []
-    student_class = str(student['class']) if student['class'] is not None else ''
-    
-    # Also check which exams the student has already taken
+    # Check which exams are already taken
     cursor.execute('SELECT exam_id FROM results WHERE student_id = ?', (session['user_id'],))
     taken_exams = [row['exam_id'] for row in cursor.fetchall()]
     
-    for exam in all_online_exams:
-        exam_class = str(exam['class']) if exam['class'] is not None else ''
-        # যদি class খালি থাকে অথবা মেলে, এবং exam taken না থাকে
-        if (exam_class == '' or exam_class == student_class) and exam['id'] not in taken_exams:
+    # ফিল্টার: শুধু যেগুলো Taken না
+    my_exams = []
+    for exam in all_class_exams:
+        if exam['id'] not in taken_exams:
             my_exams.append(exam)
     
-    # যদি কিছু না পাওয়া যায়, সব Online Exam দেখান (শুধু যেগুলো taken না)
-    if len(my_exams) == 0:
-        for exam in all_online_exams:
-            if exam['id'] not in taken_exams:
-                my_exams.append(exam)
-        print("⚠️ No matching exams found, showing all online exams (not taken)")
-    
-    print(f"📚 My Exams: {len(my_exams)}")
+    print(f"📚 Exams for class '{student_class}': {len(my_exams)}")
     for exam in my_exams:
-        print(f"   - {exam['exam_name']} (Class: {exam['class']})")
-    print("=" * 50)
+        print(f"   - {exam['exam_name']}")
     
     conn.close()
     
