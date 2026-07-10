@@ -118,7 +118,7 @@ body {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.admin-info {
+.admin-info, .teacher-info, .student-info {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -135,12 +135,34 @@ body {
     font-size: 20px;
 }
 
-.admin-details h4 {
+.teacher-avatar {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.student-avatar {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.admin-details h4, .teacher-details h4, .student-details h4 {
     font-size: 14px;
     font-weight: 500;
 }
 
-.admin-details p {
+.admin-details p, .teacher-details p, .student-details p {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.6);
 }
@@ -545,6 +567,31 @@ body {
     color: #155724;
 }
 
+/* Exam Type Badge */
+.exam-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.exam-type-badge.online {
+    background: #e8f0fe;
+    color: #4facfe;
+}
+
+.exam-type-badge.offline {
+    background: #fef3e8;
+    color: #ed8936;
+}
+
+.exam-type-badge i {
+    font-size: 12px;
+}
+
 /* Action Buttons */
 .action-buttons {
     display: flex;
@@ -630,6 +677,64 @@ body {
 .empty-add-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(237, 137, 54, 0.3);
+}
+
+/* Exam Type Modal */
+.exam-type-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.exam-type-card {
+    padding: 30px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f7fafc;
+}
+
+.exam-type-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.exam-type-card:hover .exam-type-icon {
+    transform: scale(1.1);
+}
+
+.exam-type-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 30px;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.exam-type-icon.online-icon {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+.exam-type-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 5px;
+}
+
+.exam-type-card p {
+    font-size: 13px;
+    color: #718096;
+    margin: 0;
 }
 
 /* Modal */
@@ -745,6 +850,17 @@ body {
     box-shadow: 0 0 0 4px rgba(237, 137, 54, 0.1);
 }
 
+/* Online Exam Fields */
+#onlineExamFields {
+    border-top: 2px dashed #e2e8f0;
+    padding-top: 20px;
+    margin-top: 10px;
+}
+
+#onlineExamFields .form-group {
+    margin-bottom: 15px;
+}
+
 .submit-btn {
     width: 100%;
     padding: 14px;
@@ -767,10 +883,6 @@ body {
 .submit-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(237, 137, 54, 0.4);
-}
-
-.submit-btn:active {
-    transform: translateY(0);
 }
 
 /* Animations */
@@ -883,6 +995,20 @@ body {
     .exam-table th,
     .exam-table td {
         padding: 8px 10px;
+    }
+    
+    .exam-type-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .exam-type-card {
+        padding: 20px;
+    }
+    
+    .exam-type-icon {
+        width: 55px;
+        height: 55px;
+        font-size: 24px;
     }
 }
 
