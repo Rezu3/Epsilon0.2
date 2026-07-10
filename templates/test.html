@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - Online Exam</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/test.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- ============================================= -->
+    <!-- MATHJAX CONFIGURATION - সব Math Equation জন্য -->
+    <!-- ============================================= -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [
+                    ['$', '$'],
+                    ['\\(', '\\)']
+                ],
+                displayMath: [
+                    ['$$', '$$'],
+                    ['\\[', '\\]']
+                ],
+                processEscapes: true,
+                processEnvironments: true,
+                packages: ['base', 'ams', 'noerrors', 'noundefined', 'autoload', 'require', 'physics', 'cancel']
+            },
+            options: {
+                enableMenu: false,
+                ignoreHtmlClass: 'no-mathjax',
+                processHtmlClass: 'mathjax'
+            },
+            svg: {
+                fontCache: 'global'
+            },
+            loader: {
+                load: ['[tex]/ams', '[tex]/physics', '[tex]/cancel']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+    
+    <!-- MathJax Typeset Fix for Dynamic Content -->
+    <script>
+        function renderMath() {
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise().catch(function(err) {
+                    console.log('MathJax error:', err);
+                });
+            }
+        }
+        
+        // Auto render after page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(renderMath, 500);
+        });
+    </script>
+</head>
+<body>
+    <div class="exam-wrapper">
+        <div class="exam-container" id="examContainer">
+            <!-- Header -->
+            <div class="exam-header">
+                <div class="exam-header-left">
+                    <div class="logo">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</span>
+                    </div>
+                    <span class="exam-title">Online Exam</span>
+                </div>
+                <div class="exam-header-right" id="examHeaderRight">
+                    <div class="exam-timer" id="examTimer">
+                        <i class="fas fa-clock"></i>
+                        <span id="timerDisplay">30:00</span>
+                    </div>
+                    <div class="exam-info">
+                        <span id="questionNumber">Q1/10</span>
+                        <span id="answeredCount">0 Answered</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar" style="width: 10%;"></div>
+            </div>
+
+            <!-- Security Bar -->
+            <div class="security-bar">
+                <i class="fas fa-shield-alt"></i>
+                <span>🔒 Secure Exam Mode</span>
+                <span class="security-dot"></span>
+            </div>
+
+            <!-- Question Container -->
+            <div class="question-container mathjax" id="questionContainer">
+                <!-- Questions will be rendered by JavaScript -->
+            </div>
+
+            <!-- Navigation -->
+            <div class="navigation" id="navigation">
+                <button class="nav-btn prev-btn" id="prevBtn" onclick="prevQuestion()">
+                    <i class="fas fa-arrow-left"></i> <span class="btn-text">Prev</span>
+                </button>
+                <div class="nav-center">
+                    <span id="questionIndicator">1 / 10</span>
+                </div>
+                <button class="nav-btn next-btn" id="nextBtn" onclick="nextQuestion()">
+                    <span class="btn-text">Next</span> <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="nav-btn submit-btn" id="submitBtn" onclick="submitExam()" style="display: none;">
+                    <i class="fas fa-paper-plane"></i> <span class="btn-text">Submit</span>
+                </button>
+            </div>
+
+            <!-- Security Warning -->
+            <div id="securityWarning" class="security-warning" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="warningMessage">Security violation detected!</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Fields -->
+    <span id="examDuration" style="display: none;">{{ exam.duration if exam else 30 }}</span>
+    <span id="examId" style="display: none;">{{ exam.id if exam else '' }}</span>
+    <span id="examStatus" style="display: none;">{{ 'taken' if exam_taken else 'pending' }}</span>
+
+    <script src="{{ url_for('static', filename='js/test.js') }}"></script>
+</body>
+</html>
