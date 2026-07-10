@@ -86,19 +86,67 @@ function updateDateTime() {
     }
 }
 
+// Open Exam Type Modal
+function openExamTypeModal() {
+    const modal = document.getElementById('examTypeModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+// Close Exam Type Modal
+function closeExamTypeModal() {
+    const modal = document.getElementById('examTypeModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+}
+
+// Select Exam Type
+function selectExamType(type) {
+    closeExamTypeModal();
+    openAddExamModal(type);
+}
+
 // Open Add Exam Modal
-function openAddExamModal() {
+function openAddExamModal(type) {
     const modal = document.getElementById('addExamModal');
     if (modal) {
         modal.style.display = 'flex';
         modal.classList.add('show');
         document.body.style.overflow = 'hidden';
         
+        // Set exam type
+        document.getElementById('exam_type').value = type || 'offline';
+        
+        // Show/hide online fields
+        const onlineFields = document.getElementById('onlineExamFields');
+        if (type === 'online') {
+            onlineFields.style.display = 'block';
+            document.querySelector('#addExamModal .modal-header h2').innerHTML = 
+                '<i class="fas fa-globe"></i> Add Online Exam';
+        } else {
+            onlineFields.style.display = 'none';
+            document.querySelector('#addExamModal .modal-header h2').innerHTML = 
+                '<i class="fas fa-school"></i> Add Offline Exam';
+        }
+        
         // Set default date
         const dateInput = document.getElementById('exam_date');
         if (dateInput) {
             const today = new Date();
             dateInput.value = today.toISOString().split('T')[0];
+        }
+        
+        // Clear previous form data
+        const form = document.getElementById('examForm');
+        if (form) {
+            form.reset();
+            document.getElementById('exam_type').value = type || 'offline';
         }
     }
 }
@@ -131,6 +179,7 @@ function confirmDelete() {
 // Close modal on escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+        closeExamTypeModal();
         closeAddExamModal();
         const sidebar = document.getElementById('sidebar');
         if (sidebar && sidebar.classList.contains('open')) {
@@ -141,11 +190,29 @@ document.addEventListener('keydown', function(e) {
 
 // Close modal on outside click
 document.addEventListener('click', function(e) {
-    const modal = document.getElementById('addExamModal');
-    if (modal && modal.style.display === 'flex') {
-        const modalContent = modal.querySelector('.modal-content');
+    const typeModal = document.getElementById('examTypeModal');
+    if (typeModal && typeModal.style.display === 'flex') {
+        const modalContent = typeModal.querySelector('.modal-content');
         if (modalContent && !modalContent.contains(e.target) && !e.target.closest('.add-exam-btn')) {
+            closeExamTypeModal();
+        }
+    }
+    
+    const addModal = document.getElementById('addExamModal');
+    if (addModal && addModal.style.display === 'flex') {
+        const modalContent = addModal.querySelector('.modal-content');
+        if (modalContent && !modalContent.contains(e.target) && !e.target.closest('.exam-type-card')) {
             closeAddExamModal();
         }
     }
 });
+
+// Make functions globally available
+window.openExamTypeModal = openExamTypeModal;
+window.closeExamTypeModal = closeExamTypeModal;
+window.selectExamType = selectExamType;
+window.openAddExamModal = openAddExamModal;
+window.closeAddExamModal = closeAddExamModal;
+window.viewExam = viewExam;
+window.editExam = editExam;
+window.confirmDelete = confirmDelete;
