@@ -577,6 +577,8 @@ def exam():
         cursor.execute("ALTER TABLE exams ADD COLUMN duration INTEGER DEFAULT 0")
     if 'class' not in columns:
         cursor.execute("ALTER TABLE exams ADD COLUMN class TEXT")
+    if 'status' not in columns:
+        cursor.execute("ALTER TABLE exams ADD COLUMN status TEXT DEFAULT 'Upcoming'")
     
     cursor.execute('SELECT * FROM exams ORDER BY created_at DESC')
     exams = cursor.fetchall()
@@ -584,7 +586,6 @@ def exam():
     cursor.execute('SELECT name FROM teachers ORDER BY name')
     teachers = cursor.fetchall()
     
-    # Get all students for class dropdown
     cursor.execute('SELECT DISTINCT class FROM students ORDER BY class')
     all_students = cursor.fetchall()
     
@@ -609,26 +610,43 @@ def add_exam():
     full_marks = request.form.get('full_marks')
     exam_date = request.form.get('exam_date')
     exam_type = request.form.get('exam_type', 'offline')
-    exam_time = request.form.get('exam_time')
-    duration = request.form.get('duration')
-    exam_class = request.form.get('class')
+    
+    # Online exam fields
+    exam_time = request.form.get('exam_time', '')
+    duration = request.form.get('duration', '')
+    exam_class = request.form.get('class', '')
     
     if not all([exam_name, teacher_name, subject, full_marks, exam_date]):
         flash('All fields are required!', 'error')
         return redirect(url_for('exam'))
     
+    # Online exam validation
+    if exam_type == 'online':
+        if not exam_time or not duration or not exam_class:
+            flash('For online exam, Time, Duration and Class are required!', 'error')
+            return redirect(url_for('exam'))
+    
     conn = get_db_connection()
     cursor = conn.cursor()
     
     try:
+        # Offline exam এ empty string কে None করে দিচ্ছি
+        if exam_type == 'offline':
+            exam_time = None
+            duration = None
+            exam_class = None
+        
         cursor.execute('''
-            INSERT INTO exams (exam_name, teacher_name, subject, full_marks, exam_date, exam_type, exam_time, duration, class) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (exam_name, teacher_name, subject, full_marks, exam_date, exam_type, exam_time, duration, exam_class))
+            INSERT INTO exams (exam_name, teacher_name, subject, full_marks, exam_date, exam_type, exam_time, duration, class, status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (exam_name, teacher_name, subject, full_marks, exam_date, exam_type, exam_time, duration, exam_class, 'Upcoming'))
+        
         conn.commit()
         flash('Exam created successfully!', 'success')
+        
     except Exception as e:
         flash('Error creating exam: ' + str(e), 'error')
+        print(f"❌ Error: {e}")
     finally:
         conn.close()
     
@@ -653,7 +671,6 @@ def delete_exam(exam_id):
         conn.close()
     
     return redirect(url_for('exam'))
-
 # ------------------------
 # Result Routes
 # ------------------------
@@ -941,9 +958,6 @@ def submit_online_test():
 # ------------------------
 # Student Dashboard
 # ------------------------
-# ------------------------
-# Student Dashboard
-# ------------------------
 @app.route("/student_dashboard")
 def student_dashboard():
     if 'user_type' not in session or session['user_type'] != 'student':
@@ -1076,7 +1090,6 @@ def student_dashboard():
                          total_exams_taken=total_exams_taken,
                          class_notes=class_notes,
                          my_exams=my_exams)
-
 # ------------------------
 # Admin - Students & Teachers
 # ------------------------
