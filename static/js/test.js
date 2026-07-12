@@ -1,327 +1,188 @@
-// static/js/test.js - MathJax সমর্থন সহ
+// static/js/test.js
 
 // =============================================
-// QUESTIONS DATA - MATH EQUATIONS
+// QUESTIONS DATA (সঠিক correct ইনডেক্স সহ)
 // =============================================
 const questions = [
-    // =============================================
-    // 1. INTEGRATION
-    // =============================================
     {
         id: 1,
-        question: `$$\int_0^1 x^2 \\, dx$$ এর মান কত?`,
+        question: `একটি হেলিকপ্টার $360\\text{ km/h}$ অনুভূমিক বেগে $2\\text{ km}$ উচ্চতায় উড়ন্ত অবস্থায় একটি বস্তু ফেলে দেয়। বস্তুটিকে ফেলার ২০ সেকেন্ড পর সেটি মাটিতে $O$ বিন্দুতে আঘাত করে। হেলিকপ্টার থেকে বস্তুটিকে ছাড়ার স্থান থেকে $O$ বিন্দুর সরণ কত? ($g = 10\\text{ m/s}^2$)`,
         image: null,
         options: [
-            `$$\\frac{1}{3}$$`,
-            `$$\\frac{1}{2}$$`,
-            `$$1$$`,
-            `$$\\frac{2}{3}$$`
+            `$$2\\,\\text{km}$$`,
+            `$$\\sqrt{2}\\,\\text{km}$$`,
+            `$$4\\,\\text{km}$$`,
+            `$$2\\sqrt{2}\\,\\text{km}$$`
         ],
-        correct: 0
+        correct: 0  // ✅ 1st option
     },
-
-    // =============================================
-    // 2. DERIVATIVE
-    // =============================================
     {
         id: 2,
-        question: `$$\\frac{d}{dx}(x^3 + 2x^2 - 5x + 7)$$ এর মান কত?`,
-        image: null,
+        question: `সরণ ($x$) বনাম সময় ($t$) গ্রাফটি লক্ষ্য করে নিচের বিবৃতিগুলোর মধ্যে কোনগুলো সঠিক তা নির্বাচন করুন।`,
+        image: "2.png",
         options: [
-            `$$3x^2 + 4x - 5$$`,
-            `$$3x^2 + 2x - 5$$`,
-            `$$x^2 + 4x - 5$$`,
-            `$$3x^2 + 4x + 5$$`
+            `(A), (B) এবং (C) মাত্র`,
+            `(A), (C) এবং (D) মাত্র`,
+            `(B), (D) এবং (E) মাত্র`,
+            `(C), (D) এবং (E) মাত্র`
         ],
-        correct: 0
+        correct: 1  // ✅ 2nd option
     },
-
-    // =============================================
-    // 3. MATRIX DETERMINANT
-    // =============================================
     {
         id: 3,
-        question: `নিচের ম্যাট্রিক্সটির ডিটারমিনেন্ট কত? $$\\begin{vmatrix} 1 & 2 \\\\ 3 & 4 \\end{vmatrix}$$`,
+        question: `দুটি গাড়ি P এবং Q একই অভিমুখে গতিশীল। P-এর ত্বরণ সময়ের সাথে রৈখিকভাবে বৃদ্ধি পায় এবং Q ধ্রুবক ত্বরণে চলে। $t = 0$ সময়ে তারা প্রথমবার একে অপরকে অতিক্রম করে। গাড়ি দুটির সর্বোচ্চ কতবার একে অপরকে অতিক্রম করা সম্ভব ($t = 0$-এর অতিক্রমণসহ)?`,
         image: null,
         options: [
-            `$$-2$$`,
-            `$$2$$`,
-            `$$-1$$`,
-            `$$1$$`
+            `$$1\\text{ বার}$$`,
+            `$$2\\text{ বার}$$`,
+            `$$3\\text{ বার}$$`,
+            `$$4\\text{ বার}$$`
         ],
-        correct: 0
+        correct: 2  // ✅ 3rd option
     },
-
-    // =============================================
-    // 4. LIMIT
-    // =============================================
     {
         id: 4,
-        question: `$$\\lim_{x \\to 0} \\frac{\\sin x}{x}$$ এর মান কত?`,
+        question: `স্থির জলে একটি নৌকার সর্বোচ্চ বেগ $27\\text{ km/h}$। নৌকাটি $9\\text{ km/h}$ বেগে প্রবাহিত একটি নদীতে স্রোতের অনুকূলে (downstream) চলছে। নৌকা থেকে এক ব্যক্তি একটি বলকে উলম্বভাবে উপরের দিকে $10\\text{ m/s}$ বেগে ছুঁড়ে দিল। নদীর তীরে স্থির থাকা একজন পর্যবেক্ষকের সাপেক্ষে বলটির পাল্লা (Range) কত হবে? ($g = 10\\text{ m/s}^2$)`,
         image: null,
         options: [
-            `$$0$$`,
-            `$$1$$`,
-            `$$\\infty$$`,
-            `$$-1$$`
+            `$$1000\\,\\text{cm}$$`,
+            `$$2000\\,\\text{cm}$$`,
+            `$$1500\\,\\text{cm}$$`,
+            `$$2500\\,\\text{cm}$$`
         ],
-        correct: 1
+        correct: 1  // ✅ 2nd option
     },
-
-    // =============================================
-    // 5. DEFINITE INTEGRAL
-    // =============================================
     {
         id: 5,
-        question: `$$\\int_0^{\\pi} \\sin x \\, dx$$ এর মান কত?`,
-        image: null,
+        question: `একটি বিমানের বেগ-সময় গ্রাফ দেওয়া আছে। প্রথম 30.5 সেকেন্ডে বিমানটি কত দূরত্ব অতিক্রম করবে?`,
+        image: "5.png",
         options: [
-            `$$0$$`,
-            `$$1$$`,
-            `$$2$$`,
-            `$$-1$$`
+            `$$2\\,\\text{km}$$`,
+            `$$3\\,\\text{km}$$`,
+            `$$4\\,\\text{km}$$`,
+            `$$5\\,\\text{km}$$`
         ],
-        correct: 2
+        correct: 2  // ✅ 3rd option
     },
-
-    // =============================================
-    // 6. PARTIAL DERIVATIVE
-    // =============================================
     {
         id: 6,
-        question: `$$f(x,y) = x^2y + y^3$$ হলে $$\\frac{\\partial f}{\\partial x}$$ এর মান কত?`,
+        question: `এক ব্যক্তি সরলরেখা বরাবর $x$ দূরত্ব $v_1$ সুষম বেগে এবং পরবর্তী $\\frac{3}{2}x$ দূরত্ব $v_2$ সুষম বেগে অতিক্রম করে। সমগ্র গতির গড় বেগ $\\frac{50}{7}\\text{ m/s}$। যদি $v_1 = 5\\text{ m/s}$ হয়, তবে $v_2$-এর মান কত?`,
         image: null,
         options: [
-            `$$2xy$$`,
-            `$$x^2 + 3y^2$$`,
-            `$$2xy + 3y^2$$`,
-            `$$x^2y$$`
+            `$$5\\,\\text{m/s}$$`,
+            `$$7.5\\,\\text{m/s}$$`,
+            `$$10\\,\\text{m/s}$$`,
+            `$$15\\,\\text{m/s}$$`
         ],
-        correct: 0
+        correct: 3  // ✅ 4th option
     },
-
-    // =============================================
-    // 7. TRIGONOMETRIC IDENTITY
-    // =============================================
     {
         id: 7,
-        question: `$$\\sin^2 x + \\cos^2 x$$ এর মান কত?`,
+        question: `সময় $t$ এবং দূরত্ব $x$-এর মধ্যে সম্পর্ক $t = \\alpha x^2 + \\beta x$। ত্বরণ ($a$) এবং বেগ ($v$)-এর মধ্যে সম্পর্কটি কী?`,
         image: null,
         options: [
-            `$$0$$`,
-            `$$1$$`,
-            `$$\\sin 2x$$`,
-            `$$\\cos 2x$$`
+            `$$a = -2\\alpha v^3$$`,
+            `$$a = 2\\alpha v^3$$`,
+            `$$a = -2\\beta v^3$$`,
+            `$$a = 2\\beta v^2$$`
         ],
-        correct: 1
+        correct: 1  // ✅ 2nd option
     },
-
-    // =============================================
-    // 8. LOGARITHM
-    // =============================================
     {
         id: 8,
-        question: `$$\\log_{10} 100$$ এর মান কত?`,
+        question: `একটি স্থির লক্ষ্যে ফায়ার করা একটি বুলেট $4\\text{ cm}$ প্রবেশের পর তার বেগের এক-তৃতীয়াংশ ($\\frac{1}{3}$) হারায়। বুলেটটি স্থির অবস্থায় আসার আগে আরও কত দূরত্ব প্রবেশ করবে?`,
         image: null,
         options: [
-            `$$1$$`,
-            `$$2$$`,
-            `$$10$$`,
-            `$$100$$`
+            `$$32 \\times 10^{-3}\\,\\text{m}$$`,
+            `$$40 \\times 10^{-3}\\,\\text{m}$$`,
+            `$$16 \\times 10^{-3}\\,\\text{m}$$`,
+            `$$24 \\times 10^{-3}\\,\\text{m}$$`
         ],
-        correct: 1
+        correct: 1  // ✅ 2nd option
     },
-
-    // =============================================
-    // 9. DIFFERENTIAL EQUATION
-    // =============================================
     {
         id: 9,
-        question: `$$\\frac{dy}{dx} = 2x$$ এর সমাধান কত?`,
+        question: `$10\\text{ g}$ ভরের একটি কণা $2x$ মন্দন (retardation) সহ সরলরেখায় চলে। কণাটির গতিশক্তি হ্রাস $(\\frac{10}{x})^{-n}\\text{ J}$ হলে $n$-এর মান কত?`,
         image: null,
         options: [
-            `$$y = x^2 + C$$`,
-            `$$y = 2x + C$$`,
-            `$$y = \\frac{x^2}{2} + C$$`,
-            `$$y = e^{2x} + C$$`
-        ],
-        correct: 0
-    },
-
-    // =============================================
-    // 10. VECTOR DOT PRODUCT
-    // =============================================
-    {
-        id: 10,
-        question: `$$\\vec{i} + \\vec{j}$$ এবং $$\\vec{i} - \\vec{j}$$ এর ডট গুণফল কত?`,
-        image: null,
-        options: [
-            `$$0$$`,
-            `$$1$$`,
-            `$$-1$$`,
-            `$$2$$`
-        ],
-        correct: 0
-    },
-
-    // =============================================
-    // 11. MULTIPLE INTEGRATION
-    // =============================================
-    {
-        id: 11,
-        question: `$$\\int_0^1 \\int_0^1 (x + y) \\, dx \\, dy$$ এর মান কত?`,
-        image: null,
-        options: [
-            `$$1$$`,
-            `$$\\frac{1}{2}$$`,
-            `$$\\frac{3}{2}$$`,
-            `$$2$$`
-        ],
-        correct: 0
-    },
-
-    // =============================================
-    // 12. SECOND DERIVATIVE
-    // =============================================
-    {
-        id: 12,
-        question: `$$y = e^{2x}$$ হলে $$\\frac{d^2y}{dx^2}$$ এর মান কত?`,
-        image: null,
-        options: [
-            `$$2e^{2x}$$`,
-            `$$4e^{2x}$$`,
-            `$$e^{2x}$$`,
-            `$$8e^{2x}$$`
-        ],
-        correct: 1
-    },
-
-    // =============================================
-    // 13. MATRIX MULTIPLICATION
-    // =============================================
-    {
-        id: 13,
-        question: `$$\\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix} \\begin{pmatrix} 1 \\\\ 2 \\end{pmatrix}$$ এর মান কত?`,
-        image: null,
-        options: [
-            `$$\\begin{pmatrix} 5 \\\\ 11 \\end{pmatrix}$$`,
-            `$$\\begin{pmatrix} 3 \\\\ 7 \\end{pmatrix}$$`,
-            `$$\\begin{pmatrix} 4 \\\\ 10 \\end{pmatrix}$$`,
-            `$$\\begin{pmatrix} 2 \\\\ 8 \\end{pmatrix}$$`
-        ],
-        correct: 0
-    },
-
-    // =============================================
-    // 14. LAPLACE TRANSFORM
-    // =============================================
-    {
-        id: 14,
-        question: `$$\\mathcal{L}\\{1\\}$$ এর মান কত?`,
-        image: null,
-        options: [
-            `$$\\frac{1}{s}$$`,
-            `$$\\frac{1}{s^2}$$`,
-            `$$s$$`,
-            `$$e^{-s}$$`
-        ],
-        correct: 0
-    },
-
-    // =============================================
-    // 15. FOURIER SERIES
-    // =============================================
-    {
-        id: 15,
-        question: `$$\\int_0^{2\\pi} \\sin(nx) \\, dx$$ এর মান কত?`,
-        image: null,
-        options: [
-            `$$0$$`,
             `$$1$$`,
             `$$2$$`,
-            `$$\\pi$$`
+            `$$3$$`,
+            `$$4$$`
         ],
-        correct: 0
+        correct: 2  // ✅ 3rd option
     },
-
-    // =============================================
-    // 16. COMPLEX NUMBER
-    // =============================================
     {
-        id: 16,
-        question: `$$(1 + i)^2$$ এর মান কত?`,
+        id: 10,
+        question: `$20\\text{ m/s}$ বেগে চলমান একটি ট্রেনের চালক স্টেশন থেকে $500\\text{ m}$ দূরে ব্রেক কষলে ট্রেনটি স্টেশনে এসে থামে। যদি ব্রেক অর্ধেক দূরত্বে ($250\\text{ m}$) কষা হতো, তবে ট্রেনটি কত বেগে স্টেশন অতিক্রম করতো? গতিবেগ $\\sqrt{x}\\text{ m/s}$ হলে $x$-এর মান কত?`,
         image: null,
         options: [
-            `$$2i$$`,
-            `$$1 + 2i$$`,
-            `$$2 + i$$`,
-            `$$-2i$$`
+            `$$100$$`,
+            `$$200$$`,
+            `$$250$$`,
+            `$$300$$`
         ],
-        correct: 0
+        correct: 2  // ✅ 3rd option
     },
-
-    // =============================================
-    // 17. TAYLOR SERIES
-    // =============================================
     {
-        id: 17,
-        question: `$$e^x$$ এর টেলর সিরিজের প্রথম ৩টি পদ কত?`,
+        id: 11,
+        question: `একজন জাদুকর (juggler) প্রতি সেকেন্ডে $n$ সংখ্যক বল উলম্বভাবে উপরের দিকে একই বেগে ছোঁড়েন। প্রথম বলটি সর্বোচ্চ উচ্চতায় পৌঁছালে তিনি দ্বিতীয় বলটি ছোঁড়েন। বলগুলোর সর্বোচ্চ উচ্চতা কত হতে পারে?`,
         image: null,
         options: [
-            `$$1 + x + \\frac{x^2}{2}$$`,
-            `$$1 + x + x^2$$`,
-            `$$x + \\frac{x^2}{2} + \\frac{x^3}{6}$$`,
-            `$$1 + \\frac{x}{2} + \\frac{x^2}{4}$$`
+            `$$\\frac{g}{n^2}$$`,
+            `$$\\frac{g}{2n}$$`,
+            `$$\\frac{2g}{n^2}$$`,
+            `$$\\frac{g}{2n^2}$$`
         ],
-        correct: 0
+        correct: 3  // ✅ 4th option
     },
-
-    // =============================================
-    // 18. VECTOR CROSS PRODUCT
-    // =============================================
     {
-        id: 18,
-        question: `$$\\vec{i} \\times \\vec{j}$$ এর মান কত?`,
+        id: 12,
+        question: `একটি বুলেটকে $100\\text{ m/s}$ প্রাথমিক বেগে উলম্বভাবে নিচের দিকে ছোঁড়া হলো। ১০ সেকেন্ডে সেটি মাটিতে পৌঁছায় এবং সম্পূর্ণ অস্থিতিস্থাপক সংঘর্ষের কারণে তাৎক্ষণিকভাবে স্থির হয়ে যায়। ২০ সেকেন্ডের জন্য সঠিক বেগ-সময় (v-t) গ্রাফ কোনটি হবে?`,
+        image: "12.png",
+        options: [
+            `গ্রাফ (1)`,
+            `গ্রাফ (2)`,
+            `গ্রাফ (3)`,
+            `গ্রাফ (4)`
+        ],
+        correct: 0  // ✅ 1st option
+    },
+    {
+        id: 13,
+        question: `একটি কণার $v^2$ বনাম সরণ ($x$) গ্রাফ দেওয়া আছে (যেখানে $x=0$ তে $v^2=20$ এবং $x=30$ তে $v^2=80$ একটি সরলরেখা)। কণাটির ত্বরণ কত?`,
+        image: "13.png",
+        options: [
+            `$$0.5\\,\\text{m/s}^2$$`,
+            `$$1\\,\\text{m/s}^2$$`,
+            `$$1.5\\,\\text{m/s}^2$$`,
+            `$$2\\,\\text{m/s}^2$$`
+        ],
+        correct: 2  // ✅ 3rd option
+    },
+    {
+        id: 14,
+        question: `একটি টেনিস বলকে $h$ উচ্চতা থেকে ছেড়ে দেওয়া হলো। কাঠের মেঝেতে ড্রপ খেয়ে এটি $\\frac{h}{2}$ উচ্চতা পর্যন্ত রিবাউন্ড করে। সম্পূর্ণ গতির বেগ বনাম উচ্চতার সঠিক গ্রাফ কোনটি হবে?`,
+        image: "14.png",
+        options: [
+            `গ্রাফ (1)`,
+            `গ্রাফ (2)`,
+            `গ্রাফ (3)`,
+            `গ্রাফ (4)`
+        ],
+        correct: 2  // ✅ 3rd option
+    },
+    {
+        id: 15,
+        question: `A এবং B দুটি ট্রেন যথাক্রমে $36\\text{ km/h}$ এবং $72\\text{ km/h}$ বেগে সমান্তরাল ট্র্যাকে বিপরীত মুখে চলছে। ট্রেন A-এর ভেতরে এক ব্যক্তি ট্রেনের গতির বিপরীত দিকে $1.8\\text{ km/h}$ বেগে হাঁটছেন। ট্রেন B থেকে দেখলে ওই ব্যক্তির আপেক্ষিক বেগ কত হবে?`,
         image: null,
         options: [
-            `$$\\vec{k}$$`,
-            `$$-\\vec{k}$$`,
-            `$$\\vec{i}$$`,
-            `$$\\vec{j}$$`
+            `$$29.5\\,\\text{m/s}$$`,
+            `$$30\\,\\text{m/s}$$`,
+            `$$106.2\\,\\text{m/s}$$`,
+            `$$24.5\\,\\text{m/s}$$`
         ],
-        correct: 0
-    },
-
-    // =============================================
-    // 19. STATISTICS - MEAN
-    // =============================================
-    {
-        id: 19,
-        question: `$$\\bar{x} = \\frac{\\sum x}{n}$$ সূত্রটি কী বের করতে ব্যবহৃত হয়?`,
-        image: null,
-        options: [
-            `গড় (Mean)`,
-            `মধ্যমা (Median)`,
-            `প্রচুরক (Mode)`,
-            `ভেদাঙ্ক (Variance)`
-        ],
-        correct: 0
-    },
-
-    // =============================================
-    // 20. PROBABILITY
-    // =============================================
-    {
-        id: 20,
-        question: `$$P(A \\cup B) = P(A) + P(B) - P(A \\cap B)$$ সূত্রটি কোনটি?`,
-        image: null,
-        options: [
-            `যোগ সূত্র`,
-            `গুণ সূত্র`,
-            `শর্তাধীন সম্ভাবনা`,
-            `বেইস সূত্র`
-        ],
-        correct: 0
+        correct: 1  // ✅ 2nd option
     }
 ];
 
@@ -353,6 +214,53 @@ const nextBtn = document.getElementById('nextBtn');
 const submitBtn = document.getElementById('submitBtn');
 const securityWarning = document.getElementById('securityWarning');
 const warningMessage = document.getElementById('warningMessage');
+
+// =============================================
+// QUESTION NAVIGATOR FUNCTIONS
+// =============================================
+
+// Navigate to specific question
+function goToQuestion(index) {
+    if (index < 0 || index >= questions.length || isExamSubmitted) return;
+    showQuestion(index);
+}
+
+// Update question navigator buttons
+function updateNavigator() {
+    const container = document.getElementById('questionNavButtons');
+    if (!container) return;
+    
+    let html = '';
+    for (let i = 0; i < questions.length; i++) {
+        let statusClass = 'unanswered';
+        let icon = '';
+        
+        if (i === currentQuestion) {
+            statusClass = 'current';
+        }
+        if (selectedAnswers[i] !== null) {
+            statusClass = 'answered';
+            icon = ' ✓';
+        }
+        if (i === currentQuestion && selectedAnswers[i] !== null) {
+            statusClass = 'answered current';
+        }
+        
+        html += `
+            <button class="question-nav-btn ${statusClass}" onclick="goToQuestion(${i})" title="Question ${i + 1}">
+                ${i + 1}${icon ? `<span class="nav-check">✓</span>` : ''}
+            </button>
+        `;
+    }
+    container.innerHTML = html;
+    
+    // Update answered count
+    const badge = document.getElementById('answeredCountBadge');
+    if (badge) {
+        const answered = selectedAnswers.filter(a => a !== null).length;
+        badge.textContent = `${answered}/${questions.length} Answered`;
+    }
+}
 
 // =============================================
 // INITIALIZE EXAM
@@ -551,6 +459,9 @@ function showQuestion(index) {
     const progress = ((index + 1) / questions.length) * 100;
     progressBar.style.width = `${progress}%`;
     
+    // Update navigator
+    updateNavigator();
+    
     prevBtn.style.display = index === 0 ? 'none' : 'inline-flex';
     nextBtn.style.display = index === questions.length - 1 ? 'none' : 'inline-flex';
     submitBtn.style.display = index === questions.length - 1 ? 'inline-flex' : 'none';
@@ -573,6 +484,9 @@ function selectOption(questionIndex, optionIndex) {
     
     answeredCount = selectedAnswers.filter(a => a !== null).length;
     answeredCountDisplay.textContent = `${answeredCount} Answered`;
+    
+    // Update navigator
+    updateNavigator();
 }
 
 // =============================================
@@ -775,3 +689,5 @@ window.toggleReview = toggleReview;
 window.goToDashboard = goToDashboard;
 window.showSecurityWarning = showSecurityWarning;
 window.forceLogout = forceLogout;
+window.goToQuestion = goToQuestion;
+window.updateNavigator = updateNavigator;
