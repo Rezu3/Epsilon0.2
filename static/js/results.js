@@ -326,6 +326,51 @@ function saveResults() {
     });
 }
 
+// =============================================
+// DELETE RESULT - AJAX দিয়ে Delete
+// =============================================
+function deleteResult(resultId, studentName) {
+    if (!confirm(`⚠️ Are you sure you want to delete ${studentName}'s result?\n\nStudent will be able to retake the exam.`)) {
+        return;
+    }
+    
+    // Show loading
+    const btn = document.querySelector(`.delete-result-btn[data-id="${resultId}"]`);
+    if (!btn) {
+        alert('Error: Button not found!');
+        return;
+    }
+    
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    btn.disabled = true;
+    
+    fetch('/delete_result/' + resultId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✅ Result deleted successfully!\n\nStudent can now retake the exam.');
+            // Reload the page to refresh data
+            window.location.reload();
+        } else {
+            alert('❌ Error: ' + data.message);
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Error deleting result. Please try again.');
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+    });
+}
+
 // Close sidebar on escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
@@ -346,3 +391,4 @@ document.addEventListener('keydown', function(e) {
 window.filterStudents = filterStudents;
 window.calculateGrade = calculateGrade;
 window.saveResults = saveResults;
+window.deleteResult = deleteResult;
