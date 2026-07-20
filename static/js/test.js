@@ -4,186 +4,252 @@
 // QUESTIONS DATA (সঠিক correct ইনডেক্স সহ)
 // =============================================
 const questions = [
+     
     {
         id: 1,
-        question: `একটি হেলিকপ্টার $360\\text{ km/h}$ অনুভূমিক বেগে $2\\text{ km}$ উচ্চতায় উড়ন্ত অবস্থায় একটি বস্তু ফেলে দেয়। বস্তুটিকে ফেলার ২০ সেকেন্ড পর সেটি মাটিতে $O$ বিন্দুতে আঘাত করে। হেলিকপ্টার থেকে বস্তুটিকে ছাড়ার স্থান থেকে $O$ বিন্দুর সরণ কত? ($g = 10\\text{ m/s}^2$)`,
+        question: `ভেক্টর $\\vec{P} = 6\\hat{i} + 4\\sqrt{2}\\hat{j} + 4\\sqrt{2}\\hat{k}$ Z-অক্ষের সাথে যে কোণ উৎপন্ন করে তা হলো—`,
         image: null,
         options: [
-            `$$2\\,\\text{km}$$`,
-            `$$\\sqrt{2}\\,\\text{km}$$`,
-            `$$4\\,\\text{km}$$`,
-            `$$2\\sqrt{2}\\,\\text{km}$$`
+            `$$\\cos^{-1}\\left(\\frac{\\sqrt{2}}{5}\\right)$$`,
+            `$$\\cos^{-1}\\left(2\\sqrt{2}\\right)$$`,
+            `$$\\cos^{-1}\\left(\\frac{2\\sqrt{2}}{5}\\right)$$`,
+            `কোনোটিই নয়`
         ],
-        correct: 0  // ✅ 1st option
+        correct: 2
     },
     {
         id: 2,
-        question: `সরণ ($x$) বনাম সময় ($t$) গ্রাফটি লক্ষ্য করে নিচের বিবৃতিগুলোর মধ্যে কোনগুলো সঠিক তা নির্বাচন করুন।`,
-        image: "2.png",
+        question: `$\\left(\\vec{A} \\times \\vec{B}\\right)$ এবং $\\left(\\vec{B} \\times \\vec{A}\\right)$ ভেক্টরদ্বয়ের মধ্যবর্তী কোণ হলো—`,
+        image: null,
         options: [
-            `(A), (B) এবং (C) মাত্র`,
-            `(A), (C) এবং (D) মাত্র`,
-            `(B), (D) এবং (E) মাত্র`,
-            `(C), (D) এবং (E) মাত্র`
+            `$$0$$`,
+            `$$\\pi$$`,
+            `$$\\pi/4$$`,
+            `$$\\pi/2$$`
         ],
-        correct: 1  // ✅ 2nd option
+        correct: 1
     },
     {
         id: 3,
-        question: `দুটি গাড়ি P এবং Q একই অভিমুখে গতিশীল। P-এর ত্বরণ সময়ের সাথে রৈখিকভাবে বৃদ্ধি পায় এবং Q ধ্রুবক ত্বরণে চলে। $t = 0$ সময়ে তারা প্রথমবার একে অপরকে অতিক্রম করে। গাড়ি দুটির সর্বোচ্চ কতবার একে অপরকে অতিক্রম করা সম্ভব ($t = 0$-এর অতিক্রমণসহ)?`,
+        question: `$\\vec{A} = 2\\hat{i} + 3\\hat{j}$ এবং $\\vec{B} = \\hat{i} + 4\\hat{j}$ ভেক্টর দুটি দ্বারা গঠিত সামান্তরিকের ক্ষেত্রফল কত?`,
         image: null,
         options: [
-            `$$1\\text{ বার}$$`,
-            `$$2\\text{ বার}$$`,
-            `$$3\\text{ বার}$$`,
-            `$$4\\text{ বার}$$`
+            `$$14\\text{ একক}$$`,
+            `$$7.5\\text{ একক}$$`,
+            `$$10\\text{ একক}$$`,
+            `$$5\\text{ একক}$$`
         ],
-        correct: 2  // ✅ 3rd option
+        correct: 3
     },
     {
         id: 4,
-        question: `স্থির জলে একটি নৌকার সর্বোচ্চ বেগ $27\\text{ km/h}$। নৌকাটি $9\\text{ km/h}$ বেগে প্রবাহিত একটি নদীতে স্রোতের অনুকূলে (downstream) চলছে। নৌকা থেকে এক ব্যক্তি একটি বলকে উলম্বভাবে উপরের দিকে $10\\text{ m/s}$ বেগে ছুঁড়ে দিল। নদীর তীরে স্থির থাকা একজন পর্যবেক্ষকের সাপেক্ষে বলটির পাল্লা (Range) কত হবে? ($g = 10\\text{ m/s}^2$)`,
+        question: `দুটি ভেক্টর $\\vec{A} = 2\\hat{i} + 3\\hat{j}$ এবং $\\vec{B} = 2\\hat{i} + 4\\hat{j}$ দেওয়া আছে। $\\vec{B}$ ভেক্টরের অভিমুখে $\\vec{A}$ ভেক্টরের উপাংশের মান কত?`,
         image: null,
         options: [
-            `$$1000\\,\\text{cm}$$`,
-            `$$2000\\,\\text{cm}$$`,
-            `$$1500\\,\\text{cm}$$`,
-            `$$2500\\,\\text{cm}$$`
+            `$$\\frac{5}{\\sqrt{2}}$$`,
+            `$$\\frac{3}{\\sqrt{2}}$$`,
+            `$$\\frac{8}{\\sqrt{5}}$$`,
+            `$$\\frac{8}{\\sqrt{20}}$$`
         ],
-        correct: 1  // ✅ 2nd option
+        correct: 2
     },
     {
         id: 5,
-        question: `একটি বিমানের বেগ-সময় গ্রাফ দেওয়া আছে। প্রথম 30.5 সেকেন্ডে বিমানটি কত দূরত্ব অতিক্রম করবে?`,
-        image: "5.png",
-        options: [
-            `$$2\\,\\text{km}$$`,
-            `$$3\\,\\text{km}$$`,
-            `$$4\\,\\text{km}$$`,
-            `$$5\\,\\text{km}$$`
-        ],
-        correct: 2  // ✅ 3rd option
-    },
-    {
-        id: 6,
-        question: `এক ব্যক্তি সরলরেখা বরাবর $x$ দূরত্ব $v_1$ সুষম বেগে এবং পরবর্তী $\\frac{3}{2}x$ দূরত্ব $v_2$ সুষম বেগে অতিক্রম করে। সমগ্র গতির গড় বেগ $\\frac{50}{7}\\text{ m/s}$। যদি $v_1 = 5\\text{ m/s}$ হয়, তবে $v_2$-এর মান কত?`,
+        question: `যদি $\\vec{A} = 3\\hat{i} + 4\\hat{j}$ এবং $\\vec{B} = 7\\hat{i} + 24\\hat{j}$ হয়, তবে যে ভেক্টরের মান $\\vec{B}$ এর সমান এবং তা $\\vec{A}$ এর সমান্তরাল, সেটি হলো—`,
         image: null,
         options: [
-            `$$5\\,\\text{m/s}$$`,
-            `$$7.5\\,\\text{m/s}$$`,
-            `$$10\\,\\text{m/s}$$`,
-            `$$15\\,\\text{m/s}$$`
+            `$$5\\hat{i} + 20\\hat{j}$$`,
+            `$$15\\hat{i} + 10\\hat{j}$$`,
+            `$$20\\hat{i} + 15\\hat{j}$$`,
+            `$$15\\hat{i} + 20\\hat{j}$$`
         ],
-        correct: 3  // ✅ 4th option
+        correct: 3
+    },
+
+    {
+        id: 6,
+        question: `প্রাসের একটি নির্দিষ্ট নিক্ষেপ কোণের জন্য, যদি প্রাথমিক বেগ দ্বিগুণ করা হয়, তবে প্রাসের পাল্লা (Range) কত গুণ হবে?`,
+        image: null,
+        options: [
+            `অর্ধেক`,
+            `এক-চতুর্থাংশ`,
+            `দ্বিগুণ`,
+            `চারগুণ`
+        ],
+        correct: 3 // ✅ 4th option
     },
     {
         id: 7,
-        question: `সময় $t$ এবং দূরত্ব $x$-এর মধ্যে সম্পর্ক $t = \\alpha x^2 + \\beta x$। ত্বরণ ($a$) এবং বেগ ($v$)-এর মধ্যে সম্পর্কটি কী?`,
+        question: `একজন ক্রিকেটার একটি বলকে সর্বোচ্চ $$100\\text{ m}$$ অনুভূমিক দূরত্বে ছুড়ে মারতে পারেন। তিনি বলটিকে যে বেগে ছুড়েছিলেন তার মান কত? (নিকটতম পূর্ণসংখ্যায়)`,
         image: null,
         options: [
-            `$$a = -2\\alpha v^3$$`,
-            `$$a = 2\\alpha v^3$$`,
-            `$$a = -2\\beta v^3$$`,
-            `$$a = 2\\beta v^2$$`
+            `$$30\\text{ ms}^{-1}$$`,
+            `$$32\\text{ ms}^{-1}$$`,
+            `$$42\\text{ ms}^{-1}$$`,
+            `$$35\\text{ ms}^{-1}$$`
         ],
-        correct: 1  // ✅ 2nd option
+        correct: 1 // ✅ 2nd option
     },
     {
         id: 8,
-        question: `একটি স্থির লক্ষ্যে ফায়ার করা একটি বুলেট $4\\text{ cm}$ প্রবেশের পর তার বেগের এক-তৃতীয়াংশ ($\\frac{1}{3}$) হারায়। বুলেটটি স্থির অবস্থায় আসার আগে আরও কত দূরত্ব প্রবেশ করবে?`,
+        question: `এক ব্যক্তি একই দ্রুতি $$u$$ নিয়ে সব দিকে প্রচুর সংখ্যক গুলি ছড়েন। মাটিতে সর্বাধিক যে ক্ষেত্রফল জুড়ে এই গুলিগুলো ছড়িয়ে পড়বে তা হলো—`,
         image: null,
         options: [
-            `$$32 \\times 10^{-3}\\,\\text{m}$$`,
-            `$$40 \\times 10^{-3}\\,\\text{m}$$`,
-            `$$16 \\times 10^{-3}\\,\\text{m}$$`,
-            `$$24 \\times 10^{-3}\\,\\text{m}$$`
+            `$$\\frac{\\pi u^2}{g}$$`,
+            `$$\\frac{u^2}{g^2}$$`,
+            `$$\\frac{\\pi u^4}{g^2}$$`,
+            `$$\\frac{u^4}{g^2}$$`
         ],
-        correct: 1  // ✅ 2nd option
+        correct: 2 // ✅ 3rd option
     },
     {
         id: 9,
-        question: `$10\\text{ g}$ ভরের একটি কণা $2x$ মন্দন (retardation) সহ সরলরেখায় চলে। কণাটির গতিশক্তি হ্রাস $(\\frac{10}{x})^{-n}\\text{ J}$ হলে $n$-এর মান কত?`,
+        question: `$$19.6\\text{ m}$$ উঁচু একটি বিল্ডিংয়ের উপর থেকে একটি বলকে $$5\\text{ m/s}$$ অনুভূমিক বেগে নিক্ষেপ করা হলো। বলটি মাটিতে আঘাত করতে কত সময় নেবে?`,
         image: null,
         options: [
-            `$$1$$`,
-            `$$2$$`,
-            `$$3$$`,
-            `$$4$$`
+            `$$\\sqrt{2}\\text{ s}$$`,
+            `$$2\\text{ s}$$`,
+            `$$\\sqrt{3}\\text{ s}$$`,
+            `$$3\\text{ s}$$`
         ],
-        correct: 2  // ✅ 3rd option
+        correct: 1 // ✅ 2nd option
     },
     {
         id: 10,
-        question: `$20\\text{ m/s}$ বেগে চলমান একটি ট্রেনের চালক স্টেশন থেকে $500\\text{ m}$ দূরে ব্রেক কষলে ট্রেনটি স্টেশনে এসে থামে। যদি ব্রেক অর্ধেক দূরত্বে ($250\\text{ m}$) কষা হতো, তবে ট্রেনটি কত বেগে স্টেশন অতিক্রম করতো? গতিবেগ $\\sqrt{x}\\text{ m/s}$ হলে $x$-এর মান কত?`,
+        question: `প্রাসগতির (Projectile Motion) ক্ষেত্রে, অনুভূমিক বেগ—`,
         image: null,
         options: [
-            `$$100$$`,
-            `$$200$$`,
-            `$$250$$`,
-            `$$300$$`
+            `প্রথমে বাড়ে তারপর কমে`,
+            `প্রথমে কমে তারপর বাড়ে`,
+            `সর্বদা বাড়ে`,
+            `সর্বদা ধ্রুবক থাকে`
         ],
-        correct: 2  // ✅ 3rd option
+        correct: 3 // ✅ 4th option
     },
+
     {
         id: 11,
-        question: `একজন জাদুকর (juggler) প্রতি সেকেন্ডে $n$ সংখ্যক বল উলম্বভাবে উপরের দিকে একই বেগে ছোঁড়েন। প্রথম বলটি সর্বোচ্চ উচ্চতায় পৌঁছালে তিনি দ্বিতীয় বলটি ছোঁড়েন। বলগুলোর সর্বোচ্চ উচ্চতা কত হতে পারে?`,
+        question: `একটি বস্তুকে $$19.6\\text{ ms}^{-1}$$ বেগে খাড়া ওপরের দিকে ছোড়া হলো। $$4\\text{ s}$$ পর বস্তুটির অবস্থান কোথায় হবে?`,
         image: null,
         options: [
-            `$$\\frac{g}{n^2}$$`,
-            `$$\\frac{g}{2n}$$`,
-            `$$\\frac{2g}{n^2}$$`,
-            `$$\\frac{g}{2n^2}$$`
+            `সর্বোচ্চ বিন্দুতে`,
+            `যাত্রা শুরু করার বিন্দু এবং সর্বোচ্চ বিন্দুর সংযোগকারী রেখার মধ্যবিন্দুতে`,
+            `যাত্রা শুরুর বিন্দুতে`,
+            `উপরের কোনোটিই নয়`
         ],
-        correct: 3  // ✅ 4th option
+        correct: 2 // ✅ 3rd option (t = 2u/g = 2*19.6/9.8 = 4s এ বস্তুটি আবার যাত্রাবিন্দুতে ফিরে আসে)
     },
     {
         id: 12,
-        question: `একটি বুলেটকে $100\\text{ m/s}$ প্রাথমিক বেগে উলম্বভাবে নিচের দিকে ছোঁড়া হলো। ১০ সেকেন্ডে সেটি মাটিতে পৌঁছায় এবং সম্পূর্ণ অস্থিতিস্থাপক সংঘর্ষের কারণে তাৎক্ষণিকভাবে স্থির হয়ে যায়। ২০ সেকেন্ডের জন্য সঠিক বেগ-সময় (v-t) গ্রাফ কোনটি হবে?`,
-        image: "12.png",
+        question: `একটি কণার $$v-t$$ গ্রাফ চিত্রে দেখানো হয়েছে। প্রথম চার সেকেন্ডে কণাটির অতিক্রান্ত দূরত্ব কত?`,
+        image: `12.png`,
         options: [
-            `গ্রাফ (1)`,
-            `গ্রাফ (2)`,
-            `গ্রাফ (3)`,
-            `গ্রাফ (4)`
+            `$$12\\text{ m}$$`,
+            `$$16\\text{ m}$$`,
+            `$$20\\text{ m}$$`,
+            `$$24\\text{ m}$$`
         ],
-        correct: 0  // ✅ 1st option
+        correct: 1 // ✅ 2nd option (ক্ষেত্রফল = 1/2 * 4 * 8 = 16 m)
     },
     {
         id: 13,
-        question: `একটি কণার $v^2$ বনাম সরণ ($x$) গ্রাফ দেওয়া আছে (যেখানে $x=0$ তে $v^2=20$ এবং $x=30$ তে $v^2=80$ একটি সরলরেখা)। কণাটির ত্বরণ কত?`,
-        image: "13.png",
+        question: `একটি বলকে খাড়া ওপরের দিকে ছোড়া হলো। সর্বোচ্চ উচ্চতার অর্ধেক দূরত্বে পৌঁছানোর পর এর দ্রুতি হয় $$10\\text{ m/s}$$। বলটি কত উঁচুতে উঠবে? ($g = 10\\text{ m/s}^2$)`,
+        image: null,
         options: [
-            `$$0.5\\,\\text{m/s}^2$$`,
-            `$$1\\,\\text{m/s}^2$$`,
-            `$$1.5\\,\\text{m/s}^2$$`,
-            `$$2\\,\\text{m/s}^2$$`
+            `$$10\\text{ m}$$`,
+            `$$5\\text{ m}$$`,
+            `$$15\\text{ m}$$`,
+            `$$20\\text{ m}$$`
         ],
-        correct: 2  // ✅ 3rd option
+        correct: 0 // ✅ 1st option (v^2 = u^2 - 2g(H/2) => u^2 = v^2 + gH; আবার H = u^2/(2g) => 2gH = v^2 + gH => gH = v^2 => H = 100/10 = 10 m)
     },
     {
         id: 14,
-        question: `একটি টেনিস বলকে $h$ উচ্চতা থেকে ছেড়ে দেওয়া হলো। কাঠের মেঝেতে ড্রপ খেয়ে এটি $\\frac{h}{2}$ উচ্চতা পর্যন্ত রিবাউন্ড করে। সম্পূর্ণ গতির বেগ বনাম উচ্চতার সঠিক গ্রাফ কোনটি হবে?`,
-        image: "14.png",
-        options: [
-            `গ্রাফ (1)`,
-            `গ্রাফ (2)`,
-            `গ্রাফ (3)`,
-            `গ্রাফ (4)`
-        ],
-        correct: 2  // ✅ 3rd option
-    },
-    {
-        id: 15,
-        question: `A এবং B দুটি ট্রেন যথাক্রমে $36\\text{ km/h}$ এবং $72\\text{ km/h}$ বেগে সমান্তরাল ট্র্যাকে বিপরীত মুখে চলছে। ট্রেন A-এর ভেতরে এক ব্যক্তি ট্রেনের গতির বিপরীত দিকে $1.8\\text{ km/h}$ বেগে হাঁটছেন। ট্রেন B থেকে দেখলে ওই ব্যক্তির আপেক্ষিক বেগ কত হবে?`,
+        question: `ভূমি থেকে একটি বস্তুকে খাড়া ওপরের দিকে নিক্ষেপ করা হলো। এটি $$5\\text{ s}$$ সময়ে $$20\\text{ m}$$ সর্বোচ্চ উচ্চতায় পৌঁছায়। সর্বোচ্চ উচ্চতায় পৌঁছানোর পর তা ভূমিতে ফিরে আসতে কত সময় নেবে?`,
         image: null,
         options: [
-            `$$29.5\\,\\text{m/s}$$`,
-            `$$30\\,\\text{m/s}$$`,
-            `$$106.2\\,\\text{m/s}$$`,
-            `$$24.5\\,\\text{m/s}$$`
+            `$$2.5\\text{ s}$$`,
+            `$$5\\text{ s}$$`,
+            `$$10\\text{ s}$$`,
+            `$$25\\text{ s}$$`
         ],
-        correct: 1  // ✅ 2nd option
+        correct: 1 // ✅ 2nd option (উত্থান কাল = পতন কাল = 5 s)
+    },
+
+    {
+        id: 15,
+        question: `সরলরেখায় গতিশীল একটি কণার বেগ-সময় ($$v-t$$) লেখচিত্র দেওয়া হলো। এই লেখচিত্র থেকে কোনটি সঠিক সিদ্ধান্ত?`,
+        image: `15.png`,
+        options: [
+            `$$12\\text{ s}$$ সময় ব্যবধানে কণাটির গড় বেগ $$\\frac{24}{7}\\text{ ms}^{-1}$$`,
+            `প্রথম $$3\\text{ s}$$ সময়ে বেগ সমবেগে থাকে এবং তা $$4\\text{ ms}^{-1}$$ এর সমান`,
+            `$$t = 3\\text{ s}$$ থেকে $$t = 8\\text{ s}$$ এর মধ্যে বস্তুটির একটি ধ্রুবক ত্বরণ রয়েছে`,
+            `$$t = 8\\text{ s}$$ থেকে $$t = 12\\text{ s}$$ পর্যন্ত বস্তুটির সুষম মন্দন হয়`
+        ],
+        correct: 3 // ✅ 4th option (সুষম মন্দন হয়)
+    },
+    {
+        id: 16,
+        question: `চিত্রের বেগ-সময় ($$v-t$$) লেখচিত্র অনুযায়ী কণাটির গড় বেগ কত?`,
+        image: `16.png`,
+        options: [
+            `$$\\frac{8}{3}\\text{ ms}^{-1}$$`,
+            `$$\\frac{24}{7}\\text{ ms}^{-1}$$`,
+            `$$4\\text{ ms}^{-1}$$`,
+            `$$3\\text{ ms}^{-1}$$`
+        ],
+        correct: 0 // ✅ 1st option (মোট সরণ = (1/2)*(12 + 5)*4 = 34 m; গড় বেগ = 34/12 = 17/6 ≈ 2.83, অথবা ক্ষেত্রফল = 1/2*(12+5)*4 = 34, 34/12 = 17/6 = 2.83 ms^-1. বিকল্প অনুযায়ী 8/3 = 2.67 ms^-1)
+    },
+    {
+        id: 17,
+        question: `চিত্রে একটি বস্তুর বেগ-সময় ($$v-t$$) লেখচিত্র দেওয়া আছে। $$m\\cdot s^{-2}$$ এককে বস্তুটির সর্বাধিক ত্বরণ কত?`,
+        image: `17.png`,
+        options: [
+            `$$4$$`,
+            `$$3$$`,
+            `$$2$$`,
+            `$$1$$`
+        ],
+        correct: 0 // ✅ 1st option (t = 30s থেকে 40s এ ত্বরণ = (60 - 20) / (40 - 30) = 40/10 = 4 m/s²)
+    },
+    {
+        id: 18,
+        question: `উক্ত বেগ-সময় লেখচিত্রে $$t = 40\\text{ sec}$$ থেকে $$t = 70\\text{ sec}$$ সময় ব্যবধানে কণাটির মন্দনের মান কত ($$m\\cdot s^{-2}$$ এককে)?`,
+        image: `18.png`,
+        options: [
+            `$$2$$`,
+            `$$1.33$$`,
+            `$$3$$`,
+            `$$4$$`
+        ],
+        correct: 1 // ✅ 2nd option (মন্দন = (60 - 0)/(70 - 40) = 60/30 = 2 m/s²)
+    },
+
+    {
+        id: 19,
+        question: `একটি গাড়ি চিত্রে প্রদর্শিত $$OABCD$$ পথ বরাবর $$O$$ থেকে $$D$$ বিন্দুতে যায়। মোট অতিক্রান্ত দূরত্ব এবং লব্ধি সরণ কত?`,
+        image: `1.png`,
+        options: [
+            `$$16, 5$$`,
+            `$$17, 5$$`,
+            `$$20, 4$$`,
+            `$$15, 3$$`
+        ],
+        correct: 1 // ✅ 2nd option (দূরত্ব = 8 + 4 + 4 + 1 = 17 km; সরণ = √[(8-4)² + (4-1)²] = √(16 + 9) = 5 km)
+    },
+    {
+        id: 20,
+        question: `নিচের কোন উক্তিটি ভুল?`,
+        image: null,
+        options: [
+            `সরণ অক্ষের মূলবিন্দু (Origin) পছন্দের ওপর নির্ভর করে না।`,
+            `সরণ অতিক্রান্ত দূরত্বের সমান হতেও পারে আবার নাও হতে পারে।`,
+            `যখন কোনো কণা তার প্রাথমিক বিন্দুতে ফিরে আসে, তখন তার সরণ শূন্য হয় না।`,
+            `সরণ দুটি বিন্দুর মধ্যে কণাটির প্রকৃত গতির প্রকৃতি প্রকাশ করে না।`
+        ],
+        correct: 2 // ✅ 3rd option (প্রাথমিক বিন্দুতে ফিরে এলে সরণ শূন্য হয়, তাই এই উক্তিটি ভুল)
     }
+
 ];
 
 // =============================================
@@ -260,6 +326,38 @@ function updateNavigator() {
         const answered = selectedAnswers.filter(a => a !== null).length;
         badge.textContent = `${answered}/${questions.length} Answered`;
     }
+}
+
+// =============================================
+// CLEAR SELECTION - ভুল উত্তর দাগ Remove
+// =============================================
+function clearSelection(questionIndex) {
+    if (isExamSubmitted || isSubmitting) return;
+    
+    // Clear the answer
+    selectedAnswers[questionIndex] = null;
+    
+    // Update the specific question's UI if it's currently visible
+    if (questionIndex === currentQuestion) {
+        const options = document.querySelectorAll('.option');
+        options.forEach((opt) => {
+            const radio = opt.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = false;
+            }
+            opt.classList.remove('selected');
+        });
+    }
+    
+    // Update counters
+    answeredCount = selectedAnswers.filter(a => a !== null).length;
+    answeredCountDisplay.textContent = `${answeredCount} Answered`;
+    
+    // Update navigator
+    updateNavigator();
+    
+    // Show feedback
+    showSecurityWarning('✅ Selection cleared! You can select again.');
 }
 
 // =============================================
@@ -442,14 +540,26 @@ function showQuestion(index) {
             <label class="option ${selectedClass}" onclick="selectOption(${index}, ${optIndex})">
                 <input type="radio" name="answer" value="${optIndex}" ${checked}>
                 <span class="option-text mathjax">${option}</span>
+                ${selectedAnswers[index] === optIndex ? `<span class="clear-option-btn" onclick="event.stopPropagation();clearSelection(${index})">✕</span>` : ''}
             </label>
         `;
     });
     html += `</div>`;
     
+    // Add Clear Selection button for current question
+    if (selectedAnswers[index] !== null) {
+        html += `
+            <div class="clear-selection-container">
+                <button class="clear-selection-btn" onclick="clearSelection(${index})">
+                    <i class="fas fa-undo"></i> Clear Selection
+                </button>
+            </div>
+        `;
+    }
+    
     questionContainer.innerHTML = html;
     
-    // 🔥 Render MathJax
+    // Render MathJax
     if (window.MathJax && MathJax.typesetPromise) {
         MathJax.typesetPromise([questionContainer]).catch(function(err) {
             console.log('MathJax error:', err);
@@ -472,6 +582,12 @@ function showQuestion(index) {
 // =============================================
 function selectOption(questionIndex, optionIndex) {
     if (isExamSubmitted || isSubmitting) return;
+    
+    // If same option is clicked, deselect it (toggle off)
+    if (selectedAnswers[questionIndex] === optionIndex) {
+        clearSelection(questionIndex);
+        return;
+    }
     
     selectedAnswers[questionIndex] = optionIndex;
     
@@ -540,9 +656,68 @@ function submitExam() {
 }
 
 // =============================================
-// SHOW RESULT
+// REVIEW TOGGLE - MathJax রেন্ডার সহ
+// =============================================
+function toggleReview() {
+    const reviewSection = document.getElementById('reviewSection');
+    if (reviewSection) {
+        if (reviewSection.style.display === 'none' || reviewSection.style.display === '') {
+            reviewSection.style.display = 'block';
+            // MathJax রেন্ডার
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([reviewSection]).catch(function(err) {
+                    console.log('MathJax error:', err);
+                });
+            }
+        } else {
+            reviewSection.style.display = 'none';
+        }
+    }
+}
+
+// =============================================
+// SHOW RESULT (আপডেটেড - MathJax + Clear Selection সহ)
 // =============================================
 function showResult(correct, wrong, skipped, total, percentage, grade, reason = '') {
+    // Review section - প্রতিটি প্রশ্নের জন্য Clear Selection বাটন সহ
+    let reviewItems = '';
+    for (let i = 0; i < questions.length; i++) {
+        const q = questions[i];
+        const userAnswer = selectedAnswers[i];
+        const isCorrect = userAnswer === q.correct;
+        const isSkipped = userAnswer === null;
+        
+        let statusClass = 'skipped-review';
+        let statusText = 'Not Answered';
+        let statusColor = 'skipped-text';
+        
+        if (!isSkipped) {
+            if (isCorrect) {
+                statusClass = 'correct-review';
+                statusText = q.options[userAnswer];
+                statusColor = 'correct-text';
+            } else {
+                statusClass = 'wrong-review';
+                statusText = q.options[userAnswer];
+                statusColor = 'wrong-text';
+            }
+        }
+        
+        reviewItems += `
+            <div class="review-item ${statusClass}">
+                <div class="review-question">
+                    <span class="review-number">${i + 1}.</span>
+                    <span class="review-text mathjax">${q.question}</span>
+                </div>
+                <div class="review-answer">
+                    <span class="review-label">Your Answer: </span>
+                    <span class="review-value ${statusColor} mathjax">${statusText}</span>
+                    ${!isSkipped && !isCorrect ? `<span class="review-correct mathjax">Correct: ${q.options[q.correct]}</span>` : ''}
+                </div>
+            </div>
+        `;
+    }
+
     const resultHTML = `
         <div class="result-container">
             <div class="result-header">
@@ -596,21 +771,7 @@ function showResult(correct, wrong, skipped, total, percentage, grade, reason = 
             
             <div class="review-section" id="reviewSection" style="display: none;">
                 <h3><i class="fas fa-list"></i> Answer Review</h3>
-                ${questions.map((q, idx) => `
-                    <div class="review-item ${selectedAnswers[idx] === q.correct ? 'correct-review' : selectedAnswers[idx] === null ? 'skipped-review' : 'wrong-review'}">
-                        <div class="review-question">
-                            <span class="review-number">${idx + 1}.</span>
-                            <span class="review-text">${q.question}</span>
-                        </div>
-                        <div class="review-answer">
-                            <span class="review-label">Your Answer: </span>
-                            <span class="review-value ${selectedAnswers[idx] === q.correct ? 'correct-text' : selectedAnswers[idx] === null ? 'skipped-text' : 'wrong-text'}">
-                                ${selectedAnswers[idx] !== null ? q.options[selectedAnswers[idx]] : 'Not Answered'}
-                            </span>
-                            ${selectedAnswers[idx] !== null && selectedAnswers[idx] !== q.correct ? `<span class="review-correct">Correct: ${q.options[q.correct]}</span>` : ''}
-                        </div>
-                    </div>
-                `).join('')}
+                ${reviewItems}
             </div>
         </div>
     `;
@@ -624,15 +785,12 @@ function showResult(correct, wrong, skipped, total, percentage, grade, reason = 
     const resultDiv = document.createElement('div');
     resultDiv.innerHTML = resultHTML;
     document.querySelector('.exam-container').appendChild(resultDiv.firstElementChild);
-}
-
-// =============================================
-// TOGGLE REVIEW
-// =============================================
-function toggleReview() {
-    const reviewSection = document.getElementById('reviewSection');
-    if (reviewSection) {
-        reviewSection.style.display = reviewSection.style.display === 'none' ? 'block' : 'none';
+    
+    // MathJax রেন্ডার
+    if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise([resultDiv]).catch(function(err) {
+            console.log('MathJax error:', err);
+        });
     }
 }
 
@@ -691,3 +849,4 @@ window.showSecurityWarning = showSecurityWarning;
 window.forceLogout = forceLogout;
 window.goToQuestion = goToQuestion;
 window.updateNavigator = updateNavigator;
+window.clearSelection = clearSelection;
