@@ -674,6 +674,9 @@ def delete_exam(exam_id):
 # ------------------------
 # Result Routes
 # ------------------------
+# ------------------------
+# Result Routes
+# ------------------------
 def calculate_grade(marks, full_marks):
     if full_marks <= 0:
         return 'N/A'
@@ -745,17 +748,22 @@ def get_students_by_class():
     exam = cursor.fetchone()
     
     if exam:
-        cursor.execute('SELECT student_id, marks FROM results WHERE exam_id = ?', (exam_id,))
+        # results এর সাথে result_id ও নিন
+        cursor.execute('SELECT id as result_id, student_id, marks FROM results WHERE exam_id = ?', (exam_id,))
         results = cursor.fetchall()
-        result_dict = {r['student_id']: r['marks'] for r in results}
+        result_dict = {r['student_id']: r for r in results}
         
         students_list = []
         for student in students:
             student_dict = dict(student)
-            student_dict['marks'] = result_dict.get(student['id'], '')
-            if student_dict['marks'] != '' and student_dict['marks'] is not None:
-                student_dict['grade'] = calculate_grade(float(student_dict['marks']), exam['full_marks'])
+            result = result_dict.get(student['id'])
+            if result:
+                student_dict['marks'] = result['marks']
+                student_dict['result_id'] = result['result_id']
+                student_dict['grade'] = calculate_grade(float(result['marks']), exam['full_marks'])
             else:
+                student_dict['marks'] = ''
+                student_dict['result_id'] = None
                 student_dict['grade'] = ''
             students_list.append(student_dict)
     else:
@@ -816,6 +824,46 @@ def save_results():
     
     return redirect(url_for('results'))
 
+# =============================================
+# 🔥 DELETE RESULT - JSON Response (AJAX এর জন্য)
+# =============================================
+@app.route("/delete_result/<int:result_id>", methods=["POST"])
+def delete_result(result_id):
+    if 'user_type' not in session:
+        return jsonify({'success': False, 'message': 'Please login first!'}), 401
+    
+    # Admin এবং Teacher ডিলিট করতে পারবে
+    if session['user_type'] not in ['admin', 'teacher']:
+        return jsonify({'success': False, 'message': 'Unauthorized access!'}), 403
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Check if result exists
+        cursor.execute('SELECT * FROM results WHERE id = ?', (result_id,))
+        result = cursor.fetchone()
+        
+        if not result:
+            return jsonify({'success': False, 'message': 'Result not found!'}), 404
+        
+        # Get exam_id and student_id for logging
+        exam_id = result['exam_id']
+        student_id = result['student_id']
+        
+        # Delete the result
+        cursor.execute('DELETE FROM results WHERE id = ?', (result_id,))
+        conn.commit()
+        
+        print(f"✅ Result deleted: exam_id={exam_id}, student_id={student_id}")
+        
+        return jsonify({'success': True, 'message': 'Result deleted successfully! Student can retake the exam.'})
+        
+    except Exception as e:
+        print(f"❌ Delete error: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        conn.close()
 # ------------------------
 # Rank Routes
 # ------------------------
