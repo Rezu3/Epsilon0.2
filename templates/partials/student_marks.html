@@ -11,6 +11,7 @@
                     <th>School</th>
                     <th>Marks <span style="font-weight:400;">(Out of {{ exam.full_marks if exam else 0 }})</span></th>
                     <th style="width: 80px;">Grade</th>
+                    <th style="width: 100px;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,17 +44,20 @@
                                 {% endif %}
                             </span>
                         </td>
+                        <td>
+                            {% if student.result_id is defined and student.result_id %}
+                            <button class="delete-result-btn" data-id="{{ student.result_id }}" onclick="deleteResult('{{ student.result_id }}', '{{ student.name }}')" title="Delete Result">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="6" class="empty-row">
+                        <td colspan="7" class="empty-row">
                             <i class="fas fa-users"></i>
                             <p>No students found in this class</p>
-                            <p style="font-size:13px; color:#a0aec0;">
-                                <i class="fas fa-info-circle"></i> 
-                                Make sure students are registered with this class
-                            </p>
                         </td>
                     </tr>
                 {% endif %}
