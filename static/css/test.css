@@ -687,7 +687,90 @@ body {
     color: #4facfe;
     display: block;
 }
+/* static/css/test.css - এই অংশ যোগ করুন */
 
+/* ========== MATHJAX লাইন ব্রেক ফিক্স ========== */
+.mathjax {
+    font-size: 18px !important;
+    line-height: 2.2 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+.mathjax .MathJax {
+    font-size: 18px !important;
+    line-height: 2.2 !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+.mathjax .MathJax_Display {
+    font-size: 20px !important;
+    line-height: 2.2 !important;
+    margin: 8px 0 !important;
+    display: block !important;
+}
+
+/* প্রশ্নের টেক্সট */
+.question-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 16px;
+    line-height: 2.2 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+.question-text .mathjax {
+    font-size: 20px !important;
+    line-height: 2.2 !important;
+}
+
+/* অপশন */
+.option-text .mathjax {
+    font-size: 16px !important;
+    line-height: 2 !important;
+}
+
+/* রিভিউ */
+.review-text .mathjax {
+    font-size: 15px !important;
+    line-height: 2 !important;
+}
+
+/* মোবাইলের জন্য */
+@media (max-width: 768px) {
+    .mathjax {
+        font-size: 16px !important;
+        line-height: 2 !important;
+    }
+    .mathjax .MathJax {
+        font-size: 16px !important;
+    }
+    .mathjax .MathJax_Display {
+        font-size: 18px !important;
+    }
+    .question-text .mathjax {
+        font-size: 17px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .mathjax {
+        font-size: 14px !important;
+        line-height: 1.9 !important;
+    }
+    .mathjax .MathJax {
+        font-size: 14px !important;
+    }
+    .mathjax .MathJax_Display {
+        font-size: 16px !important;
+    }
+    .question-text .mathjax {
+        font-size: 15px !important;
+    }
+}
 /* ========== MOBILE RESPONSIVE ========== */
 @media (max-width: 768px) {
     body { padding: 8px; }
