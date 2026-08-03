@@ -1313,6 +1313,18 @@ def get_student_data(student_id):
     else:
         return jsonify({'error': 'Student not found'}), 404
 
+
+
+@app.route('/manifest.json')
+def serve_manifest():
+    return send_from_directory('.', 'manifest.json')
+
+@app.route('/sw.js')
+def serve_sw():
+    return send_from_directory('.', 'sw.js')
+
+
+
 # ------------------------
 # Logout
 # ------------------------
