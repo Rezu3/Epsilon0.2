@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, flash, url_for, jsonify, send_file, send_from_directory
+from flask import Flask, render_template, request, redirect, session, flash, url_for, jsonify, send_file
 import sqlite3
 import os
 from datetime import datetime
@@ -1315,14 +1315,7 @@ def get_student_data(student_id):
 
 
 
-@app.route('/manifest.json')
-def serve_manifest():
-    return send_from_directory('.', 'manifest.json')
-
-@app.route('/sw.js')
-def serve_sw():
-    return send_from_directory('.', 'sw.js')
-
+ 
 
 
 # ------------------------
