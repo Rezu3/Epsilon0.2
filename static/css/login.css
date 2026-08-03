@@ -23,14 +23,8 @@ body {
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .login-container {
@@ -41,48 +35,18 @@ body {
     border-radius: 30px;
     overflow: hidden;
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* Left Side - Branding */
 .login-brand {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
     padding: 50px 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
-}
-
-.login-brand::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 50%;
-    animation: float 20s infinite linear;
-}
-
-.login-brand::after {
-    content: '';
-    position: absolute;
-    bottom: -30%;
-    left: -30%;
-    width: 80%;
-    height: 80%;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 50%;
-    animation: float 15s infinite linear reverse;
-}
-
-@keyframes float {
-    0% { transform: translate(0, 0) rotate(0deg); }
-    50% { transform: translate(30px, 20px) rotate(180deg); }
-    100% { transform: translate(0, 0) rotate(360deg); }
 }
 
 .brand-content {
@@ -95,15 +59,14 @@ body {
 .brand-logo {
     width: 100px;
     height: 100px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 25px;
     font-size: 48px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
     animation: pulse 2s ease-in-out infinite;
 }
 
@@ -113,42 +76,78 @@ body {
 }
 
 .brand-name {
-    font-size: 36px;
+    font-size: 32px;
     font-weight: 800;
     margin-bottom: 8px;
-    letter-spacing: 1px;
-    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #fff, rgba(255,255,255,0.7));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .brand-tagline {
     font-size: 14px;
     opacity: 0.85;
-    margin-bottom: 35px;
+    margin-bottom: 30px;
     font-weight: 300;
     letter-spacing: 2px;
 }
 
+/* Database Download */
+.db-download-section {
+    margin: 20px 0 30px;
+}
+
+.db-download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 25px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    width: 100%;
+    justify-content: center;
+}
+
+.db-download-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.db-hint {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-top: 6px;
+}
+
+/* Brand Features */
 .brand-features {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    text-align: left;
+    gap: 12px;
 }
 
 .feature {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     padding: 12px 16px;
     border-radius: 12px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     transition: all 0.3s ease;
 }
 
 .feature:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
 }
 
@@ -161,9 +160,10 @@ body {
 .feature span {
     font-size: 13px;
     font-weight: 400;
+    opacity: 0.9;
 }
 
-/* Right Side - Login Form */
+/* Right Side */
 .login-form-wrapper {
     padding: 50px 45px;
     display: flex;
@@ -174,24 +174,7 @@ body {
 
 .login-form-container {
     width: 100%;
-    max-width: 400px;
-}
-
-.form-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.form-header h2 {
-    font-size: 28px;
-    font-weight: 700;
-    color: #2d3748;
-    margin-bottom: 4px;
-}
-
-.form-header p {
-    color: #718096;
-    font-size: 14px;
+    max-width: 450px;
 }
 
 /* Flash Messages */
@@ -204,17 +187,6 @@ body {
     gap: 12px;
     animation: slideDown 0.4s ease-out;
     font-size: 14px;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .flash-success {
@@ -233,124 +205,192 @@ body {
     font-size: 18px;
 }
 
-/* Login Type Selector */
+/* ========== 3 OVAL BUTTONS ========== */
+/* ========== 3 OVAL BUTTONS - সাইজ সমান ========== */
 .login-type-selector {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
     margin-bottom: 25px;
 }
 
-.login-card {
-    padding: 15px 10px;
-    border-radius: 14px;
-    text-align: center;
+.login-btn-oval {
+    padding: 25px 20px;
+    border: none;
+    border-radius: 100px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid #e2e8f0;
-    background: #f7fafc;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Poppins', sans-serif;
     position: relative;
-}
-
-.login-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-}
-
-.login-card .icon-wrapper {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
+    overflow: hidden;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 8px;
-    font-size: 20px;
-    transition: all 0.3s ease;
+    gap: 4px;
+    min-height: 110px;
+    width: 100%;
 }
 
-.login-card:hover .icon-wrapper {
-    transform: scale(1.1);
+/* Admin Button - Left */
+.admin-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    grid-column: 1 / 2;
 }
 
-.login-card h4 {
-    font-size: 14px;
-    font-weight: 600;
-    color: #2d3748;
+.admin-btn:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+}
+
+/* Teacher Button - Right */
+.teacher-btn {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: white;
+    grid-column: 2 / 3;
+}
+
+.teacher-btn:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(245, 87, 108, 0.4);
+}
+
+/* Student Button - Bottom Center (সাইজ সমান) */
+.student-btn {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+    grid-column: 1 / 3;
+    max-width: 48.5%;  /* Admin ও Teacher এর সমান সাইজ */
+    margin: 0 auto;
+    min-height: 110px;  /* Admin ও Teacher এর সমান উচ্চতা */
+}
+
+.student-btn:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(79, 172, 254, 0.4);
+}
+
+.btn-icon {
+    font-size: 28px;
     margin-bottom: 2px;
 }
 
-.login-card p {
-    font-size: 11px;
-    color: #a0aec0;
-    margin: 0;
+.btn-label {
+    font-size: 20px;
+    font-weight: 700;
 }
 
-.select-indicator {
+.btn-sub {
+    font-size: 12px;
+    opacity: 0.8;
+    font-weight: 300;
+}
+
+.btn-glow {
     position: absolute;
-    bottom: -2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 3px;
-    border-radius: 3px;
-    transition: all 0.3s ease;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
 }
 
-/* Admin Card */
-.login-card.admin .icon-wrapper {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
+.login-btn-oval:hover .btn-glow {
+    opacity: 1;
 }
 
-.login-card.admin.active {
-    border-color: #667eea;
-    background: rgba(102, 126, 234, 0.05);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .login-type-selector {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .admin-btn {
+        grid-column: 1;
+    }
+    
+    .teacher-btn {
+        grid-column: 1;
+    }
+    
+    .student-btn {
+        grid-column: 1;
+        max-width: 100%;  /* মোবাইলে পুরো width */
+    }
+    
+    .login-btn-oval {
+        min-height: 80px;
+        padding: 20px;
+        border-radius: 50px;
+    }
+    
+    .btn-icon {
+        font-size: 22px;
+    }
+    
+    .btn-label {
+        font-size: 17px;
+    }
 }
 
-.login-card.admin.active .select-indicator {
-    width: 40px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+@media (max-width: 480px) {
+    .login-btn-oval {
+        min-height: 70px;
+        padding: 15px;
+        border-radius: 40px;
+    }
+    
+    .btn-icon {
+        font-size: 18px;
+    }
+    
+    .btn-label {
+        font-size: 15px;
+    }
+    
+    .btn-sub {
+        font-size: 10px;
+    }
+}
+/* ========== LOGIN FORM (Hidden by default) ========== */
+.login-form-container-hidden {
+    animation: slideDown 0.5s ease;
 }
 
-/* Teacher Card */
-.login-card.teacher .icon-wrapper {
-    background: linear-gradient(135deg, #f093fb, #f5576c);
-    color: white;
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.login-card.teacher.active {
-    border-color: #f5576c;
-    background: rgba(245, 87, 108, 0.05);
-    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.15);
+.form-header {
+    text-align: center;
+    margin-bottom: 25px;
 }
 
-.login-card.teacher.active .select-indicator {
-    width: 40px;
-    background: linear-gradient(135deg, #f093fb, #f5576c);
+.form-header h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #2d3748;
 }
 
-/* Student Card */
-.login-card.student .icon-wrapper {
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-    color: white;
-}
-
-.login-card.student.active {
-    border-color: #4facfe;
-    background: rgba(79, 172, 254, 0.05);
-    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.15);
-}
-
-.login-card.student.active .select-indicator {
-    width: 40px;
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
+.form-header p {
+    color: #718096;
+    font-size: 14px;
 }
 
 /* Form */
 .login-form .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
 .login-form label {
@@ -380,17 +420,20 @@ body {
     color: #a0aec0;
     font-size: 16px;
     transition: color 0.3s ease;
+    z-index: 1;
 }
 
 .input-wrapper input {
     width: 100%;
-    padding: 13px 16px 13px 45px;
+    padding: 14px 16px 14px 45px;
     border: 2px solid #e2e8f0;
     border-radius: 12px;
     font-size: 14px;
     font-family: 'Poppins', sans-serif;
     transition: all 0.3s ease;
     background: #f7fafc;
+    position: relative;
+    z-index: 1;
 }
 
 .input-wrapper input:focus {
@@ -400,11 +443,27 @@ body {
     box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
-.input-wrapper input:focus ~ .input-icon,
-.input-wrapper input:focus + .input-icon {
+.input-wrapper input:focus ~ .input-icon {
     color: #667eea;
 }
 
+.input-highlight {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    z-index: 2;
+}
+
+.input-wrapper input:focus ~ .input-highlight {
+    transform: scaleX(1);
+}
+
+/* Toggle Password */
 .toggle-btn {
     position: absolute;
     right: 14px;
@@ -415,7 +474,7 @@ body {
     color: #a0aec0;
     cursor: pointer;
     font-size: 18px;
-    transition: color 0.3s ease;
+    z-index: 2;
 }
 
 .toggle-btn:hover {
@@ -427,7 +486,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 20px 0 25px;
+    margin: 22px 0 28px;
 }
 
 .checkbox-label {
@@ -499,6 +558,8 @@ body {
     justify-content: center;
     gap: 12px;
     font-family: 'Poppins', sans-serif;
+    position: relative;
+    overflow: hidden;
 }
 
 .login-btn:hover {
@@ -506,8 +567,20 @@ body {
     box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
 }
 
-.login-btn:active {
-    transform: translateY(0);
+.btn-shimmer {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
 }
 
 /* Register Links */
@@ -550,106 +623,80 @@ body {
     color: #a0aec0;
 }
 
-/* Responsive */
+/* ========== RESPONSIVE ========== */
 @media (max-width: 992px) {
     .login-container {
         grid-template-columns: 1fr;
     }
     
     .login-brand {
-        padding: 40px 30px;
-        min-height: 250px;
-    }
-    
-    .brand-features {
-        grid-template-columns: 1fr 1fr;
+        padding: 35px 30px;
+        min-height: 200px;
     }
     
     .login-form-wrapper {
-        padding: 40px 30px;
+        padding: 35px 30px;
     }
 }
 
 @media (max-width: 768px) {
-    .login-wrapper {
-        padding: 10px;
-    }
-    
     .login-container {
         border-radius: 20px;
     }
     
     .login-brand {
-        padding: 30px 20px;
-        min-height: 200px;
+        padding: 25px 20px;
+        min-height: 180px;
     }
     
     .brand-name {
-        font-size: 28px;
+        font-size: 24px;
     }
     
     .brand-logo {
         width: 70px;
         height: 70px;
         font-size: 32px;
-        margin-bottom: 15px;
     }
     
     .brand-features {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-    
-    .feature {
-        padding: 10px 12px;
-        font-size: 12px;
-    }
-    
-    .feature i {
-        font-size: 14px;
-        width: 24px;
+        grid-template-columns: 1fr;
     }
     
     .login-form-wrapper {
-        padding: 30px 20px;
+        padding: 25px 20px;
     }
     
     .login-type-selector {
         grid-template-columns: 1fr;
-        gap: 8px;
+        gap: 12px;
     }
     
-    .login-card {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        padding: 12px 16px;
+    .admin-btn {
+        grid-column: 1;
     }
     
-    .login-card .icon-wrapper {
-        margin: 0;
-        width: 40px;
-        height: 40px;
-        font-size: 16px;
+    .teacher-btn {
+        grid-column: 1;
     }
     
-    .login-card h4 {
-        margin: 0;
-        font-size: 14px;
+    .student-btn {
+        grid-column: 1;
+        max-width: 100%;
     }
     
-    .login-card p {
-        display: none;
+    .login-btn-oval {
+        min-height: 80px;
+        padding: 20px;
+        border-radius: 50px;
     }
     
-    .form-header h2 {
-        font-size: 24px;
+    .btn-icon {
+        font-size: 22px;
     }
     
-    .form-options {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
+    .btn-label {
+        font-size: 17px;
     }
 }
 
@@ -659,133 +706,33 @@ body {
     }
     
     .login-brand {
-        padding: 25px 15px;
-        min-height: 180px;
+        padding: 20px 15px;
+        min-height: 160px;
     }
     
     .brand-name {
-        font-size: 22px;
-    }
-    
-    .brand-tagline {
-        font-size: 12px;
-        margin-bottom: 20px;
-    }
-    
-    .brand-features {
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-    }
-    
-    .feature {
-        padding: 8px 10px;
-        font-size: 11px;
-    }
-    
-    .feature i {
-        font-size: 12px;
-        width: 20px;
-    }
-    
-    .login-form-wrapper {
-        padding: 25px 15px;
-    }
-    
-    .form-header h2 {
         font-size: 20px;
     }
     
-    .input-wrapper input {
-        padding: 11px 14px 11px 38px;
-        font-size: 13px;
+    .login-form-wrapper {
+        padding: 20px 15px;
     }
     
-    .input-wrapper .input-icon {
-        left: 12px;
-        font-size: 14px;
+    .login-btn-oval {
+        min-height: 70px;
+        padding: 15px;
+        border-radius: 40px;
     }
     
-    .login-btn {
-        padding: 14px;
+    .btn-icon {
+        font-size: 18px;
+    }
+    
+    .btn-label {
         font-size: 15px;
     }
-}
-
-
-/* static/css/login.css - এই অংশ যোগ করুন */
-
-/* Database Download Section */
-.db-download-section {
-    margin: 20px 0 30px;
-    text-align: center;
-}
-
-.db-download-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 25px;
-    background: rgba(255, 255, 255, 0.15);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 12px;
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-    backdrop-filter: blur(10px);
-    width: 100%;
-    justify-content: center;
-}
-
-.db-download-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
-
-.db-download-btn i {
-    font-size: 18px;
-}
-
-.db-download-btn i:first-child {
-    color: #4facfe;
-}
-
-.db-download-btn i:last-child {
-    color: #48bb78;
-}
-
-.db-hint {
-    font-size: 11px;
-    opacity: 0.7;
-    margin-top: 6px;
-    color: rgba(255, 255, 255, 0.8);
-    letter-spacing: 0.5px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .db-download-btn {
-        padding: 10px 18px;
-        font-size: 13px;
-    }
     
-    .db-hint {
+    .btn-sub {
         font-size: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    .db-download-btn {
-        padding: 8px 14px;
-        font-size: 12px;
-        gap: 8px;
-    }
-    
-    .db-download-btn i {
-        font-size: 14px;
     }
 }
