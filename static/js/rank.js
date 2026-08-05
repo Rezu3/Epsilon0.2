@@ -58,6 +58,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Show My Students
+function showMyStudents() {
+    const studentsSection = document.getElementById('studentsSection');
+    const studySection = document.getElementById('studyMaterialSection');
+    
+    if (studentsSection) {
+        studentsSection.style.display = 'block';
+        studentsSection.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => {
+            studentsSection.style.transition = 'all 0.3s ease';
+            studentsSection.style.boxShadow = '0 0 0 3px #f093fb';
+            setTimeout(() => {
+                studentsSection.style.boxShadow = 'none';
+            }, 2000);
+        }, 100);
+    }
+    
+    if (studySection) {
+        studySection.style.display = 'none';
+    }
+}
 // Update date and time
 function updateDateTime() {
     const now = new Date();
