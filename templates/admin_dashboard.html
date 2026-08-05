@@ -4,23 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> 𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - Admin Dashboard</title>
-    
-    <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
-    
-    <!-- ============================================ -->
-    <!-- FONT AWESOME - CDN (আইকনের জন্য) -->
-    <!-- ============================================ -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- ব্যাকআপ CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- ============================================ -->
-    <!-- SIDEBAR OVERLAY FOR MOBILE -->
+    <!-- SIDEBAR OVERLAY - মোবাইলের জন্য -->
     <!-- ============================================ -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -37,56 +27,56 @@
         </div>
         
         <nav class="sidebar-nav">
-            <!-- 1. Dashboard -->
-            <a href="{{ url_for('admin_dashboard') }}" class="nav-item active" data-page="dashboard">
+            <!-- 1. Dashboard (Active) -->
+            <a href="{{ url_for('admin_dashboard') }}" class="nav-item active">
                 <i class="fas fa-th-large"></i>
                 <span>Dashboard</span>
             </a>
             
             <!-- 2. All Students -->
-            <a href="{{ url_for('admin_students') }}" class="nav-item" data-page="students">
+            <a href="{{ url_for('admin_students') }}" class="nav-item">
                 <i class="fas fa-user-graduate"></i>
                 <span>All Students</span>
             </a>
             
             <!-- 3. All Teachers -->
-            <a href="{{ url_for('admin_teachers') }}" class="nav-item" data-page="teachers">
+            <a href="{{ url_for('admin_teachers') }}" class="nav-item">
                 <i class="fas fa-chalkboard-teacher"></i>
                 <span>All Teachers</span>
             </a>
             
             <!-- 4. Fees Management -->
-            <a href="#" class="nav-item" data-page="fees" onclick="viewFeesDetails(event)">
+            <a href="#" class="nav-item" onclick="viewFeesDetails(event)">
                 <i class="fas fa-money-bill-wave"></i>
                 <span>Fees Management</span>
             </a>
             
             <!-- 5. Exams -->
-            <a href="{{ url_for('exam') }}" class="nav-item" data-page="exam">
+            <a href="{{ url_for('exam') }}" class="nav-item">
                 <i class="fas fa-pencil-alt"></i>
                 <span>Exams</span>
             </a>
             
             <!-- 6. Results -->
-            <a href="{{ url_for('results') }}" class="nav-item" data-page="results">
+            <a href="{{ url_for('results') }}" class="nav-item">
                 <i class="fas fa-file-alt"></i>
                 <span>Results</span>
             </a>
             
             <!-- 7. Rank -->
-            <a href="{{ url_for('rank') }}" class="nav-item" data-page="rank">
+            <a href="{{ url_for('rank') }}" class="nav-item">
                 <i class="fas fa-trophy"></i>
                 <span>Rank</span>
             </a>
             
-            <!-- 8. Download Database -->
+            <!-- 8. Download Database (নতুন যোগ) -->
             <a href="#" class="nav-item db-download" onclick="downloadDatabase(event)">
                 <i class="fas fa-database"></i>
                 <span>Download Database</span>
             </a>
             
             <!-- 9. Logout -->
-            <a href="{{ url_for('logout') }}" class="nav-item logout" data-page="logout">
+            <a href="{{ url_for('logout') }}" class="nav-item logout">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
             </a>
@@ -147,8 +137,9 @@
             {% endif %}
         {% endwith %}
 
-        <!-- Quick Action Cards -->
+        <!-- Quick Action Cards - 7 Icons -->
         <div class="quick-actions">
+            <!-- 1. Views All Records -->
             <a href="{{ url_for('admin_students') }}" class="action-card">
                 <div class="action-icon view-icon">
                     <i class="fas fa-eye"></i>
@@ -160,6 +151,7 @@
                 <i class="fas fa-chevron-right action-arrow"></i>
             </a>
 
+            <!-- 2. Fees Details -->
             <a href="#" class="action-card" onclick="viewFeesDetails(event)">
                 <div class="action-icon fees-icon">
                     <i class="fas fa-file-invoice-dollar"></i>
@@ -171,6 +163,7 @@
                 <i class="fas fa-chevron-right action-arrow"></i>
             </a>
 
+            <!-- 3. Add New Student -->
             <a href="{{ url_for('student_register') }}" class="action-card">
                 <div class="action-icon student-icon">
                     <i class="fas fa-user-plus"></i>
@@ -182,6 +175,7 @@
                 <i class="fas fa-chevron-right action-arrow"></i>
             </a>
 
+            <!-- 4. Add New Teacher -->
             <a href="{{ url_for('teacher_register') }}" class="action-card">
                 <div class="action-icon teacher-icon">
                     <i class="fas fa-chalkboard-teacher"></i>
@@ -193,6 +187,7 @@
                 <i class="fas fa-chevron-right action-arrow"></i>
             </a>
 
+            <!-- 5. Exam -->
             <a href="{{ url_for('exam') }}" class="action-card">
                 <div class="action-icon exam-icon">
                     <i class="fas fa-pencil-alt"></i>
@@ -204,6 +199,7 @@
                 <i class="fas fa-chevron-right action-arrow"></i>
             </a>
 
+            <!-- 6. Result -->
             <a href="{{ url_for('results') }}" class="action-card">
                 <div class="action-icon result-icon">
                     <i class="fas fa-file-alt"></i>
@@ -215,6 +211,7 @@
                 <i class="fas fa-chevron-right action-arrow"></i>
             </a>
 
+            <!-- 7. Rank -->
             <a href="{{ url_for('rank') }}" class="action-card">
                 <div class="action-icon rank-icon">
                     <i class="fas fa-trophy"></i>
@@ -227,7 +224,7 @@
             </a>
         </div>
 
-        <!-- Welcome Message -->
+        <!-- Welcome Message at Bottom -->
         <div class="welcome-footer">
             <div class="welcome-content">
                 <i class="fas fa-graduation-cap"></i>
@@ -238,14 +235,18 @@
     </div>
 
     <!-- ============================================ -->
-    <!-- SCRIPTS -->
+    <!-- SCRIPTS - সম্পূর্ণ (সব ফাংশন সহ) -->
     <!-- ============================================ -->
     <script>
-        // Database Download Function
+        // ============================================
+        // DATABASE DOWNLOAD FUNCTION
+        // ============================================
         function downloadDatabase(event) {
             event.preventDefault();
             event.stopPropagation();
-            if (confirm('Are you sure you want to download the database backup?')) {
+            if (confirm('⚠️ Are you sure you want to download the database backup?\n\nThis will download the entire database file.')) {
+                showFlashMessage('info', '⏳ Downloading database... Please wait.');
+                
                 fetch('/download_database')
                     .then(response => {
                         if (!response.ok) {
@@ -263,50 +264,104 @@
                         a.remove();
                         window.URL.revokeObjectURL(url);
                         
-                        const flashDiv = document.createElement('div');
-                        flashDiv.className = 'flash-message flash-success';
-                        flashDiv.innerHTML = `
-                            <i class="fas fa-check-circle"></i>
-                            Database downloaded successfully! <br>
-                            File: tution.db
-                            <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
-                        `;
-                        const mainContent = document.querySelector('.main-content');
-                        const quickActions = document.querySelector('.quick-actions');
-                        if (mainContent && quickActions) {
-                            mainContent.insertBefore(flashDiv, quickActions);
-                        }
-                        
-                        setTimeout(() => {
-                            if (flashDiv.parentElement) {
-                                flashDiv.remove();
-                            }
-                        }, 5000);
+                        showFlashMessage('success', '✅ Database downloaded successfully!<br><small>File: tution.db</small>');
                     })
                     .catch(error => {
                         console.error('Error downloading database:', error);
-                        alert('❌ Error downloading database. Please try again.');
+                        showFlashMessage('error', '❌ Error downloading database. Please try again.');
                     });
             }
         }
 
-        function viewFeesDetails(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            alert('Fees Management feature coming soon!');
+        // ============================================
+        // SHOW FLASH MESSAGE
+        // ============================================
+        function showFlashMessage(type, message) {
+            const existingMessages = document.querySelectorAll('.flash-message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            const flashDiv = document.createElement('div');
+            flashDiv.className = `flash-message flash-${type}`;
+            
+            let icon = '';
+            if (type === 'success') icon = 'fa-check-circle';
+            else if (type === 'error') icon = 'fa-exclamation-circle';
+            else if (type === 'info') icon = 'fa-info-circle';
+            else icon = 'fa-bell';
+            
+            flashDiv.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+                <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            
+            const mainContent = document.querySelector('.main-content');
+            const quickActions = document.querySelector('.quick-actions');
+            if (mainContent && quickActions) {
+                mainContent.insertBefore(flashDiv, quickActions);
+            } else if (mainContent) {
+                mainContent.insertBefore(flashDiv, mainContent.firstChild);
+            }
+            
+            setTimeout(() => {
+                if (flashDiv.parentElement) {
+                    flashDiv.style.transition = 'opacity 0.5s ease';
+                    flashDiv.style.opacity = '0';
+                    setTimeout(() => {
+                        if (flashDiv.parentElement) {
+                            flashDiv.remove();
+                        }
+                    }, 500);
+                }
+            }, 5000);
         }
 
         // ============================================
-        // SIDEBAR TOGGLE
+        // VIEW FEES DETAILS
+        // ============================================
+        function viewFeesDetails(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            alert('💰 Fees Details Page\n\nYou can view:\n• Total fees collected\n• Pending dues\n• Payment history\n• Student-wise fees');
+        }
+
+        // ============================================
+        // UPDATE DATE AND TIME
+        // ============================================
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'short', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            const dateTimeStr = now.toLocaleDateString('en-US', options);
+            const element = document.getElementById('currentDateTime');
+            if (element) {
+                element.textContent = dateTimeStr;
+            }
+        }
+
+        // ============================================
+        // SIDEBAR TOGGLE FOR MOBILE
         // ============================================
         document.addEventListener('DOMContentLoaded', function() {
             console.log('✅ Admin Dashboard loaded');
+            
+            // Update date/time
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
             
             const menuBtn = document.getElementById('menuBtn');
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
             const overlay = document.getElementById('sidebarOverlay');
             
+            // Function to toggle sidebar
             function toggleSidebar(e) {
                 if (e) {
                     e.preventDefault();
@@ -315,6 +370,7 @@
                 
                 if (sidebar) {
                     sidebar.classList.toggle('open');
+                    console.log('Sidebar:', sidebar.classList.contains('open') ? 'OPEN' : 'CLOSED');
                     
                     if (sidebar.classList.contains('open')) {
                         if (overlay) overlay.classList.add('active');
@@ -326,31 +382,98 @@
                 }
             }
             
+            // Menu button click (3 lines button)
             if (menuBtn) {
                 menuBtn.addEventListener('click', toggleSidebar);
                 console.log('✅ Menu button connected');
+            } else {
+                console.error('❌ Menu button not found!');
             }
             
+            // Sidebar toggle button (inside sidebar)
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', toggleSidebar);
+                console.log('✅ Sidebar toggle connected');
             }
             
+            // Close sidebar on overlay click
             if (overlay) {
                 overlay.addEventListener('click', function() {
                     if (sidebar && sidebar.classList.contains('open')) {
                         sidebar.classList.remove('open');
                         overlay.classList.remove('active');
                         document.body.style.overflow = '';
+                        console.log('Sidebar closed by overlay');
                     }
                 });
             }
             
+            // Close sidebar on outside click (mobile only)
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 992) {
+                    const isSidebar = sidebar && sidebar.contains(e.target);
+                    const isMenuBtn = menuBtn && menuBtn.contains(e.target);
+                    const isSidebarToggle = sidebarToggle && sidebarToggle.contains(e.target);
+                    const isOverlay = overlay && overlay.contains(e.target);
+                    const isNavItem = e.target.closest('.nav-item');
+                    
+                    // Don't close if clicking nav items
+                    if (isNavItem) return;
+                    
+                    if (!isSidebar && !isMenuBtn && !isSidebarToggle && !isOverlay && sidebar && sidebar.classList.contains('open')) {
+                        sidebar.classList.remove('open');
+                        if (overlay) overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                        console.log('Sidebar closed by outside click');
+                    }
+                }
+            });
+            
+            // Close sidebar on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (sidebar && sidebar.classList.contains('open')) {
+                        sidebar.classList.remove('open');
+                        if (overlay) overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                        console.log('Sidebar closed by Escape');
+                    }
+                }
+            });
+            
             // Desktop: keep sidebar open
             if (window.innerWidth > 992 && sidebar) {
                 sidebar.classList.add('open');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
             }
             
-            console.log('✅ Sidebar toggle ready');
+            // Handle window resize
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    if (window.innerWidth > 992 && sidebar) {
+                        sidebar.classList.add('open');
+                        if (overlay) overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    } else if (window.innerWidth <= 992 && sidebar) {
+                        sidebar.classList.remove('open');
+                        if (overlay) overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }, 250);
+            });
+            
+            // Notification bell click
+            const notificationBell = document.querySelector('.notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function() {
+                    alert('📬 You have 3 new notifications');
+                });
+            }
+            
+            console.log('✅ Sidebar toggle initialized successfully');
         });
     </script>
 
