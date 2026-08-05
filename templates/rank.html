@@ -71,58 +71,73 @@
         </div>
     </div>
     {% elif user_type == 'teacher' %}
+   
     <!-- Teacher Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo">
-                <i class="fas fa-graduation-cap"></i>
-                <span>𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</span>
-            </div>
-            <button class="sidebar-toggle" id="sidebarToggle">
-                <i class="fas fa-bars"></i>
-            </button>
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span>𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</span>
         </div>
-        
-        <nav class="sidebar-nav">
-            <a href="{{ url_for('teacher_home') }}" class="nav-item">
-                <i class="fas fa-home"></i>
-                <span>Home</span>
-            </a>
-             <a href="javascript:void(0)" class="nav-item" onclick="showMyStudents()">
-                <i class="fas fa-user-graduate"></i>
-                <span>My Students</span>
-            </a>
-            <a href="{{ url_for('exam') }}" class="nav-item">
-                <i class="fas fa-pencil-alt"></i>
-                <span>Exams</span>
-            </a>
-            <a href="{{ url_for('results') }}" class="nav-item">
-                <i class="fas fa-file-alt"></i>
-                <span>Results</span>
-            </a>
-            <a href="{{ url_for('rank') }}" class="nav-item active">
-                <i class="fas fa-trophy"></i>
-                <span>Rank</span>
-            </a>
-            <a href="{{ url_for('logout') }}" class="nav-item logout">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
-            </a>
-        </nav>
-        
-        <div class="sidebar-footer">
-            <div class="teacher-info">
-                <div class="teacher-avatar">
-                    <i class="fas fa-chalkboard-teacher"></i>
-                </div>
-                <div class="teacher-details">
-                    <h4>{{ session.get('username', 'Teacher') }}</h4>
-                    <p>Teacher</p>
-                </div>
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="{{ url_for('teacher_home') }}" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+
+        <a href="javascript:void(0)" class="nav-item" onclick="showMyStudents()">
+            <i class="fas fa-user-graduate"></i>
+            <span>My Students</span>
+        </a>
+
+        <a href="javascript:void(0)" class="nav-item" onclick="showStudyMaterial()">
+            <i class="fas fa-book"></i>
+            <span>Study Material</span>
+        </a>
+
+        <a href="{{ url_for('exam') }}" class="nav-item">
+            <i class="fas fa-pencil-alt"></i>
+            <span>Exams</span>
+        </a>
+
+        <a href="{{ url_for('results') }}" class="nav-item">
+            <i class="fas fa-file-alt"></i>
+            <span>Results</span>
+        </a>
+
+        <a href="{{ url_for('rank') }}" class="nav-item active">
+            <i class="fas fa-trophy"></i>
+            <span>Rank</span>
+        </a>
+
+        <a href="javascript:void(0)" class="nav-item" onclick="showQuiz()">
+            <i class="fas fa-question-circle"></i>
+            <span>Quiz</span>
+        </a>
+
+        <a href="{{ url_for('logout') }}" class="nav-item logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="teacher-info">
+            <div class="teacher-avatar">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <div class="teacher-details">
+                <h4>{{ session.get('username', 'Teacher') }}</h4>
+                <p>Teacher</p>
             </div>
         </div>
     </div>
-    {% else %}
+</div>
     <!-- Student Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
