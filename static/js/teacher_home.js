@@ -1,7 +1,12 @@
 // static/js/teacher_home.js
-document.addEventListener("DOMContentLoaded", function () {
-    const hash = window.location.hash;
 
+document.addEventListener("DOMContentLoaded", function () {
+    // 1. Initialize Date & Time
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+
+    // 2. Handle URL Hash Navigation
+    const hash = window.location.hash;
     if (hash === "#students") {
         showMyStudents();
     } else if (hash === "#study-material") {
@@ -9,10 +14,64 @@ document.addEventListener("DOMContentLoaded", function () {
     } else if (hash === "#quiz") {
         showQuiz();
     }
+
+    // 3. Clean Duplicate Class Options
+    removeDuplicateClasses();
+
+    // 4. Sidebar Toggle Functionality
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+
+    function toggleSidebar() {
+        if (sidebar) {
+            sidebar.classList.toggle('open');
+        }
+    }
+
+    if (menuBtn) menuBtn.addEventListener('click', toggleSidebar);
+    if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
+
+    // Close sidebar on clicking outside (Mobile view)
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 992 && sidebar) {
+            const isSidebar = sidebar.contains(e.target);
+            const isMenuBtn = menuBtn && menuBtn.contains(e.target);
+            if (!isSidebar && !isMenuBtn && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        }
+    });
+
+    // 5. Notification Bell
+    const notificationBell = document.querySelector('.notification-bell');
+    if (notificationBell) {
+        notificationBell.addEventListener('click', function() {
+            alert('📬 You have 5 new notifications');
+        });
+    }
+
+    // 6. Action Cards Animation
+    const cards = document.querySelectorAll('.action-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100 + (index * 100));
+    });
+
+    // 7. Hide Upload Form Initially
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm) {
+        uploadForm.style.display = 'none';
+    }
 });
-// teacher_home.js - এই ফাংশন যোগ করুন
+
+// Remove Duplicate Class Options in Select Dropdowns
 function removeDuplicateClasses() {
-    // Class Filter
     const classFilter = document.getElementById('classFilter');
     if (classFilter) {
         const options = classFilter.querySelectorAll('option');
@@ -26,7 +85,6 @@ function removeDuplicateClasses() {
         });
     }
     
-    // Study Material Modal
     const modalClassSelect = document.querySelector('#studyMaterialModal select[name="class"]');
     if (modalClassSelect) {
         const options = modalClassSelect.querySelectorAll('option');
@@ -41,72 +99,7 @@ function removeDuplicateClasses() {
     }
 }
 
-// DOMContentLoaded এ কল করুন
-document.addEventListener('DOMContentLoaded', function() {
-    removeDuplicateClasses();
-    // ... বাকি কোড
-});
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize date/time
-    updateDateTime();
-    setInterval(updateDateTime, 1000);
-
-    // Sidebar toggle for mobile
-    const menuBtn = document.getElementById('menuBtn');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggle = document.getElementById('sidebarToggle');
-
-    function toggleSidebar() {
-        sidebar.classList.toggle('open');
-    }
-
-    if (menuBtn) {
-        menuBtn.addEventListener('click', toggleSidebar);
-    }
-
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', toggleSidebar);
-    }
-
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', function(e) {
-        if (window.innerWidth <= 992) {
-            const isSidebar = sidebar.contains(e.target);
-            const isMenuBtn = menuBtn && menuBtn.contains(e.target);
-            if (!isSidebar && !isMenuBtn && sidebar.classList.contains('open')) {
-                sidebar.classList.remove('open');
-            }
-        }
-    });
-
-    // Notification bell click
-    const notificationBell = document.querySelector('.notification-bell');
-    if (notificationBell) {
-        notificationBell.addEventListener('click', function() {
-            alert('📬 You have 5 new notifications');
-        });
-    }
-
-    // Add animation to cards on load
-    const cards = document.querySelectorAll('.action-card');
-    cards.forEach((card, index) => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        setTimeout(() => {
-            card.style.transition = 'all 0.5s ease';
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }, 100 + (index * 100));
-    });
-
-    // Remove the upload form display toggle
-    const uploadForm = document.getElementById('uploadForm');
-    if (uploadForm) {
-        uploadForm.style.display = 'none';
-    }
-});
-
-// Update date and time
+// Update Date and Time UI
 function updateDateTime() {
     const now = new Date();
     const options = { 
@@ -125,7 +118,7 @@ function updateDateTime() {
     }
 }
 
-// Filter students by class and search
+// Filter Students List
 function filterStudents() {
     const classFilter = document.getElementById('classFilter');
     const searchInput = document.getElementById('searchStudent');
@@ -140,17 +133,12 @@ function filterStudents() {
         const cardName = card.dataset.name || '';
         
         let show = true;
-        
-        // Class filter
         if (selectedClass !== 'all' && cardClass !== selectedClass) {
             show = false;
         }
-        
-        // Search filter
         if (searchTerm && !cardName.includes(searchTerm)) {
             show = false;
         }
-        
         if (show) {
             visibleCount++;
         }
@@ -158,7 +146,6 @@ function filterStudents() {
         card.style.display = show ? '' : 'none';
     });
     
-    // Update total count
     const totalCount = document.querySelector('.total-count');
     if (totalCount) {
         const total = document.querySelectorAll('.student-card').length;
@@ -166,7 +153,7 @@ function filterStudents() {
     }
 }
 
-// Show My Students
+// View Section: My Students
 function showMyStudents() {
     const studentsSection = document.getElementById('studentsSection');
     const studySection = document.getElementById('studyMaterialSection');
@@ -188,7 +175,7 @@ function showMyStudents() {
     }
 }
 
-// Show Study Material
+// View Section: Study Material
 function showStudyMaterial() {
     const studySection = document.getElementById('studyMaterialSection');
     const studentsSection = document.getElementById('studentsSection');
@@ -210,28 +197,25 @@ function showStudyMaterial() {
     }
 }
 
-// View Student Dashboard - Teacher directly views student dashboard
+// View Student Dashboard directly as Teacher
 function viewStudentDashboard(studentId) {
-    // Directly go to student dashboard with student ID (no password required)
     window.location.href = '/student_dashboard_as_teacher/' + studentId;
 }
 
-// View Student Result
+// Student Action Placeholders
 function viewStudentResult(id) {
     alert('📄 Viewing results for student ID: ' + id);
 }
 
-// Send Message
 function sendMessage(id) {
     alert('✉️ Sending message to student ID: ' + id);
 }
 
-// Show Quiz
 function showQuiz() {
     alert('🧠 Quiz Management\n\nYou can:\n• Create new quizzes\n• Manage quiz questions\n• Set quiz timings\n• View quiz results');
 }
 
-// Open Study Material Modal
+// Modal Handlers
 function openStudyMaterialModal() {
     const modal = document.getElementById('studyMaterialModal');
     if (modal) {
@@ -241,7 +225,6 @@ function openStudyMaterialModal() {
     }
 }
 
-// Close Study Material Modal
 function closeStudyMaterialModal() {
     const modal = document.getElementById('studyMaterialModal');
     if (modal) {
@@ -251,7 +234,7 @@ function closeStudyMaterialModal() {
     }
 }
 
-// Close modal on escape key
+// Global Keyboard & Overlay Click Listeners for Modal
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeStudyMaterialModal();
@@ -262,7 +245,6 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Close modal on outside click
 document.addEventListener('click', function(e) {
     const modal = document.getElementById('studyMaterialModal');
     if (modal && modal.style.display === 'flex') {
@@ -273,7 +255,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Make functions globally available
+// Export Functions Globally
 window.showMyStudents = showMyStudents;
 window.showStudyMaterial = showStudyMaterial;
 window.showQuiz = showQuiz;
