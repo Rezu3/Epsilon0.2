@@ -9,7 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Sidebar -->
+    <!-- ============================================ -->
+    <!-- SIDEBAR - সম্পূর্ণ সাইডবার (সব আইটেম সহ) -->
+    <!-- ============================================ -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo">
@@ -22,34 +24,42 @@
         </div>
         
         <nav class="sidebar-nav">
+            <!-- 1. Home (Active) -->
             <a href="{{ url_for('teacher_home') }}" class="nav-item active">
                 <i class="fas fa-home"></i>
                 <span>Home</span>
             </a>
+            <!-- 2. My Students -->
             <a href="javascript:void(0)" class="nav-item" onclick="showMyStudents()">
                 <i class="fas fa-user-graduate"></i>
                 <span>My Students</span>
             </a>
+            <!-- 3. Study Material -->
             <a href="javascript:void(0)" class="nav-item" onclick="showStudyMaterial()">
                 <i class="fas fa-book"></i>
                 <span>Study Material</span>
             </a>
+            <!-- 4. Exams -->
             <a href="{{ url_for('exam') }}" class="nav-item">
                 <i class="fas fa-pencil-alt"></i>
                 <span>Exams</span>
             </a>
+            <!-- 5. Results -->
             <a href="{{ url_for('results') }}" class="nav-item">
                 <i class="fas fa-file-alt"></i>
                 <span>Results</span>
             </a>
+            <!-- 6. Rank -->
             <a href="{{ url_for('rank') }}" class="nav-item">
                 <i class="fas fa-trophy"></i>
                 <span>Rank</span>
             </a>
+            <!-- 7. Quiz -->
             <a href="javascript:void(0)" class="nav-item" onclick="showQuiz()">
                 <i class="fas fa-question-circle"></i>
                 <span>Quiz</span>
             </a>
+            <!-- 8. Logout -->
             <a href="{{ url_for('logout') }}" class="nav-item logout">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
@@ -69,7 +79,9 @@
         </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- ============================================ -->
+    <!-- MAIN CONTENT -->
+    <!-- ============================================ -->
     <div class="main-content" id="mainContent">
         <!-- Top Bar -->
         <header class="top-bar">
@@ -389,6 +401,152 @@
             </div>
         </div>
     </div>
+
+    <!-- ============================================ -->
+    <!-- SCRIPTS -->
+    <!-- ============================================ -->
+    <script>
+        // ============================================
+        // TEACHER FUNCTIONS
+        // ============================================
+        function showMyStudents() {
+            document.getElementById('studentsSection').style.display = 'block';
+            document.getElementById('studyMaterialSection').style.display = 'none';
+        }
+
+        function showStudyMaterial() {
+            document.getElementById('studentsSection').style.display = 'none';
+            document.getElementById('studyMaterialSection').style.display = 'block';
+        }
+
+        function showQuiz() {
+            alert('🧠 Quiz Management\n\nYou can:\n• Create new quizzes\n• Manage quiz questions\n• Set quiz timings\n• View quiz results');
+        }
+
+        function openStudyMaterialModal() {
+            document.getElementById('studyMaterialModal').style.display = 'block';
+        }
+
+        function closeStudyMaterialModal() {
+            document.getElementById('studyMaterialModal').style.display = 'none';
+        }
+
+        // ============================================
+        // STUDENT FUNCTIONS
+        // ============================================
+        function viewStudentDashboard(studentId) {
+            window.location.href = `/student_dashboard_as_teacher/${studentId}`;
+        }
+
+        function sendMessage(studentId) {
+            alert(`💬 Send message to student ID: ${studentId}\n\nThis will open messaging feature.`);
+        }
+
+        function viewStudentResult(studentId) {
+            alert(`📄 View results for student ID: ${studentId}\n\nThis will show student's results.`);
+        }
+
+        // ============================================
+        // FILTER STUDENTS
+        // ============================================
+        function filterStudents() {
+            const classFilter = document.getElementById('classFilter').value;
+            const searchFilter = document.getElementById('searchStudent').value.toLowerCase();
+            const cards = document.querySelectorAll('.student-card');
+            
+            cards.forEach(card => {
+                const studentClass = card.dataset.class;
+                const studentName = card.dataset.name;
+                
+                let show = true;
+                
+                if (classFilter !== 'all' && studentClass !== classFilter) {
+                    show = false;
+                }
+                
+                if (searchFilter && !studentName.includes(searchFilter)) {
+                    show = false;
+                }
+                
+                card.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        // ============================================
+        // SIDEBAR TOGGLE FOR MOBILE
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.getElementById('menuBtn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+
+            function toggleSidebar() {
+                if (sidebar) {
+                    sidebar.classList.toggle('open');
+                }
+            }
+
+            if (menuBtn) {
+                menuBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleSidebar();
+                });
+            }
+
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleSidebar();
+                });
+            }
+
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 992) {
+                    const isSidebar = sidebar && sidebar.contains(e.target);
+                    const isMenuBtn = menuBtn && menuBtn.contains(e.target);
+                    
+                    if (!isSidebar && !isMenuBtn && sidebar && sidebar.classList.contains('open')) {
+                        sidebar.classList.remove('open');
+                    }
+                }
+            });
+
+            // Close modal on outside click
+            window.onclick = function(event) {
+                const modal = document.getElementById('studyMaterialModal');
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        });
+
+        // ============================================
+        // UPDATE DATE TIME
+        // ============================================
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'short', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            const dateTimeStr = now.toLocaleDateString('en-US', options);
+            const element = document.getElementById('currentDateTime');
+            if (element) {
+                element.textContent = dateTimeStr;
+            }
+        }
+
+        // Update date/time every second
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
 
     <script src="{{ url_for('static', filename='js/teacher_home.js') }}"></script>
 </body>
