@@ -9,6 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- ============================================ -->
+    <!-- SIDEBAR OVERLAY FOR MOBILE (নতুন যোগ) -->
+    <!-- ============================================ -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -216,7 +221,7 @@
     </div>
 
     <!-- ============================================ -->
-    <!-- SIDEBAR TOGGLE SCRIPT - FIXED -->
+    <!-- SCRIPTS - সম্পূর্ণ আপডেটেড -->
     <!-- ============================================ -->
     <script>
         // Database Download Function
@@ -276,7 +281,7 @@
         }
 
         // ============================================
-        // SIDEBAR TOGGLE - FIXED FOR MOBILE
+        // SIDEBAR TOGGLE - সম্পূর্ণ ঠিক করা
         // ============================================
         document.addEventListener('DOMContentLoaded', function() {
             console.log('✅ Admin Dashboard loaded');
@@ -284,7 +289,7 @@
             const menuBtn = document.getElementById('menuBtn');
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
-            const mainContent = document.getElementById('mainContent');
+            const overlay = document.getElementById('sidebarOverlay');
             
             // Function to toggle sidebar
             function toggleSidebar(e) {
@@ -294,23 +299,14 @@
                 }
                 
                 if (sidebar) {
-                    // Toggle 'open' class (not 'collapsed')
                     sidebar.classList.toggle('open');
-                    console.log('Sidebar toggled:', sidebar.classList.contains('open') ? 'OPEN' : 'CLOSED');
-                    
-                    // Toggle overlay
-                    let overlay = document.querySelector('.sidebar-overlay');
-                    if (!overlay) {
-                        overlay = document.createElement('div');
-                        overlay.className = 'sidebar-overlay';
-                        document.body.appendChild(overlay);
-                    }
+                    console.log('Sidebar:', sidebar.classList.contains('open') ? 'OPEN' : 'CLOSED');
                     
                     if (sidebar.classList.contains('open')) {
-                        overlay.classList.add('active');
+                        if (overlay) overlay.classList.add('active');
                         document.body.style.overflow = 'hidden';
                     } else {
-                        overlay.classList.remove('active');
+                        if (overlay) overlay.classList.remove('active');
                         document.body.style.overflow = '';
                     }
                 }
@@ -321,9 +317,8 @@
                 menuBtn.addEventListener('click', toggleSidebar);
                 menuBtn.addEventListener('touchstart', function(e) {
                     // Prevent double tap zoom on mobile
-                    e.preventDefault();
-                }, { passive: false });
-                console.log('✅ Menu button event listener added');
+                }, { passive: true });
+                console.log('✅ Menu button connected');
             } else {
                 console.error('❌ Menu button not found!');
             }
@@ -331,20 +326,20 @@
             // Sidebar toggle button click
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', toggleSidebar);
-                console.log('✅ Sidebar toggle button event listener added');
+                console.log('✅ Sidebar toggle connected');
             }
             
             // Close sidebar on overlay click
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('sidebar-overlay')) {
+            if (overlay) {
+                overlay.addEventListener('click', function() {
                     if (sidebar && sidebar.classList.contains('open')) {
                         sidebar.classList.remove('open');
-                        e.target.classList.remove('active');
+                        overlay.classList.remove('active');
                         document.body.style.overflow = '';
-                        console.log('Sidebar closed by overlay click');
+                        console.log('Sidebar closed by overlay');
                     }
-                }
-            });
+                });
+            }
             
             // Close sidebar on outside click (mobile only)
             document.addEventListener('click', function(e) {
@@ -352,13 +347,15 @@
                     const isSidebar = sidebar && sidebar.contains(e.target);
                     const isMenuBtn = menuBtn && menuBtn.contains(e.target);
                     const isSidebarToggle = sidebarToggle && sidebarToggle.contains(e.target);
+                    const isOverlay = overlay && overlay.contains(e.target);
+                    const isNavItem = e.target.closest('.nav-item');
                     
-                    if (!isSidebar && !isMenuBtn && !isSidebarToggle && sidebar && sidebar.classList.contains('open')) {
+                    // Don't close if clicking nav items
+                    if (isNavItem) return;
+                    
+                    if (!isSidebar && !isMenuBtn && !isSidebarToggle && !isOverlay && sidebar && sidebar.classList.contains('open')) {
                         sidebar.classList.remove('open');
-                        const overlay = document.querySelector('.sidebar-overlay');
-                        if (overlay) {
-                            overlay.classList.remove('active');
-                        }
+                        if (overlay) overlay.classList.remove('active');
                         document.body.style.overflow = '';
                         console.log('Sidebar closed by outside click');
                     }
@@ -370,12 +367,9 @@
                 if (e.key === 'Escape') {
                     if (sidebar && sidebar.classList.contains('open')) {
                         sidebar.classList.remove('open');
-                        const overlay = document.querySelector('.sidebar-overlay');
-                        if (overlay) {
-                            overlay.classList.remove('active');
-                        }
+                        if (overlay) overlay.classList.remove('active');
                         document.body.style.overflow = '';
-                        console.log('Sidebar closed by escape key');
+                        console.log('Sidebar closed by Escape');
                     }
                 }
             });
@@ -391,13 +385,11 @@
                 }
             });
             
-            // Fix: Remove 'collapsed' class if exists (using 'open' instead)
-            if (sidebar) {
-                sidebar.classList.remove('collapsed');
-                // On desktop (width > 992), keep sidebar open
-                if (window.innerWidth > 992) {
-                    sidebar.classList.add('open');
-                }
+            // Desktop: keep sidebar open
+            if (window.innerWidth > 992 && sidebar) {
+                sidebar.classList.add('open');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
             }
             
             // Handle window resize
@@ -406,12 +398,12 @@
                 clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(function() {
                     if (window.innerWidth > 992 && sidebar) {
-                        // On desktop, keep sidebar open
                         sidebar.classList.add('open');
-                        const overlay = document.querySelector('.sidebar-overlay');
-                        if (overlay) {
-                            overlay.classList.remove('active');
-                        }
+                        if (overlay) overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    } else if (window.innerWidth <= 992 && sidebar) {
+                        sidebar.classList.remove('open');
+                        if (overlay) overlay.classList.remove('active');
                         document.body.style.overflow = '';
                     }
                 }, 250);
