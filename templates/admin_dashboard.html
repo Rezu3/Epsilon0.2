@@ -22,35 +22,42 @@
         </div>
         
         <nav class="sidebar-nav">
-            <a href="{{ url_for('admin_dashboard') }}" class="nav-item active">
+            <a href="{{ url_for('admin_dashboard') }}" class="nav-item active" data-page="dashboard">
                 <i class="fas fa-th-large"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ url_for('admin_students') }}" class="nav-item">
+            <a href="{{ url_for('admin_students') }}" class="nav-item" data-page="students">
                 <i class="fas fa-user-graduate"></i>
                 <span>All Students</span>
             </a>
-            <a href="{{ url_for('admin_teachers') }}" class="nav-item">
+            <a href="{{ url_for('admin_teachers') }}" class="nav-item" data-page="teachers">
                 <i class="fas fa-chalkboard-teacher"></i>
                 <span>All Teachers</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="#" class="nav-item" data-page="fees" onclick="viewFeesDetails(event)">
                 <i class="fas fa-money-bill-wave"></i>
                 <span>Fees Management</span>
             </a>
-            <a href="{{ url_for('exam') }}" class="nav-item">
+            <a href="{{ url_for('exam') }}" class="nav-item" data-page="exam">
                 <i class="fas fa-pencil-alt"></i>
                 <span>Exams</span>
             </a>
-            <a href="{{ url_for('results') }}" class="nav-item">
+            <a href="{{ url_for('results') }}" class="nav-item" data-page="results">
                 <i class="fas fa-file-alt"></i>
                 <span>Results</span>
             </a>
-            <a href="{{ url_for('rank') }}" class="nav-item">
+            <a href="{{ url_for('rank') }}" class="nav-item" data-page="rank">
                 <i class="fas fa-trophy"></i>
                 <span>Rank</span>
             </a>
-            <a href="{{ url_for('logout') }}" class="nav-item logout">
+            
+            <!-- Database Download Option -->
+            <a href="#" class="nav-item db-download" onclick="downloadDatabase(event)">
+                <i class="fas fa-database"></i>
+                <span>Download Database</span>
+            </a>
+            
+            <a href="{{ url_for('logout') }}" class="nav-item logout" data-page="logout">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
             </a>
@@ -207,6 +214,130 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Database Download Function
+        function downloadDatabase(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (confirm('Are you sure you want to download the database backup?')) {
+                fetch('/download_database')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'tution.db';
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(url);
+                        
+                        // Show success message
+                        const flashDiv = document.createElement('div');
+                        flashDiv.className = 'flash-message flash-success';
+                        flashDiv.innerHTML = `
+                            <i class="fas fa-check-circle"></i>
+                            Database downloaded successfully! <br>
+                            File: tution.db
+                            <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                        `;
+                        const mainContent = document.querySelector('.main-content');
+                        const quickActions = document.querySelector('.quick-actions');
+                        if (mainContent && quickActions) {
+                            mainContent.insertBefore(flashDiv, quickActions);
+                        }
+                        
+                        // Auto remove after 5 seconds
+                        setTimeout(() => {
+                            if (flashDiv.parentElement) {
+                                flashDiv.remove();
+                            }
+                        }, 5000);
+                    })
+                    .catch(error => {
+                        console.error('Error downloading database:', error);
+                        alert('❌ Error downloading database. Please try again.');
+                    });
+            }
+        }
+
+        // View Fees Details function
+        function viewFeesDetails(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            alert('Fees Management feature coming soon!');
+        }
+
+        // Ensure sidebar stays visible on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Remove any inline styles that might hide sidebar
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                sidebar.style.display = '';
+                sidebar.style.visibility = '';
+                sidebar.style.opacity = '';
+            }
+            
+            // Ensure main content has correct margin
+            const mainContent = document.getElementById('mainContent');
+            if (mainContent) {
+                mainContent.style.marginLeft = '';
+            }
+
+            // Update active nav item based on current page
+            const currentPath = window.location.pathname;
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                const href = item.getAttribute('href');
+                if (href && href !== '#' && currentPath.includes(href)) {
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Handle sidebar toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.getElementById('menuBtn');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (menuBtn && sidebar && mainContent) {
+                menuBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('expanded');
+                });
+            }
+
+            // Sidebar toggle button (if exists)
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            if (sidebarToggle && sidebar && mainContent) {
+                sidebarToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('expanded');
+                });
+            }
+        });
+
+        // Prevent any click on nav items from hiding sidebar
+        document.addEventListener('click', function(e) {
+            const navItem = e.target.closest('.nav-item');
+            if (navItem && !navItem.classList.contains('logout')) {
+                // Don't hide sidebar on nav item clicks
+                e.stopPropagation();
+            }
+        });
+    </script>
 
     <script src="{{ url_for('static', filename='js/admin_dashboard.js') }}"></script>
 </body>
