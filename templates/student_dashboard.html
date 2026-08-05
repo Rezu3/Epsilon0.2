@@ -9,9 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- ============================================ -->
-    <!-- SIDEBAR - সম্পূর্ণ সাইডবার (সব আইটেম সহ) -->
-    <!-- ============================================ -->
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo">
@@ -24,42 +22,34 @@
         </div>
         
         <nav class="sidebar-nav">
-            <!-- 1. Home (Active) -->
             <a href="{{ url_for('student_dashboard') }}" class="nav-item active">
                 <i class="fas fa-home"></i>
                 <span>Home</span>
             </a>
-            <!-- 2. Class Notes -->
-            <a href="javascript:void(0)" class="nav-item" onclick="showClassNotes()">
+            <a href="#" class="nav-item" onclick="showClassNotes()">
                 <i class="fas fa-book"></i>
                 <span>Class Notes</span>
             </a>
-            <!-- 3. Online Test -->
-            <a href="javascript:void(0)" class="nav-item" onclick="showMyExams()">
+            <a href="#" class="nav-item" onclick="showMyExams()">
                 <i class="fas fa-pencil-alt"></i>
                 <span>Online Test</span>
             </a>
-            <!-- 4. My Results -->
-            <a href="javascript:void(0)" class="nav-item" onclick="showResults()">
+            <a href="#" class="nav-item" onclick="showResults()">
                 <i class="fas fa-file-alt"></i>
                 <span>My Results</span>
             </a>
-            <!-- 5. Rank -->
-            <a href="javascript:void(0)" class="nav-item" onclick="showRank()">
+            <a href="#" class="nav-item" onclick="showRank()">
                 <i class="fas fa-trophy"></i>
                 <span>Rank</span>
             </a>
-            <!-- 6. Quiz -->
-            <a href="javascript:void(0)" class="nav-item" onclick="showQuiz()">
+            <a href="#" class="nav-item" onclick="showQuiz()">
                 <i class="fas fa-question-circle"></i>
                 <span>Quiz</span>
             </a>
-            <!-- 7. WhatsApp Group -->
-            <a href="javascript:void(0)" class="nav-item" onclick="showWhatsApp()">
+            <a href="#" class="nav-item" onclick="showWhatsApp()">
                 <i class="fab fa-whatsapp"></i>
                 <span>WhatsApp Group</span>
             </a>
-            <!-- 8. Logout -->
             <a href="{{ url_for('logout') }}" class="nav-item logout">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
@@ -79,9 +69,7 @@
         </div>
     </div>
 
-    <!-- ============================================ -->
-    <!-- MAIN CONTENT -->
-    <!-- ============================================ -->
+    <!-- Main Content -->
     <div class="main-content" id="mainContent">
         <!-- Top Bar -->
         <header class="top-bar">
@@ -141,6 +129,37 @@
                 <div class="profile-detail">
                     <i class="fas fa-phone"></i>
                     <span>{{ student.phone if student else 'N/A' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- WhatsApp Group Section -->
+        <div class="whatsapp-section" id="whatsappSection">
+            <div class="whatsapp-card">
+                <div class="whatsapp-icon">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
+                <h3>Join Our WhatsApp Group</h3>
+                <p>Connect with your classmates and teachers</p>
+                
+                <div class="gender-form" id="genderForm">
+                    <div class="gender-options">
+                        <button class="gender-btn male" onclick="selectGender('male')">
+                            <i class="fas fa-male"></i>
+                            Male
+                        </button>
+                        <button class="gender-btn female" onclick="selectGender('female')">
+                            <i class="fas fa-female"></i>
+                            Female
+                        </button>
+                    </div>
+                    <div id="whatsappLinkContainer" style="display: none; margin-top: 20px;">
+                        <a href="#" id="whatsappLink" target="_blank" class="whatsapp-join-btn">
+                            <i class="fab fa-whatsapp"></i>
+                            Join WhatsApp Group
+                        </a>
+                        <p class="whatsapp-hint">Click the button above to join the group</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -247,7 +266,7 @@
                 <span class="total-count">{{ my_exams|length }} Tests</span>
             </div>
             
-            <!-- Debug Info -->
+            <!-- Debug Info (শুধু টেস্টের জন্য) -->
             {% if my_exams|length == 0 %}
                 <div style="background: #fef3e8; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 13px; border-left: 4px solid #ed8936;">
                     <p><strong>🔍 Debug Info:</strong></p>
@@ -334,201 +353,7 @@
                 {% endif %}
             </div>
         </div>
-
-        <!-- ============================================ -->
-        <!-- WHATSAPP GROUP SECTION - সব শেষে -->
-        <!-- ============================================ -->
-        <div class="whatsapp-section" id="whatsappSection" style="display: none;">
-            <div class="whatsapp-card">
-                <div class="whatsapp-icon">
-                    <i class="fab fa-whatsapp"></i>
-                </div>
-                <h3>Join Our WhatsApp Group</h3>
-                <p>Connect with your classmates and teachers</p>
-                
-                <div class="gender-form" id="genderForm">
-                    <div class="gender-options">
-                        <button class="gender-btn male" onclick="selectGender('male')">
-                            <i class="fas fa-male"></i>
-                            Male
-                        </button>
-                        <button class="gender-btn female" onclick="selectGender('female')">
-                            <i class="fas fa-female"></i>
-                            Female
-                        </button>
-                    </div>
-                    <div id="whatsappLinkContainer" style="display: none; margin-top: 20px;">
-                        <a href="#" id="whatsappLink" target="_blank" class="whatsapp-join-btn">
-                            <i class="fab fa-whatsapp"></i>
-                            Join WhatsApp Group
-                        </a>
-                        <p class="whatsapp-hint">Click the button above to join the group</p>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-
-    <!-- ============================================ -->
-    <!-- SCRIPTS -->
-    <!-- ============================================ -->
-    <script>
-        // ============================================
-        // SIDEBAR NAVIGATION FUNCTIONS
-        // ============================================
-        function showClassNotes() {
-            document.querySelectorAll('.class-notes-section, .my-exams-section, .results-section, .whatsapp-section, .rank-showcase').forEach(el => {
-                el.style.display = 'none';
-            });
-            document.getElementById('classNotesSection').style.display = 'block';
-        }
-
-        function showMyExams() {
-            document.querySelectorAll('.class-notes-section, .my-exams-section, .results-section, .whatsapp-section, .rank-showcase').forEach(el => {
-                el.style.display = 'none';
-            });
-            document.getElementById('myExamsSection').style.display = 'block';
-        }
-
-        function showResults() {
-            document.querySelectorAll('.class-notes-section, .my-exams-section, .results-section, .whatsapp-section, .rank-showcase').forEach(el => {
-                el.style.display = 'none';
-            });
-            document.getElementById('resultsSection').style.display = 'block';
-        }
-
-        function showRank() {
-            document.querySelectorAll('.class-notes-section, .my-exams-section, .results-section, .whatsapp-section, .rank-showcase').forEach(el => {
-                el.style.display = 'none';
-            });
-            document.getElementById('rankSection').style.display = 'block';
-        }
-
-        function showQuiz() {
-            alert('🧠 Quiz Management\n\nYou can:\n• Take quizzes\n• View quiz results\n• Track your progress');
-        }
-
-        function showWhatsApp() {
-            document.querySelectorAll('.class-notes-section, .my-exams-section, .results-section, .whatsapp-section, .rank-showcase').forEach(el => {
-                el.style.display = 'none';
-            });
-            document.getElementById('whatsappSection').style.display = 'block';
-        }
-
-        // ============================================
-        // WHATSAPP GROUP FUNCTIONS
-        // ============================================
-        function selectGender(gender) {
-            const linkContainer = document.getElementById('whatsappLinkContainer');
-            const whatsappLink = document.getElementById('whatsappLink');
-            
-            // Show loading
-            const genderBtns = document.querySelectorAll('.gender-btn');
-            genderBtns.forEach(btn => btn.disabled = true);
-            
-            // Simulate loading
-            setTimeout(() => {
-                let groupLink = '';
-                if (gender === 'male') {
-                    groupLink = 'https://chat.whatsapp.com/your-male-group-link';
-                } else {
-                    groupLink = 'https://chat.whatsapp.com/your-female-group-link';
-                }
-                
-                whatsappLink.href = groupLink;
-                linkContainer.style.display = 'block';
-                genderBtns.forEach(btn => btn.disabled = false);
-                
-                // Hide gender options after selection
-                document.querySelector('.gender-options').style.display = 'none';
-            }, 500);
-        }
-
-        // ============================================
-        // ONLINE EXAM FUNCTIONS
-        // ============================================
-        function startOnlineExam(examId) {
-            window.location.href = `/online_test/${examId}`;
-        }
-
-        // ============================================
-        // SIDEBAR TOGGLE FOR MOBILE
-        // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuBtn = document.getElementById('menuBtn');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-
-            function toggleSidebar() {
-                if (sidebar) {
-                    sidebar.classList.toggle('open');
-                }
-            }
-
-            if (menuBtn) {
-                menuBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleSidebar();
-                });
-            }
-
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleSidebar();
-                });
-            }
-
-            document.addEventListener('click', function(e) {
-                if (window.innerWidth <= 992) {
-                    const isSidebar = sidebar && sidebar.contains(e.target);
-                    const isMenuBtn = menuBtn && menuBtn.contains(e.target);
-                    
-                    if (!isSidebar && !isMenuBtn && sidebar && sidebar.classList.contains('open')) {
-                        sidebar.classList.remove('open');
-                    }
-                }
-            });
-
-            // Rank progress bar animation
-            const progressFill = document.getElementById('rankProgressFill');
-            if (progressFill) {
-                const progress = progressFill.dataset.progress || 0;
-                setTimeout(() => {
-                    progressFill.style.width = progress + '%';
-                }, 300);
-            }
-        });
-
-        // ============================================
-        // UPDATE DATE TIME
-        // ============================================
-        function updateDateTime() {
-            const now = new Date();
-            const options = { 
-                weekday: 'short', 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            };
-            const dateTimeStr = now.toLocaleDateString('en-US', options);
-            const element = document.getElementById('currentDateTime');
-            if (element) {
-                element.textContent = dateTimeStr;
-            }
-        }
-
-        // Update date/time every second
-        updateDateTime();
-        setInterval(updateDateTime, 1000);
-
-        console.log('Student Dashboard loaded successfully!');
-    </script>
 
     <script src="{{ url_for('static', filename='js/student_dashboard.js') }}"></script>
 </body>
