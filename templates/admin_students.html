@@ -10,6 +10,7 @@
 </head>
 <body>
     <!-- Sidebar -->
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo">
@@ -22,11 +23,11 @@
         </div>
         
         <nav class="sidebar-nav">
-            <a href="{{ url_for('admin_dashboard') }}" class="nav-item">
+            <a href="{{ url_for('admin_dashboard') }}" class="nav-item active">
                 <i class="fas fa-th-large"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ url_for('admin_students') }}" class="nav-item active">
+            <a href="{{ url_for('admin_students') }}" class="nav-item">
                 <i class="fas fa-user-graduate"></i>
                 <span>All Students</span>
             </a>
@@ -50,6 +51,13 @@
                 <i class="fas fa-trophy"></i>
                 <span>Rank</span>
             </a>
+            
+            <!-- Database Download Option -->
+            <a href="#" class="nav-item db-download" onclick="downloadDatabase(event)">
+                <i class="fas fa-database"></i>
+                <span>Download Database</span>
+            </a>
+            
             <a href="{{ url_for('logout') }}" class="nav-item logout">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
