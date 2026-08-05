@@ -72,6 +72,7 @@
     </div>
     {% elif user_type == 'teacher' %}
     <!-- Teacher Sidebar -->
+         <!-- Teacher Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo">
@@ -82,7 +83,7 @@
                 <i class="fas fa-bars"></i>
             </button>
         </div>
-        
+
         <nav class="sidebar-nav">
             <a href="{{ url_for('teacher_home') }}" class="nav-item">
                 <i class="fas fa-home"></i>
@@ -92,17 +93,21 @@
                 <i class="fas fa-user-graduate"></i>
                 <span>My Students</span>
             </a>
-            <a href="javascript:void(0)" class="nav-item" onclick="showSchedule()">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Schedule</span>
+            <a href="javascript:void(0)" class="nav-item" onclick="showStudyMaterial()">
+                <i class="fas fa-book"></i>
+                <span>Study Material</span>
             </a>
             <a href="{{ url_for('exam') }}" class="nav-item">
                 <i class="fas fa-pencil-alt"></i>
                 <span>Exams</span>
             </a>
-            <a href="{{ url_for('results') }}" class="nav-item active">
+            <a href="{{ url_for('results') }}" class="nav-item">
                 <i class="fas fa-file-alt"></i>
                 <span>Results</span>
+            </a>
+            <a href="{{ url_for('rank') }}" class="nav-item active">
+                <i class="fas fa-trophy"></i>
+                <span>Rank</span>
             </a>
             <a href="javascript:void(0)" class="nav-item" onclick="showQuiz()">
                 <i class="fas fa-question-circle"></i>
@@ -113,7 +118,7 @@
                 <span>Logout</span>
             </a>
         </nav>
-        
+
         <div class="sidebar-footer">
             <div class="teacher-info">
                 <div class="teacher-avatar">
@@ -126,6 +131,7 @@
             </div>
         </div>
     </div>
+
     {% else %}
     <!-- Student Sidebar -->
     <div class="sidebar" id="sidebar">
@@ -271,15 +277,16 @@
     <script src="{{ url_for('static', filename='js/results.js') }}"></script>
     <script>
         // Teacher sidebar functions
+        <script>
         function showMyStudents() {
-            alert('👨‍🎓 My Students\n\nYou can view:\n• All students list\n• Student details\n• Performance data\n• Attendance records');
+            window.location.href = "{{ url_for('teacher_home') }}#students";
         }
-        function showSchedule() {
-            alert('📅 Class Schedule\n\nYou can view:\n• Today\'s classes\n• Weekly schedule\n• Class timings\n• Subject details');
+        function showStudyMaterial() {
+            window.location.href = "{{ url_for('teacher_home') }}#study-material";
         }
         function showQuiz() {
-            alert('🧠 Quiz Management\n\nYou can:\n• Create new quizzes\n• Manage quiz questions\n• Set quiz timings\n• View quiz results');
+            window.location.href = "{{ url_for('teacher_home') }}#quiz";
         }
     </script>
 </body>
-</html>
+</html> 
