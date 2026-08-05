@@ -155,7 +155,18 @@ document.addEventListener('keydown', function(e) {
         if (sidebar && sidebar.classList.contains('open')) sidebar.classList.remove('open');
     }
 });
+// Teacher Sidebar Navigation Functions
+function showMyStudents() {
+    window.location.href = "/teacher_home#students";
+}
 
+function showStudyMaterial() {
+    window.location.href = "/teacher_home#study-material";
+}
+
+function showQuiz() {
+    window.location.href = "/teacher_home#quiz";
+}
 // Close modal on outside click
 document.addEventListener('click', function(e) {
     const typeModal = document.getElementById('examTypeModal');
