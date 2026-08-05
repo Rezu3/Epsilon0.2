@@ -1,66 +1,150 @@
 // static/js/admin_students.js
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ Admin Students JS loaded');
+    
     // Initialize date/time
     updateDateTime();
     setInterval(updateDateTime, 1000);
 
-    // Sidebar toggle for mobile
+    // ============================================
+    // SIDEBAR TOGGLE - FIXED FOR MOBILE
+    // ============================================
     const menuBtn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
     const sidebarToggle = document.getElementById('sidebarToggle');
 
-    function toggleSidebar() {
-        sidebar.classList.toggle('open');
+    function toggleSidebar(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        if (sidebar) {
+            sidebar.classList.toggle('open');
+            console.log('Sidebar toggled:', sidebar.classList.contains('open') ? 'OPEN' : 'CLOSED');
+            
+            // Toggle overlay
+            let overlay = document.querySelector('.sidebar-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'sidebar-overlay';
+                document.body.appendChild(overlay);
+            }
+            
+            if (sidebar.classList.contains('open')) {
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } else {
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
     }
 
     if (menuBtn) {
         menuBtn.addEventListener('click', toggleSidebar);
+        menuBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+        console.log('✅ Menu button event added');
     }
 
     if (sidebarToggle) {
         sidebarToggle.addEventListener('click', toggleSidebar);
     }
 
-    // Close sidebar when clicking outside on mobile
+    // Close sidebar on overlay click
     document.addEventListener('click', function(e) {
-        if (window.innerWidth <= 992) {
-            const isSidebar = sidebar.contains(e.target);
-            const isMenuBtn = menuBtn && menuBtn.contains(e.target);
-            if (!isSidebar && !isMenuBtn && sidebar.classList.contains('open')) {
+        if (e.target.classList.contains('sidebar-overlay')) {
+            if (sidebar && sidebar.classList.contains('open')) {
                 sidebar.classList.remove('open');
+                e.target.classList.remove('active');
+                document.body.style.overflow = '';
             }
         }
     });
 
-    // Student search functionality
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 992) {
+            const isSidebar = sidebar && sidebar.contains(e.target);
+            const isMenuBtn = menuBtn && menuBtn.contains(e.target);
+            const isSidebarToggle = sidebarToggle && sidebarToggle.contains(e.target);
+            const isNavItem = e.target.closest('.nav-item');
+            
+            if (isNavItem) {
+                return;
+            }
+            
+            if (!isSidebar && !isMenuBtn && !isSidebarToggle && sidebar && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+                const overlay = document.querySelector('.sidebar-overlay');
+                if (overlay) {
+                    overlay.classList.remove('active');
+                }
+                document.body.style.overflow = '';
+            }
+        }
+    });
+
+    // ============================================
+    // STUDENT SEARCH FUNCTIONALITY
+    // ============================================
     const searchInput = document.getElementById('searchStudent');
     if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase().trim();
+        searchInput.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
             const rows = document.querySelectorAll('.students-table tbody tr');
             
             rows.forEach(row => {
                 const text = row.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+                row.style.display = text.includes(filter) ? '' : 'none';
             });
         });
     }
 
-    // Notification bell click
+    // ============================================
+    // NOTIFICATION BELL
+    // ============================================
     const notificationBell = document.querySelector('.notification-bell');
     if (notificationBell) {
         notificationBell.addEventListener('click', function() {
             alert('📬 You have 3 new notifications');
         });
     }
+
+    // ============================================
+    // DESKTOP: KEEP SIDEBAR OPEN
+    // ============================================
+    if (window.innerWidth > 992 && sidebar) {
+        sidebar.classList.add('open');
+    }
+
+    // ============================================
+    // HANDLE WINDOW RESIZE
+    // ============================================
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (window.innerWidth > 992 && sidebar) {
+                sidebar.classList.add('open');
+                const overlay = document.querySelector('.sidebar-overlay');
+                if (overlay) {
+                    overlay.classList.remove('active');
+                }
+                document.body.style.overflow = '';
+            }
+        }, 250);
+    });
+
+    console.log('✅ All initialized successfully');
 });
 
-// Update date and time
+// ============================================
+// UPDATE DATE AND TIME
+// ============================================
 function updateDateTime() {
     const now = new Date();
     const options = { 
@@ -79,7 +163,9 @@ function updateDateTime() {
     }
 }
 
-// Toggle password visibility - প্রতিটি Student এর জন্য আলাদা
+// ============================================
+// TOGGLE PASSWORD VISIBILITY
+// ============================================
 function togglePassword(studentId) {
     const dotsSpan = document.getElementById('password-dots-' + studentId);
     const textSpan = document.getElementById('password-text-' + studentId);
@@ -91,26 +177,27 @@ function togglePassword(studentId) {
     }
     
     if (dotsSpan.style.display === 'none') {
-        // Currently showing password, hide it
         dotsSpan.style.display = 'inline';
         textSpan.style.display = 'none';
         icon.className = 'fas fa-eye';
     } else {
-        // Currently hiding password, show it
         dotsSpan.style.display = 'none';
         textSpan.style.display = 'inline';
         icon.className = 'fas fa-eye-slash';
     }
 }
 
-// View student
+// ============================================
+// VIEW STUDENT
+// ============================================
 function viewStudent(id) {
     alert('👤 Viewing student details for ID: ' + id);
 }
 
-// Edit student - Open Modal with data
+// ============================================
+// EDIT STUDENT - Open Modal with data
+// ============================================
 function editStudent(id) {
-    // Fetch student data
     fetch('/get_student_data/' + id)
         .then(response => response.json())
         .then(data => {
@@ -119,7 +206,6 @@ function editStudent(id) {
                 return;
             }
             
-            // Fill the form
             document.getElementById('edit_student_id').value = data.id;
             document.getElementById('edit_name').value = data.name;
             document.getElementById('edit_class').value = data.class;
@@ -127,7 +213,6 @@ function editStudent(id) {
             document.getElementById('edit_phone').value = data.phone;
             document.getElementById('edit_password').value = '';
             
-            // Show modal
             const modal = document.getElementById('editStudentModal');
             modal.classList.add('show');
             modal.style.display = 'flex';
@@ -139,7 +224,9 @@ function editStudent(id) {
         });
 }
 
-// Close edit modal
+// ============================================
+// CLOSE EDIT MODAL
+// ============================================
 function closeEditModal() {
     const modal = document.getElementById('editStudentModal');
     modal.classList.remove('show');
@@ -147,23 +234,34 @@ function closeEditModal() {
     document.body.style.overflow = '';
 }
 
-// Confirm delete
+// ============================================
+// CONFIRM DELETE
+// ============================================
 function confirmDelete() {
     return confirm('⚠️ Are you sure you want to delete this student? This action cannot be undone!');
 }
 
-// Close modal on escape key
+// ============================================
+// CLOSE MODAL ON ESCAPE KEY
+// ============================================
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeEditModal();
         const sidebar = document.getElementById('sidebar');
         if (sidebar && sidebar.classList.contains('open')) {
             sidebar.classList.remove('open');
+            const overlay = document.querySelector('.sidebar-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+            document.body.style.overflow = '';
         }
     }
 });
 
-// Close modal on outside click
+// ============================================
+// CLOSE MODAL ON OUTSIDE CLICK
+// ============================================
 document.addEventListener('click', function(e) {
     const modal = document.getElementById('editStudentModal');
     if (modal && modal.classList.contains('show')) {
@@ -174,9 +272,13 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Make functions globally available
+// ============================================
+// MAKE FUNCTIONS GLOBALLY AVAILABLE
+// ============================================
 window.viewStudent = viewStudent;
 window.editStudent = editStudent;
 window.togglePassword = togglePassword;
 window.confirmDelete = confirmDelete;
 window.closeEditModal = closeEditModal;
+
+console.log('✅ All functions loaded successfully');
