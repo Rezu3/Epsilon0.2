@@ -1,64 +1,95 @@
 // static/js/admin_dashboard.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize date/time
+    console.log('✅ Admin Dashboard JS loaded');
+    
+    // ============================================
+    // UPDATE DATE & TIME
+    // ============================================
     updateDateTime();
     setInterval(updateDateTime, 1000);
 
-    // Initialize sidebar - ensure it's always visible
-    initializeSidebar();
-
-    // Sidebar toggle for mobile
+    // ============================================
+    // SIDEBAR TOGGLE - FIXED FOR MOBILE
+    // ============================================
     const menuBtn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
     const sidebarToggle = document.getElementById('sidebarToggle');
 
-    function toggleSidebar() {
+    // Function to toggle sidebar
+    function toggleSidebar(e) {
+        // Prevent default behavior
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
         if (sidebar) {
+            // Toggle 'open' class
             sidebar.classList.toggle('open');
-            // Save state to localStorage
-            const isOpen = sidebar.classList.contains('open');
-            localStorage.setItem('sidebarOpen', isOpen);
+            console.log('Sidebar toggled:', sidebar.classList.contains('open') ? 'OPEN' : 'CLOSED');
+            
+            // Create or toggle overlay for mobile
+            let overlay = document.querySelector('.sidebar-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'sidebar-overlay';
+                document.body.appendChild(overlay);
+            }
+            
+            if (sidebar.classList.contains('open')) {
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent scroll
+            } else {
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
         }
     }
 
+    // Menu button click (3 lines button)
     if (menuBtn) {
-        menuBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleSidebar();
-        });
+        // Click event
+        menuBtn.addEventListener('click', toggleSidebar);
+        
+        // Touch event for mobile (prevent double tap)
+        menuBtn.addEventListener('touchstart', function(e) {
+            // Just prevent double tap zoom
+        }, { passive: true });
+        
+        console.log('✅ Menu button event added');
+    } else {
+        console.warn('⚠️ Menu button not found!');
     }
 
+    // Sidebar toggle button (inside sidebar)
     if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleSidebar();
-        });
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        console.log('✅ Sidebar toggle event added');
     }
 
-    // Prevent sidebar from closing when clicking nav items
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            // Don't close sidebar when clicking nav items
-            e.stopPropagation();
-            
-            // If it's a regular link (not a function call)
-            const href = this.getAttribute('href');
-            if (href && href !== '#') {
-                // Allow navigation
-                return true;
+    // ============================================
+    // CLOSE SIDEBAR ON OVERLAY CLICK
+    // ============================================
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('sidebar-overlay')) {
+            if (sidebar && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+                e.target.classList.remove('active');
+                document.body.style.overflow = '';
+                console.log('Sidebar closed by overlay');
             }
-        });
+        }
     });
 
-    // Close sidebar when clicking outside on mobile (only if not clicking nav items)
+    // ============================================
+    // CLOSE SIDEBAR ON OUTSIDE CLICK (MOBILE ONLY)
+    // ============================================
     document.addEventListener('click', function(e) {
         if (window.innerWidth <= 992) {
             const isSidebar = sidebar && sidebar.contains(e.target);
             const isMenuBtn = menuBtn && menuBtn.contains(e.target);
+            const isSidebarToggle = sidebarToggle && sidebarToggle.contains(e.target);
             const isNavItem = e.target.closest('.nav-item');
             
             // Don't close if clicking nav items
@@ -66,14 +97,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            if (!isSidebar && !isMenuBtn && sidebar && sidebar.classList.contains('open')) {
+            if (!isSidebar && !isMenuBtn && !isSidebarToggle && sidebar && sidebar.classList.contains('open')) {
                 sidebar.classList.remove('open');
-                localStorage.setItem('sidebarOpen', 'false');
+                const overlay = document.querySelector('.sidebar-overlay');
+                if (overlay) {
+                    overlay.classList.remove('active');
+                }
+                document.body.style.overflow = '';
+                console.log('Sidebar closed by outside click');
             }
         }
     });
 
-    // Notification bell click
+    // ============================================
+    // CLOSE SIDEBAR ON ESCAPE KEY
+    // ============================================
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (sidebar && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+                const overlay = document.querySelector('.sidebar-overlay');
+                if (overlay) {
+                    overlay.classList.remove('active');
+                }
+                document.body.style.overflow = '';
+                console.log('Sidebar closed by Escape key');
+            }
+        }
+    });
+
+    // ============================================
+    // NOTIFICATION BELL
+    // ============================================
     const notificationBell = document.querySelector('.notification-bell');
     if (notificationBell) {
         notificationBell.addEventListener('click', function() {
@@ -81,7 +136,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Add animation to cards on load
+    // ============================================
+    // CARD ANIMATION
+    // ============================================
     const cards = document.querySelectorAll('.action-card');
     cards.forEach((card, index) => {
         card.style.opacity = '0';
@@ -93,56 +150,69 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100 + (index * 100));
     });
 
-    // Set active nav item based on current page
+    // ============================================
+    // SET ACTIVE NAV ITEM
+    // ============================================
     setActiveNavItem();
 
-    // Handle page show event (for back/forward navigation)
-    window.addEventListener('pageshow', function() {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar) {
-            // Ensure sidebar is visible
-            sidebar.style.display = '';
-            sidebar.style.visibility = '';
-            sidebar.style.opacity = '';
-            
-            // Restore sidebar state from localStorage
-            const isOpen = localStorage.getItem('sidebarOpen') === 'true';
-            if (isOpen) {
+    // ============================================
+    // DESKTOP: KEEP SIDEBAR OPEN
+    // ============================================
+    if (window.innerWidth > 992 && sidebar) {
+        sidebar.classList.add('open');
+    }
+
+    // ============================================
+    // HANDLE WINDOW RESIZE
+    // ============================================
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (window.innerWidth > 992 && sidebar) {
                 sidebar.classList.add('open');
-            } else {
+                const overlay = document.querySelector('.sidebar-overlay');
+                if (overlay) {
+                    overlay.classList.remove('active');
+                }
+                document.body.style.overflow = '';
+            } else if (window.innerWidth <= 992 && sidebar) {
+                // On mobile, keep it closed by default
                 sidebar.classList.remove('open');
+                const overlay = document.querySelector('.sidebar-overlay');
+                if (overlay) {
+                    overlay.classList.remove('active');
+                }
+                document.body.style.overflow = '';
             }
-        }
+        }, 250);
     });
+
+    console.log('✅ All initialized successfully');
 });
 
-// Initialize Sidebar - ensure it's always visible
+// ============================================
+// INITIALIZE SIDEBAR
+// ============================================
 function initializeSidebar() {
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
-        // Ensure sidebar is visible
         sidebar.style.display = 'flex';
         sidebar.style.visibility = 'visible';
         sidebar.style.opacity = '1';
         
-        // Restore sidebar state from localStorage
-        const isOpen = localStorage.getItem('sidebarOpen');
-        if (isOpen === 'true') {
-            sidebar.classList.add('open');
-        } else if (isOpen === 'false') {
+        // On desktop, keep open; on mobile, keep closed
+        if (window.innerWidth <= 992) {
             sidebar.classList.remove('open');
         } else {
-            // Default: open on desktop, closed on mobile
-            if (window.innerWidth <= 992) {
-                sidebar.classList.remove('open');
-            } else {
-                sidebar.classList.add('open');
-            }
+            sidebar.classList.add('open');
         }
     }
 }
 
-// Set Active Nav Item based on current page
+// ============================================
+// SET ACTIVE NAV ITEM
+// ============================================
 function setActiveNavItem() {
     const currentPath = window.location.pathname;
     const navItems = document.querySelectorAll('.nav-item');
@@ -150,11 +220,9 @@ function setActiveNavItem() {
     navItems.forEach(item => {
         const href = item.getAttribute('href');
         if (href && href !== '#') {
-            // Remove trailing slashes for comparison
             const cleanHref = href.replace(/\/$/, '');
             const cleanPath = currentPath.replace(/\/$/, '');
             
-            // Check if current path matches or starts with href
             if (cleanPath === cleanHref || (cleanHref !== '/' && cleanPath.startsWith(cleanHref + '/'))) {
                 navItems.forEach(nav => nav.classList.remove('active'));
                 item.classList.add('active');
@@ -163,7 +231,9 @@ function setActiveNavItem() {
     });
 }
 
-// Update date and time
+// ============================================
+// UPDATE DATE AND TIME
+// ============================================
 function updateDateTime() {
     const now = new Date();
     const options = { 
@@ -182,7 +252,9 @@ function updateDateTime() {
     }
 }
 
-// Database Download Function
+// ============================================
+// DATABASE DOWNLOAD FUNCTION
+// ============================================
 function downloadDatabase(event) {
     if (event) {
         event.preventDefault();
@@ -190,7 +262,6 @@ function downloadDatabase(event) {
     }
     
     if (confirm('⚠️ Are you sure you want to download the database backup?\n\nThis will download the entire database file.')) {
-        // Show loading message
         showFlashMessage('info', '⏳ Downloading database... Please wait.');
         
         fetch('/download_database')
@@ -210,7 +281,6 @@ function downloadDatabase(event) {
                 a.remove();
                 window.URL.revokeObjectURL(url);
                 
-                // Show success message
                 showFlashMessage('success', '✅ Database downloaded successfully!<br><small>File: tution.db</small>');
             })
             .catch(error => {
@@ -220,9 +290,10 @@ function downloadDatabase(event) {
     }
 }
 
-// Show Flash Message
+// ============================================
+// SHOW FLASH MESSAGE
+// ============================================
 function showFlashMessage(type, message) {
-    // Remove existing flash messages
     const existingMessages = document.querySelectorAll('.flash-message');
     existingMessages.forEach(msg => msg.remove());
     
@@ -249,8 +320,6 @@ function showFlashMessage(type, message) {
         mainContent.insertBefore(flashDiv, mainContent.firstChild);
     }
     
-    // Auto remove after 5 seconds for success, 8 seconds for others
-    const timeout = type === 'success' ? 5000 : 8000;
     setTimeout(() => {
         if (flashDiv.parentElement) {
             flashDiv.style.transition = 'opacity 0.5s ease';
@@ -261,91 +330,25 @@ function showFlashMessage(type, message) {
                 }
             }, 500);
         }
-    }, timeout);
+    }, 5000);
 }
 
-// Function for Fees Details
+// ============================================
+// VIEW FEES DETAILS
+// ============================================
 function viewFeesDetails(event) {
     if (event) {
         event.preventDefault();
         event.stopPropagation();
     }
     alert('💰 Fees Details Page\n\nYou can view:\n• Total fees collected\n• Pending dues\n• Payment history\n• Student-wise fees');
-    // window.location.href = '/fees_details';
 }
 
-// Function for Exam Management
-function manageExams(event) {
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
-    alert('📝 Exam Management Page\n\nYou can:\n• Schedule new exams\n• Manage exam subjects\n• Set exam dates\n• View exam lists');
-    // window.location.href = '/exams';
-}
-
-// Function for Results
-function viewResults(event) {
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
-    alert('📄 Results Page\n\nYou can:\n• Publish exam results\n• View student results\n• Generate report cards\n• Analyze performance');
-    // window.location.href = '/results';
-}
-
-// Function for Rankings
-function viewRank(event) {
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
-    alert('🏆 Rankings Page\n\nYou can view:\n• Class-wise rankings\n• Subject-wise rankings\n• Overall performance\n• Top performers');
-    // window.location.href = '/rankings';
-}
-
-// Close sidebar on escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar && sidebar.classList.contains('open')) {
-            sidebar.classList.remove('open');
-            localStorage.setItem('sidebarOpen', 'false');
-        }
-    }
-});
-
-// Handle window resize for sidebar
-let resizeTimer;
-window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar) {
-            // Ensure sidebar is visible on resize
-            sidebar.style.display = 'flex';
-            sidebar.style.visibility = 'visible';
-            sidebar.style.opacity = '1';
-            
-            // Adjust for mobile/desktop
-            if (window.innerWidth > 992) {
-                // On desktop, keep sidebar open by default
-                if (!sidebar.classList.contains('open')) {
-                    // Only if not manually closed by user
-                    const isOpen = localStorage.getItem('sidebarOpen');
-                    if (isOpen === null || isOpen === 'true') {
-                        sidebar.classList.add('open');
-                    }
-                }
-            }
-        }
-    }, 250);
-});
-
-// Make functions globally accessible
+// ============================================
+// MAKE FUNCTIONS GLOBALLY ACCESSIBLE
+// ============================================
 window.downloadDatabase = downloadDatabase;
 window.viewFeesDetails = viewFeesDetails;
-window.manageExams = manageExams;
-window.viewResults = viewResults;
-window.viewRank = viewRank;
 window.showFlashMessage = showFlashMessage;
+
+console.log('✅ All functions loaded successfully');
