@@ -10,38 +10,29 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateDateTime, 1000);
 
     // ============================================
-    // SIDEBAR TOGGLE - FIXED FOR MOBILE
+    // SIDEBAR TOGGLE - সম্পূর্ণ ঠিক করা
     // ============================================
     const menuBtn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
     const sidebarToggle = document.getElementById('sidebarToggle');
+    const overlay = document.getElementById('sidebarOverlay');
 
     // Function to toggle sidebar
     function toggleSidebar(e) {
-        // Prevent default behavior
         if (e) {
             e.preventDefault();
             e.stopPropagation();
         }
         
         if (sidebar) {
-            // Toggle 'open' class
             sidebar.classList.toggle('open');
-            console.log('Sidebar toggled:', sidebar.classList.contains('open') ? 'OPEN' : 'CLOSED');
-            
-            // Create or toggle overlay for mobile
-            let overlay = document.querySelector('.sidebar-overlay');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.className = 'sidebar-overlay';
-                document.body.appendChild(overlay);
-            }
+            console.log('Sidebar:', sidebar.classList.contains('open') ? 'OPEN' : 'CLOSED');
             
             if (sidebar.classList.contains('open')) {
-                overlay.classList.add('active');
-                document.body.style.overflow = 'hidden'; // Prevent scroll
+                if (overlay) overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
             } else {
-                overlay.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
                 document.body.style.overflow = '';
             }
         }
@@ -49,15 +40,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Menu button click (3 lines button)
     if (menuBtn) {
-        // Click event
         menuBtn.addEventListener('click', toggleSidebar);
-        
-        // Touch event for mobile (prevent double tap)
         menuBtn.addEventListener('touchstart', function(e) {
-            // Just prevent double tap zoom
+            // Prevent double tap zoom
         }, { passive: true });
-        
-        console.log('✅ Menu button event added');
+        console.log('✅ Menu button connected');
     } else {
         console.warn('⚠️ Menu button not found!');
     }
@@ -65,22 +52,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Sidebar toggle button (inside sidebar)
     if (sidebarToggle) {
         sidebarToggle.addEventListener('click', toggleSidebar);
-        console.log('✅ Sidebar toggle event added');
+        console.log('✅ Sidebar toggle connected');
     }
 
     // ============================================
     // CLOSE SIDEBAR ON OVERLAY CLICK
     // ============================================
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('sidebar-overlay')) {
+    if (overlay) {
+        overlay.addEventListener('click', function() {
             if (sidebar && sidebar.classList.contains('open')) {
                 sidebar.classList.remove('open');
-                e.target.classList.remove('active');
+                overlay.classList.remove('active');
                 document.body.style.overflow = '';
                 console.log('Sidebar closed by overlay');
             }
-        }
-    });
+        });
+    }
 
     // ============================================
     // CLOSE SIDEBAR ON OUTSIDE CLICK (MOBILE ONLY)
@@ -90,6 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const isSidebar = sidebar && sidebar.contains(e.target);
             const isMenuBtn = menuBtn && menuBtn.contains(e.target);
             const isSidebarToggle = sidebarToggle && sidebarToggle.contains(e.target);
+            const isOverlay = overlay && overlay.contains(e.target);
             const isNavItem = e.target.closest('.nav-item');
             
             // Don't close if clicking nav items
@@ -97,12 +85,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            if (!isSidebar && !isMenuBtn && !isSidebarToggle && sidebar && sidebar.classList.contains('open')) {
+            if (!isSidebar && !isMenuBtn && !isSidebarToggle && !isOverlay && sidebar && sidebar.classList.contains('open')) {
                 sidebar.classList.remove('open');
-                const overlay = document.querySelector('.sidebar-overlay');
-                if (overlay) {
-                    overlay.classList.remove('active');
-                }
+                if (overlay) overlay.classList.remove('active');
                 document.body.style.overflow = '';
                 console.log('Sidebar closed by outside click');
             }
@@ -116,12 +101,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Escape') {
             if (sidebar && sidebar.classList.contains('open')) {
                 sidebar.classList.remove('open');
-                const overlay = document.querySelector('.sidebar-overlay');
-                if (overlay) {
-                    overlay.classList.remove('active');
-                }
+                if (overlay) overlay.classList.remove('active');
                 document.body.style.overflow = '';
-                console.log('Sidebar closed by Escape key');
+                console.log('Sidebar closed by Escape');
             }
         }
     });
@@ -160,6 +142,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================
     if (window.innerWidth > 992 && sidebar) {
         sidebar.classList.add('open');
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
     }
 
     // ============================================
@@ -171,18 +155,11 @@ document.addEventListener('DOMContentLoaded', function() {
         resizeTimer = setTimeout(function() {
             if (window.innerWidth > 992 && sidebar) {
                 sidebar.classList.add('open');
-                const overlay = document.querySelector('.sidebar-overlay');
-                if (overlay) {
-                    overlay.classList.remove('active');
-                }
+                if (overlay) overlay.classList.remove('active');
                 document.body.style.overflow = '';
             } else if (window.innerWidth <= 992 && sidebar) {
-                // On mobile, keep it closed by default
                 sidebar.classList.remove('open');
-                const overlay = document.querySelector('.sidebar-overlay');
-                if (overlay) {
-                    overlay.classList.remove('active');
-                }
+                if (overlay) overlay.classList.remove('active');
                 document.body.style.overflow = '';
             }
         }, 250);
@@ -196,16 +173,19 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================
 function initializeSidebar() {
     const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
     if (sidebar) {
         sidebar.style.display = 'flex';
         sidebar.style.visibility = 'visible';
         sidebar.style.opacity = '1';
         
-        // On desktop, keep open; on mobile, keep closed
         if (window.innerWidth <= 992) {
             sidebar.classList.remove('open');
+            if (overlay) overlay.classList.remove('active');
         } else {
             sidebar.classList.add('open');
+            if (overlay) overlay.classList.remove('active');
         }
     }
 }
