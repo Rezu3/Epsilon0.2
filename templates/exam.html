@@ -381,11 +381,16 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/exam.js') }}"></script>
-    <script>
-        function showMyStudents(){alert('👨‍🎓 My Students\n\nView all students list');}
-        function showStudyMaterial(){alert('📚 Study Material\n\nUpload and manage study materials');}
-        function showQuiz(){alert('🧠 Quiz Management\n\nCreate and manage quizzes');}
+     <script>
+        function showMyStudents() {
+            window.location.href = "{{ url_for('teacher_home') }}#students";
+        }
+        function showStudyMaterial() {
+            window.location.href = "{{ url_for('teacher_home') }}#study-material";
+        }
+        function showQuiz() {
+            window.location.href = "{{ url_for('teacher_home') }}#quiz";
+        }
     </script>
 </body>
 </html>
-ata thik a6e ?
