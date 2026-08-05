@@ -65,9 +65,15 @@
                 <div class="exam-header-left">
                     <div class="logo">
                         <i class="fas fa-graduation-cap"></i>
-                        <span>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</span>
+                        <span>𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</span>
                     </div>
                     <span class="exam-title">Online Exam</span>
+
+                    <!-- Fullscreen Button -->
+                    <button id="fullscreenBtn" onclick="toggleFullScreen()" title="Toggle Fullscreen" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-left: 10px; display: inline-flex; align-items: center; gap: 5px; transition: all 0.3s ease;">
+                        <i class="fas fa-expand" id="fullscreenIcon"></i>
+                        <span style="font-size: 12px; font-weight: 500;">Fullscreen</span>
+                    </button>
                 </div>
                 <div class="exam-header-right" id="examHeaderRight">
                     <div class="exam-timer" id="examTimer">
@@ -98,16 +104,16 @@
                 <!-- Questions will be rendered by JavaScript -->
             </div>
 
+            <!-- Question Navigator -->
+            <div class="question-navigator">
+                <span class="nav-label"><i class="fas fa-list-ul"></i> Questions:</span>
+                <div class="question-nav-buttons" id="questionNavButtons">
+                    <!-- JavaScript দিয়ে তৈরি হবে -->
+                </div>
+                <span class="answered-count-badge" id="answeredCountBadge">0/10 Answered</span>
+            </div>
+
             <!-- Navigation -->
-             <!-- Progress Bar এর পর, Question Container এর আগে -->
-<!-- Question Navigator -->
-<div class="question-navigator">
-    <span class="nav-label"><i class="fas fa-list-ul"></i> Questions:</span>
-    <div class="question-nav-buttons" id="questionNavButtons">
-        <!-- JavaScript দিয়ে তৈরি হবে -->
-    </div>
-    <span class="answered-count-badge" id="answeredCountBadge">0/10 Answered</span>
-</div>
             <div class="navigation" id="navigation">
                 <button class="nav-btn prev-btn" id="prevBtn" onclick="prevQuestion()">
                     <i class="fas fa-arrow-left"></i> <span class="btn-text">Prev</span>
@@ -137,5 +143,41 @@
     <span id="examStatus" style="display: none;">{{ 'taken' if exam_taken else 'pending' }}</span>
 
     <script src="{{ url_for('static', filename='js/test.js') }}"></script>
+
+    <!-- Fullscreen Handler Script -->
+    <script>
+        function toggleFullScreen() {
+            var icon = document.getElementById('fullscreenIcon');
+            if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+                }
+                if(icon) {
+                    icon.classList.remove('fa-expand');
+                    icon.classList.add('fa-compress');
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+                if(icon) {
+                    icon.classList.remove('fa-compress');
+                    icon.classList.add('fa-expand');
+                }
+            }
+        }
+    </script>
 </body>
 </html>
