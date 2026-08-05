@@ -1,4 +1,15 @@
 // static/js/teacher_home.js
+document.addEventListener("DOMContentLoaded", function () {
+    const hash = window.location.hash;
+
+    if (hash === "#students") {
+        showMyStudents();
+    } else if (hash === "#study-material") {
+        showStudyMaterial();
+    } else if (hash === "#quiz") {
+        showQuiz();
+    }
+});
 // teacher_home.js - এই ফাংশন যোগ করুন
 function removeDuplicateClasses() {
     // Class Filter
