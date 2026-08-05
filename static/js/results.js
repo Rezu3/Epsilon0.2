@@ -82,7 +82,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+// Teacher Sidebar Navigation Functions
+function showMyStudents() {
+    window.location.href = "/teacher_home#students";
+}
 
+function showStudyMaterial() {
+    window.location.href = "/teacher_home#study-material";
+}
+
+function showQuiz() {
+    window.location.href = "/teacher_home#quiz";
+}
 // Update date and time
 function updateDateTime() {
     const now = new Date();
