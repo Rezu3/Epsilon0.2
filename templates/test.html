@@ -142,7 +142,22 @@
     <span id="examId" style="display: none;">{{ exam.id if exam else '' }}</span>
     <span id="examStatus" style="display: none;">{{ 'taken' if exam_taken else 'pending' }}</span>
 
-    <script src="{{ url_for('static', filename='js/test.js') }}"></script>
+    <!-- Class 7 থেকে 12 অনুযায়ী শর্তসাপেক্ষে JS ফাইল লোড -->
+    {% if exam and (exam.class == '7' or exam.class == 'Class 7' or exam.class == '7th' or exam.class == 7) %}
+        <script src="{{ url_for('static', filename='js/test7.js') }}"></script>
+    {% elif exam and (exam.class == '8' or exam.class == 'Class 8' or exam.class == '8th' or exam.class == 8) %}
+        <script src="{{ url_for('static', filename='js/test8.js') }}"></script>
+    {% elif exam and (exam.class == '9' or exam.class == 'Class 9' or exam.class == '9th' or exam.class == 9) %}
+        <script src="{{ url_for('static', filename='js/test9.js') }}"></script>
+    {% elif exam and (exam.class == '10' or exam.class == 'Class 10' or exam.class == '10th' or exam.class == 10) %}
+        <script src="{{ url_for('static', filename='js/test10.js') }}"></script>
+    {% elif exam and (exam.class == '11' or exam.class == 'Class 11' or exam.class == '11th' or exam.class == 11) %}
+        <script src="{{ url_for('static', filename='js/test11.js') }}"></script>
+    {% elif exam and (exam.class == '12' or exam.class == 'Class 12' or exam.class == '12th' or exam.class == 12) %}
+        <script src="{{ url_for('static', filename='js/test12.js') }}"></script>
+    {% else %}
+        <script src="{{ url_for('static', filename='js/test.js') }}"></script>
+    {% endif %}
 
     <!-- Fullscreen Handler Script -->
     <script>
@@ -153,7 +168,7 @@
                     document.documentElement.requestFullscreen();
                 } else if (document.documentElement.msRequestFullscreen) {
                     document.documentElement.msRequestFullscreen();
-                } else if (document.documentElement.mozRequestFullScreen) {
+                } else if (document.mozRequestFullScreen) {
                     document.documentElement.mozRequestFullScreen();
                 } else if (document.documentElement.webkitRequestFullscreen) {
                     document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
