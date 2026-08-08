@@ -92,6 +92,25 @@ function updateDateTime() {
 }
 
 // ============================================
+// নাম ঠিক করার ফাংশন
+// ============================================
+function fixStudentName(name) {
+    if (!name) return 'N/A';
+    
+    // যদি নামে ডুপ্লিকেট অক্ষর থাকে (যেমন: "R Rimi")
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+        const firstPart = parts[0];
+        const secondPart = parts.slice(1).join(' ');
+        // যদি প্রথম অংশ ১ অক্ষর হয় এবং দ্বিতীয় অংশের প্রথম অক্ষরের সাথে মিলে যায়
+        if (firstPart.length === 1 && secondPart.length > 0 && firstPart === secondPart[0]) {
+            return secondPart; // "Rimi" ফেরত দেবে
+        }
+    }
+    return name;
+}
+
+// ============================================
 // FILTER RANK
 // ============================================
 function filterRank() {
@@ -133,7 +152,25 @@ function filterRank() {
     })
     .then(response => response.text())
     .then(html => {
-        rankListContainer.innerHTML = html;
+        // নাম ঠিক করে HTML আপডেট করা
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        
+        // সব নামের সেল খুঁজে নাম ঠিক করা
+        tempDiv.querySelectorAll('.student-name-cell, td').forEach(cell => {
+            if (cell.textContent && cell.textContent.trim().length > 0) {
+                const originalName = cell.textContent.trim();
+                // শুধু নামের সেল চিহ্নিত করা (যেখানে avatar নেই)
+                if (!cell.querySelector('.avatar-small')) {
+                    const fixedName = fixStudentName(originalName);
+                    if (fixedName !== originalName) {
+                        cell.textContent = fixedName;
+                    }
+                }
+            }
+        });
+        
+        rankListContainer.innerHTML = tempDiv.innerHTML;
         if (downloadBtn) {
             downloadBtn.style.display = 'block';
             downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download';
@@ -153,7 +190,7 @@ function filterRank() {
 }
 
 // ============================================
-// MAIN DOWNLOAD FUNCTION - ২টি অপশন দেখাবে
+// MAIN DOWNLOAD FUNCTION - ২টি অপশন
 // ============================================
 function downloadPDF() {
     const container = document.getElementById('rankListContainer');
@@ -171,9 +208,6 @@ function downloadPDF() {
         return;
     }
 
-    // ============================================
-    // ২টি অপশন দেখানোর জন্য কনফার্ম বক্স
-    // ============================================
     const choice = confirm(
         '📄 Choose an option:\n\n' +
         '🟢 Click "OK" → Direct Download PDF\n' +
@@ -182,29 +216,36 @@ function downloadPDF() {
     );
 
     if (choice) {
-        // ============================================
-        // অপশন ১: Direct Download (OK)
-        // ============================================
         directDownloadPDF(examName, className, table);
     } else {
-        // ============================================
-        // অপশন ২: Print (Cancel)
-        // ============================================
         printPDF(examName, className, table);
     }
 }
 
 // ============================================
-// ১. DIRECT DOWNLOAD PDF - সরাসরি ডাউনলোড
+// ১. DIRECT DOWNLOAD PDF - আসল PDF ফাইল
 // ============================================
 function directDownloadPDF(examName, className, table) {
     const downloadBtn = document.getElementById('downloadBtn');
     const originalText = downloadBtn.innerHTML;
-    downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+    downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
     downloadBtn.disabled = true;
 
     const tableClone = table.cloneNode(true);
     tableClone.querySelectorAll('.action-btn, .download-btn, .delete-btn, .show-password-btn').forEach(el => el.remove());
+
+    // ============================================
+    // টেবিলের নাম ঠিক করা
+    // ============================================
+    tableClone.querySelectorAll('td').forEach(cell => {
+        const text = cell.textContent.trim();
+        if (text && text.length > 0) {
+            const fixedName = fixStudentName(text);
+            if (fixedName !== text) {
+                cell.textContent = fixedName;
+            }
+        }
+    });
 
     const styles = getPDFStyles();
     let tableHTML = tableClone.outerHTML;
@@ -234,33 +275,78 @@ function directDownloadPDF(examName, className, table) {
         </html>
     `;
 
+    // ============================================
+    // PDF তৈরি ও ডাউনলোড
+    // ============================================
     try {
-        // HTML ফাইল ডাউনলোড (মোবাইলে কাজ করে)
-        const blob = new Blob([content], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `rank_${examName.replace(/[^a-zA-Z0-9]/g, '_')}.html`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        // html2pdf লাইব্রেরি চেক করা
+        if (typeof html2pdf !== 'undefined') {
+            // html2pdf ব্যবহার করে PDF বানানো
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+            tempDiv.style.position = 'fixed';
+            tempDiv.style.left = '-9999px';
+            tempDiv.style.top = '0';
+            document.body.appendChild(tempDiv);
+            
+            const opt = {
+                margin: 10,
+                filename: `rank_${examName.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(tempDiv).save().then(() => {
+                document.body.removeChild(tempDiv);
+                downloadBtn.innerHTML = '✅ Downloaded!';
+                setTimeout(() => {
+                    downloadBtn.innerHTML = originalText;
+                    downloadBtn.disabled = false;
+                }, 2000);
+            }).catch(() => {
+                document.body.removeChild(tempDiv);
+                // html2pdf fail করলে print method ব্যবহার
+                fallbackPrint(content, downloadBtn, originalText);
+            });
+        } else {
+            // html2pdf না থাকলে Print method ব্যবহার
+            fallbackPrint(content, downloadBtn, originalText);
+        }
         
-        downloadBtn.innerHTML = '✅ Downloaded!';
+    } catch (e) {
+        console.log('PDF generation error:', e);
+        fallbackPrint(content, downloadBtn, originalText);
+    }
+}
+
+// ============================================
+// FALLBACK: PRINT METHOD
+// ============================================
+function fallbackPrint(content, downloadBtn, originalText) {
+    try {
+        const printWindow = window.open('', '_blank');
+        if (!printWindow || printWindow.closed) {
+            throw new Error('Popup blocked');
+        }
+        printWindow.document.write(content);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        
         setTimeout(() => {
             downloadBtn.innerHTML = originalText;
             downloadBtn.disabled = false;
-        }, 2000);
-        
+        }, 3000);
     } catch (e) {
-        alert('❌ Download failed. Please try Print option.');
+        alert('⚠️ Please allow popups. Or use Print option.');
         downloadBtn.innerHTML = originalText;
         downloadBtn.disabled = false;
     }
 }
 
 // ============================================
-// ২. PRINT PDF - প্রিন্ট ডায়ালগ
+// ২. PRINT PDF
 // ============================================
 function printPDF(examName, className, table) {
     const downloadBtn = document.getElementById('downloadBtn');
@@ -270,6 +356,17 @@ function printPDF(examName, className, table) {
 
     const tableClone = table.cloneNode(true);
     tableClone.querySelectorAll('.action-btn, .download-btn, .delete-btn, .show-password-btn').forEach(el => el.remove());
+
+    // নাম ঠিক করা
+    tableClone.querySelectorAll('td').forEach(cell => {
+        const text = cell.textContent.trim();
+        if (text && text.length > 0) {
+            const fixedName = fixStudentName(text);
+            if (fixedName !== text) {
+                cell.textContent = fixedName;
+            }
+        }
+    });
 
     const styles = getPDFStyles();
     let tableHTML = tableClone.outerHTML;
