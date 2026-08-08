@@ -148,8 +148,184 @@ function filterRank() {
         if (downloadBtn) downloadBtn.style.display = 'none';
     });
 }
- 
+// Download PDF - Print Method (Mobile Compatible Fix)
+function downloadPDF() {
+    const container = document.getElementById('rankListContainer');
+    const examSelect = document.getElementById('examSelect');
+    const classSelect = document.getElementById('classSelect');
+    
+    const examName = examSelect.options[examSelect.selectedIndex]?.text || 'All Exams';
+    const className = classSelect.value || 'All Classes';
+    
+    // Get the table
+    const table = container.querySelector('table');
+    if (!table) {
+        alert('No data to export! Please select exam and class first.');
+        return;
+    }
+
+    // Show loading
+    const downloadBtn = document.getElementById('downloadBtn');
+    const originalText = downloadBtn.innerHTML;
+    downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+    downloadBtn.disabled = true;
+
+    // Clone the table for PDF
+    const tableClone = table.cloneNode(true);
+    
+    // Remove action buttons from clone
+    tableClone.querySelectorAll('.action-btn, .download-btn, .delete-btn, .show-password-btn').forEach(el => el.remove());
+
+    // Create print window
+    const printWindow = window.open('', '_blank');
+    
+    if (!printWindow) {
+        alert('Please allow popups for this site to download PDF.');
+        downloadBtn.innerHTML = originalText;
+        downloadBtn.disabled = false;
+        return;
+    }
+
+    const styles = `
+        <style>
+            @page {
+                margin: 10mm;
+                size: A4;
+            }
+            * {
+                box-sizing: border-box;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                padding: 0;
+                margin: 0;
+                background: white;
+            }
+            .pdf-container {
+                padding: 10px;
+                width: 100%;
+            }
+            .header {
+                text-align: center;
+                border-bottom: 3px solid #2d3748;
+                padding-bottom: 15px;
+                margin-bottom: 20px;
+            }
+            .header h1 {
+                font-size: 24px;
+                color: #2d3748;
+                margin: 0 0 5px 0;
+            }
+            .header p {
+                color: #718096;
+                font-size: 13px;
+                margin: 3px 0;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 12px;
+            }
+            th {
+                background-color: #667eea !important;
+                padding: 10px 12px;
+                text-align: left;
+                font-weight: 700;
+                color: white !important;
+                border: 1px solid #5a4b8a;
+            }
+            td {
+                padding: 8px 10px;
+                border: 1px solid #d1d5db;
+                color: #374151;
+            }
+            tr:nth-child(odd) td { background-color: #f8fafc !important; }
+            tr:nth-child(even) td { background-color: #f1f5f9 !important; }
+            
+            .rank-badge {
+                display: inline-block;
+                padding: 4px 14px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 700;
+                background-color: #e2e8f0 !important;
+                color: #4a5568 !important;
+            }
+            
+            .grade-badge {
+                display: inline-block;
+                padding: 3px 12px;
+                border-radius: 12px;
+                font-size: 11px;
+                font-weight: 600;
+            }
+            .grade-badge.grade-a-plus, .grade-badge.grade-a { background-color: #48bb78 !important; color: white !important; }
+            .grade-badge.grade-a-minus { background-color: #68d391 !important; color: white !important; }
+            .grade-badge.grade-b { background-color: #f6ad55 !important; color: white !important; }
+            .grade-badge.grade-c, .grade-badge.grade-d { background-color: #fbd38d !important; color: #2d3748 !important; }
+            .grade-badge.grade-f { background-color: #fc8181 !important; color: white !important; }
+            .grade-badge.grade-default { background-color: #e2e8f0 !important; color: #4a5568 !important; }
+            
+            .footer {
+                text-align: center;
+                border-top: 1px solid #e2e8f0;
+                padding-top: 12px;
+                margin-top: 15px;
+                color: #a0aec0;
+                font-size: 11px;
+            }
+        </style>
+    `;
+
+    let tableHTML = tableClone.outerHTML;
+
+    const content = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Rank - ${examName}</title>
+            ${styles}
+        </head>
+        <body>
+            <div class="pdf-container">
+                <div class="header">
+                    <h1>𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h1>
+                    <p><strong>Exam:</strong> ${examName} | <strong>Class:</strong> ${className}</p>
+                    <p>Date: ${new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                </div>
+                ${tableHTML}
+                <div class="footer">
+                    <p>Generated by 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - Learning Management System</p>
+                </div>
+            </div>
+            <script>
+                window.onload = function() {
+                    setTimeout(function() {
+                        window.print();
+                    }, 800);
+                };
+            <\/script>
+        </body>
+        </html>
+    `;
+
+    printWindow.document.write(content);
+    printWindow.document.close();
+
+    setTimeout(function() {
+        downloadBtn.innerHTML = originalText;
+        downloadBtn.disabled = false;
+    }, 2000);
+}
+
 // Make functions globally available
 window.filterRank = filterRank;
 window.downloadPDF = downloadPDF;
+ 
+
  
