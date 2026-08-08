@@ -148,7 +148,7 @@ function filterRank() {
         if (downloadBtn) downloadBtn.style.display = 'none';
     });
 }
-// Download PDF - Print Method (Mobile Compatible Fix)
+// Download PDF - Print Method (All original styles intact)
 function downloadPDF() {
     const container = document.getElementById('rankListContainer');
     const examSelect = document.getElementById('examSelect');
@@ -189,7 +189,7 @@ function downloadPDF() {
     const styles = `
         <style>
             @page {
-                margin: 10mm;
+                margin: 1in;
                 size: A4;
             }
             * {
@@ -206,7 +206,7 @@ function downloadPDF() {
             }
             .pdf-container {
                 padding: 10px;
-                width: 100%;
+                max-width: 100%;
             }
             .header {
                 text-align: center;
@@ -215,22 +215,27 @@ function downloadPDF() {
                 margin-bottom: 20px;
             }
             .header h1 {
-                font-size: 24px;
+                font-size: 26px;
                 color: #2d3748;
                 margin: 0 0 5px 0;
+                background: linear-gradient(135deg, #4facfe, #00f2fe);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                display: inline-block;
             }
             .header p {
                 color: #718096;
-                font-size: 13px;
+                font-size: 14px;
                 margin: 3px 0;
             }
             table {
                 width: 100%;
                 border-collapse: collapse;
                 font-size: 12px;
+                font-family: Arial, Helvetica, sans-serif;
             }
             th {
-                background-color: #667eea !important;
+                background: linear-gradient(135deg, #667eea, #764ba2) !important;
                 padding: 10px 12px;
                 text-align: left;
                 font-weight: 700;
@@ -242,8 +247,12 @@ function downloadPDF() {
                 border: 1px solid #d1d5db;
                 color: #374151;
             }
-            tr:nth-child(odd) td { background-color: #f8fafc !important; }
-            tr:nth-child(even) td { background-color: #f1f5f9 !important; }
+            /* ============================================ */
+            /* সব র‍্যাঙ্কের জন্য Normal Zebra Color */
+            /* Rank 1,2,3 এর আলাদা কালার নেই */
+            /* ============================================ */
+            tr:nth-child(odd) td { background: #f8fafc !important; }
+            tr:nth-child(even) td { background: #f1f5f9 !important; }
             
             .rank-badge {
                 display: inline-block;
@@ -251,7 +260,7 @@ function downloadPDF() {
                 border-radius: 20px;
                 font-size: 13px;
                 font-weight: 700;
-                background-color: #e2e8f0 !important;
+                background: #e2e8f0 !important;
                 color: #4a5568 !important;
             }
             
@@ -262,13 +271,33 @@ function downloadPDF() {
                 font-size: 11px;
                 font-weight: 600;
             }
-            .grade-badge.grade-a-plus, .grade-badge.grade-a { background-color: #48bb78 !important; color: white !important; }
-            .grade-badge.grade-a-minus { background-color: #68d391 !important; color: white !important; }
-            .grade-badge.grade-b { background-color: #f6ad55 !important; color: white !important; }
-            .grade-badge.grade-c, .grade-badge.grade-d { background-color: #fbd38d !important; color: #2d3748 !important; }
-            .grade-badge.grade-f { background-color: #fc8181 !important; color: white !important; }
-            .grade-badge.grade-default { background-color: #e2e8f0 !important; color: #4a5568 !important; }
+            .grade-badge.grade-a-plus { background: #48bb78 !important; color: white !important; }
+            .grade-badge.grade-a { background: #48bb78 !important; color: white !important; }
+            .grade-badge.grade-a-minus { background: #68d391 !important; color: white !important; }
+            .grade-badge.grade-b { background: #f6ad55 !important; color: white !important; }
+            .grade-badge.grade-c { background: #fbd38d !important; color: #2d3748 !important; }
+            .grade-badge.grade-d { background: #fbd38d !important; color: #2d3748 !important; }
+            .grade-badge.grade-f { background: #fc8181 !important; color: white !important; }
+            .grade-badge.grade-default { background: #e2e8f0 !important; color: #4a5568 !important; }
             
+            .student-name-cell {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .avatar-small {
+                width: 28px;
+                height: 28px;
+                background: linear-gradient(135deg, #667eea, #764ba2) !important;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white !important;
+                font-weight: 700;
+                font-size: 12px;
+                flex-shrink: 0;
+            }
             .footer {
                 text-align: center;
                 border-top: 1px solid #e2e8f0;
@@ -277,9 +306,34 @@ function downloadPDF() {
                 color: #a0aec0;
                 font-size: 11px;
             }
+            .empty-row {
+                text-align: center;
+                padding: 30px 20px !important;
+            }
+            .empty-row p {
+                color: #718096;
+            }
+            .no-print {
+                display: none;
+            }
+            @media print {
+                .no-print { display: none; }
+                body { margin: 0; padding: 0; }
+                tr:nth-child(odd) td { background: #f8fafc !important; }
+                tr:nth-child(even) td { background: #f1f5f9 !important; }
+                th { background: linear-gradient(135deg, #667eea, #764ba2) !important; color: white !important; }
+                .grade-badge.grade-a-plus { background: #48bb78 !important; color: white !important; }
+                .grade-badge.grade-a { background: #48bb78 !important; color: white !important; }
+                .grade-badge.grade-a-minus { background: #68d391 !important; color: white !important; }
+                .grade-badge.grade-b { background: #f6ad55 !important; color: white !important; }
+                .grade-badge.grade-c { background: #fbd38d !important; color: #2d3748 !important; }
+                .grade-badge.grade-d { background: #fbd38d !important; color: #2d3748 !important; }
+                .grade-badge.grade-f { background: #fc8181 !important; color: white !important; }
+            }
         </style>
     `;
 
+    // Get table HTML
     let tableHTML = tableClone.outerHTML;
 
     const content = `
@@ -320,9 +374,8 @@ function downloadPDF() {
     setTimeout(function() {
         downloadBtn.innerHTML = originalText;
         downloadBtn.disabled = false;
-    }, 2000);
+    }, 3000);
 }
-
 // Make functions globally available
 window.filterRank = filterRank;
 window.downloadPDF = downloadPDF;
