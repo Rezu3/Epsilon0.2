@@ -97,14 +97,12 @@ function updateDateTime() {
 function fixStudentName(name) {
     if (!name) return 'N/A';
     
-    // যদি নামে ডুপ্লিকেট অক্ষর থাকে (যেমন: "R Rimi")
     const parts = name.trim().split(' ');
     if (parts.length >= 2) {
         const firstPart = parts[0];
         const secondPart = parts.slice(1).join(' ');
-        // যদি প্রথম অংশ ১ অক্ষর হয় এবং দ্বিতীয় অংশের প্রথম অক্ষরের সাথে মিলে যায়
         if (firstPart.length === 1 && secondPart.length > 0 && firstPart === secondPart[0]) {
-            return secondPart; // "Rimi" ফেরত দেবে
+            return secondPart;
         }
     }
     return name;
@@ -152,20 +150,15 @@ function filterRank() {
     })
     .then(response => response.text())
     .then(html => {
-        // নাম ঠিক করে HTML আপডেট করা
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = html;
         
-        // সব নামের সেল খুঁজে নাম ঠিক করা
-        tempDiv.querySelectorAll('.student-name-cell, td').forEach(cell => {
-            if (cell.textContent && cell.textContent.trim().length > 0) {
-                const originalName = cell.textContent.trim();
-                // শুধু নামের সেল চিহ্নিত করা (যেখানে avatar নেই)
-                if (!cell.querySelector('.avatar-small')) {
-                    const fixedName = fixStudentName(originalName);
-                    if (fixedName !== originalName) {
-                        cell.textContent = fixedName;
-                    }
+        tempDiv.querySelectorAll('td').forEach(cell => {
+            const text = cell.textContent.trim();
+            if (text && text.length > 0 && !cell.querySelector('.avatar-small')) {
+                const fixedName = fixStudentName(text);
+                if (fixedName !== text) {
+                    cell.textContent = fixedName;
                 }
             }
         });
@@ -223,7 +216,7 @@ function downloadPDF() {
 }
 
 // ============================================
-// ১. DIRECT DOWNLOAD PDF - আসল PDF ফাইল
+// ১. DIRECT DOWNLOAD PDF
 // ============================================
 function directDownloadPDF(examName, className, table) {
     const downloadBtn = document.getElementById('downloadBtn');
@@ -234,9 +227,6 @@ function directDownloadPDF(examName, className, table) {
     const tableClone = table.cloneNode(true);
     tableClone.querySelectorAll('.action-btn, .download-btn, .delete-btn, .show-password-btn').forEach(el => el.remove());
 
-    // ============================================
-    // টেবিলের নাম ঠিক করা
-    // ============================================
     tableClone.querySelectorAll('td').forEach(cell => {
         const text = cell.textContent.trim();
         if (text && text.length > 0) {
@@ -275,13 +265,8 @@ function directDownloadPDF(examName, className, table) {
         </html>
     `;
 
-    // ============================================
-    // PDF তৈরি ও ডাউনলোড
-    // ============================================
     try {
-        // html2pdf লাইব্রেরি চেক করা
         if (typeof html2pdf !== 'undefined') {
-            // html2pdf ব্যবহার করে PDF বানানো
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = content;
             tempDiv.style.position = 'fixed';
@@ -306,11 +291,9 @@ function directDownloadPDF(examName, className, table) {
                 }, 2000);
             }).catch(() => {
                 document.body.removeChild(tempDiv);
-                // html2pdf fail করলে print method ব্যবহার
                 fallbackPrint(content, downloadBtn, originalText);
             });
         } else {
-            // html2pdf না থাকলে Print method ব্যবহার
             fallbackPrint(content, downloadBtn, originalText);
         }
         
@@ -357,7 +340,6 @@ function printPDF(examName, className, table) {
     const tableClone = table.cloneNode(true);
     tableClone.querySelectorAll('.action-btn, .download-btn, .delete-btn, .show-password-btn').forEach(el => el.remove());
 
-    // নাম ঠিক করা
     tableClone.querySelectorAll('td').forEach(cell => {
         const text = cell.textContent.trim();
         if (text && text.length > 0) {
@@ -428,7 +410,7 @@ function printPDF(examName, className, table) {
 }
 
 // ============================================
-// PDF STYLES
+// PDF STYLES - Rank ১,২,৩ এর কালার বাদ
 // ============================================
 function getPDFStyles() {
     return `
@@ -443,29 +425,26 @@ function getPDFStyles() {
             table { width: 100%; border-collapse: collapse; font-size: 12px; }
             th { background: #667eea; padding: 8px 10px; text-align: left; font-weight: 600; color: white; border: 1px solid #5a4b8a; }
             td { padding: 7px 10px; border: 1px solid #d1d5db; color: #374151; }
-            tr:nth-child(1) td { background: #ffd700; color: #2d3748; }
-            tr:nth-child(2) td { background: #c0c0c0; color: #2d3748; }
-            tr:nth-child(3) td { background: #cd7f32; color: white; }
-            tr:nth-child(4) td { background: #f8fafc; }
-            tr:nth-child(5) td { background: #f1f5f9; }
-            .rank-badge { display: inline-block; padding: 2px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; }
-            .rank-badge.gold { background: #ffd700; color: #2d3748; }
-            .rank-badge.silver { background: #c0c0c0; color: #2d3748; }
-            .rank-badge.bronze { background: #cd7f32; color: white; }
-            .rank-badge.normal { background: #e2e8f0; color: #4a5568; }
+            /* ============================================ */
+            /* সব র‍্যাঙ্কের জন্য Normal Zebra Color */
+            /* ============================================ */
+            tr:nth-child(odd) td { background: #f8fafc; }
+            tr:nth-child(even) td { background: #f1f5f9; }
+            .rank-badge { display: inline-block; padding: 2px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; background: #e2e8f0; color: #4a5568; }
             .grade-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
             .grade-badge.grade-a-plus { background: #48bb78; color: white; }
             .grade-badge.grade-a { background: #48bb78; color: white; }
+            .grade-badge.grade-a-minus { background: #68d391; color: white; }
             .grade-badge.grade-b { background: #f6ad55; color: white; }
             .grade-badge.grade-c { background: #fbd38d; color: #2d3748; }
+            .grade-badge.grade-d { background: #fbd38d; color: #2d3748; }
             .grade-badge.grade-f { background: #fc8181; color: white; }
             .grade-badge.grade-default { background: #e2e8f0; color: #4a5568; }
             .footer { text-align: center; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 12px; color: #a0aec0; font-size: 10px; }
             @media print {
                 body { margin: 0; padding: 8px; }
-                tr:nth-child(1) td { background: #ffd700 !important; }
-                tr:nth-child(2) td { background: #c0c0c0 !important; }
-                tr:nth-child(3) td { background: #cd7f32 !important; color: white !important; }
+                tr:nth-child(odd) td { background: #f8fafc !important; }
+                tr:nth-child(even) td { background: #f1f5f9 !important; }
                 th { background: #667eea !important; color: white !important; }
             }
             @media screen and (max-width: 600px) {
