@@ -30,7 +30,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-</head>
+ </head>
 <body>
     <div class="login-wrapper">
         <div class="login-container">
@@ -41,7 +41,6 @@
                         <i class="fas fa-graduation-cap"></i>
                     </div>
                     <h1 class="brand-name">𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h1>
-                    <p class="brand-tagline">Smart Learning Management System</p> 
                 </div>
             </div>
 
@@ -133,7 +132,8 @@
                                     <span class="checkmark"></span>
                                     Remember me
                                 </label>
-                                <a href="#" class="forgot-link">Forgot Password?</a>
+                                <!-- WhatsApp Dynamic Link -->
+                                <a href="https://wa.me/919749469918?text=Sir%20I%20have%20forgotten%20my%20password.%20Could%20you%20please%20tell%20me%20the%20password?" target="_blank" class="forgot-link">Forgot Password?</a>
                             </div>
 
                             <button type="submit" class="login-btn" id="loginBtn">
@@ -142,12 +142,13 @@
                                 <span class="btn-shimmer"></span>
                             </button>
 
-                            <div class="register-links">
+                            <!-- Register links completely hidden -->
+                            <div class="register-links" style="display: none;">
                                 <p class="register-text" id="registerText">
-                                    New here? <a href="{{ url_for('teacher_register') }}" id="registerLink">Register as Teacher</a>
+                                    New here? <a href="{{ url_for('teacher_register') }}" id="registerLink"> </a>
                                 </p>
                                 <p class="register-text student-register" id="studentRegisterText" style="display: none;">
-                                    <a href="{{ url_for('student_register') }}">Register as Student</a>
+                                    <a href="{{ url_for('student_register') }}"> </a>
                                 </p>
                             </div>
                         </form>
@@ -161,10 +162,9 @@
         </div>
     </div>
 
-    <!-- ============================================ -->
-    <!-- SCRIPTS -->
-    <!-- ============================================ -->
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
+ 
     
     <!-- ============================================ -->
     <!-- SERVICE WORKER REGISTER (নতুন যোগ) -->
