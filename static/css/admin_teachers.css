@@ -13,7 +13,9 @@ body {
     min-height: 100vh;
 }
 
-/* Sidebar */
+/* ============================================
+   SIDEBAR
+   ============================================ */
 .sidebar {
     width: 280px;
     background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
@@ -65,6 +67,20 @@ body {
     font-size: 20px;
     cursor: pointer;
     display: none;
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    touch-action: manipulation;
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.sidebar-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-toggle:active {
+    transform: scale(0.95);
 }
 
 .sidebar-nav {
@@ -83,6 +99,7 @@ body {
     transition: all 0.3s ease;
     margin-bottom: 5px;
     cursor: pointer;
+    touch-action: manipulation;
 }
 
 .nav-item:hover {
@@ -111,6 +128,15 @@ body {
 
 .nav-item.logout:hover {
     background: rgba(252, 129, 129, 0.1);
+}
+
+.nav-item.db-download {
+    color: rgba(100, 255, 218, 0.8);
+}
+
+.nav-item.db-download:hover {
+    background: rgba(100, 255, 218, 0.1);
+    color: #64ffda;
 }
 
 .sidebar-footer {
@@ -145,7 +171,9 @@ body {
     color: rgba(255, 255, 255, 0.6);
 }
 
-/* Main Content */
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
 .main-content {
     flex: 1;
     margin-left: 280px;
@@ -153,7 +181,9 @@ body {
     min-height: 100vh;
 }
 
-/* Top Bar */
+/* ============================================
+   TOP BAR
+   ============================================ */
 .top-bar {
     display: flex;
     justify-content: space-between;
@@ -178,6 +208,29 @@ body {
     font-size: 24px;
     color: #2d3748;
     cursor: pointer;
+    padding: 10px 14px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-width: 44px;
+    min-height: 44px;
+    z-index: 999;
+    position: relative;
+}
+
+.menu-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.menu-btn:active {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(0.95);
+}
+
+.menu-btn i {
+    font-size: 24px;
+    pointer-events: none;
 }
 
 .brand h1 {
@@ -252,7 +305,9 @@ body {
     border: 2px solid #f093fb;
 }
 
-/* Flash Messages */
+/* ============================================
+   FLASH MESSAGES
+   ============================================ */
 .flash-message {
     padding: 15px 20px;
     border-radius: 12px;
@@ -292,7 +347,9 @@ body {
     opacity: 1;
 }
 
-/* Teachers Container */
+/* ============================================
+   TEACHERS CONTAINER
+   ============================================ */
 .teachers-container {
     background: white;
     border-radius: 16px;
@@ -347,6 +404,7 @@ body {
     align-items: center;
     gap: 8px;
     white-space: nowrap;
+    text-decoration: none;
 }
 
 .add-btn:hover {
@@ -363,7 +421,9 @@ body {
     color: #2d3748;
 }
 
-/* Table */
+/* ============================================
+   TABLE
+   ============================================ */
 .table-responsive {
     overflow-x: auto;
 }
@@ -416,17 +476,45 @@ body {
     flex-shrink: 0;
 }
 
-.student-count {
-    display: inline-block;
-    padding: 4px 12px;
-    background: #e8f0fe;
-    color: #667eea;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 500;
+/* ============================================
+   PASSWORD FIELD
+   ============================================ */
+.password-dots {
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: #4a5568;
 }
 
-/* Action Buttons */
+.password-text {
+    font-size: 14px;
+    color: #2d3748;
+    font-weight: 500;
+    font-family: 'Courier New', monospace;
+}
+
+.show-password-btn {
+    background: none;
+    border: none;
+    color: #718096;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.show-password-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #2d3748;
+}
+
+.show-password-btn:active {
+    transform: scale(0.9);
+}
+
+/* ============================================
+   ACTION BUTTONS
+   ============================================ */
 .action-buttons {
     display: flex;
     gap: 6px;
@@ -455,6 +543,16 @@ body {
     color: white;
 }
 
+.edit-btn {
+    background: rgba(237, 137, 54, 0.1);
+    color: #ed8936;
+}
+
+.edit-btn:hover {
+    background: #ed8936;
+    color: white;
+}
+
 .message-btn {
     background: rgba(72, 187, 120, 0.1);
     color: #48bb78;
@@ -475,7 +573,9 @@ body {
     color: white;
 }
 
-/* Empty Row */
+/* ============================================
+   EMPTY ROW
+   ============================================ */
 .empty-row {
     text-align: center;
     padding: 60px 20px !important;
@@ -506,6 +606,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    text-decoration: none;
 }
 
 .empty-add-btn:hover {
@@ -513,7 +614,154 @@ body {
     box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
 }
 
-/* Animations */
+/* ============================================
+   EDIT MODAL
+   ============================================ */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.show {
+    display: flex !important;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 0;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    padding: 25px 30px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    border-radius: 20px 20px 0 0;
+    color: white;
+}
+
+.modal-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-header h2 i {
+    font-size: 22px;
+}
+
+.modal-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    color: #2d3748;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-group label i {
+    color: #f093fb;
+    margin-right: 8px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #f093fb;
+    box-shadow: 0 0 0 4px rgba(245, 87, 108, 0.1);
+}
+
+.form-group input::placeholder {
+    color: #a0aec0;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(245, 87, 108, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
 @keyframes slideDown {
     from {
         opacity: 0;
@@ -525,157 +773,68 @@ body {
     }
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-    .sidebar {
-        transform: translateX(-100%);
+@keyframes fadeIn {
+    from {
+        opacity: 0;
     }
-    
-    .sidebar.open {
-        transform: translateX(0);
-    }
-    
-    .sidebar-toggle {
-        display: block;
-    }
-    
-    .main-content {
-        margin-left: 0;
-        padding: 15px;
-    }
-    
-    .menu-btn {
-        display: block;
+    to {
+        opacity: 1;
     }
 }
 
-@media (max-width: 768px) {
-    .top-bar {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
     }
-    
-    .top-bar-right {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
-    .table-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .table-actions {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .search-input {
-        max-width: 100%;
-        width: 100%;
-    }
-    
-    .add-btn {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .teachers-table {
-        font-size: 13px;
-    }
-    
-    .teachers-table th,
-    .teachers-table td {
-        padding: 8px 10px;
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }
 
-@media (max-width: 480px) {
-    .teachers-table {
-        font-size: 12px;
-    }
-    
-    .teachers-table th,
-    .teachers-table td {
-        padding: 6px 8px;
-    }
-    
-    .avatar {
-        width: 28px;
-        height: 28px;
-        font-size: 12px;
-    }
-    
-    .action-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 12px;
-    }
-    
-    .brand h1 {
-        font-size: 18px;
-    }
-}
-/* ======================================== */
-/* MOBILE FIX - Three Lines Button & Sidebar */
-/* ======================================== */
-
-.menu-btn {
+/* ============================================
+   SIDEBAR OVERLAY FOR MOBILE
+   ============================================ */
+.sidebar-overlay {
     display: none;
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: #2d3748;
-    cursor: pointer;
-    padding: 10px 14px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    min-width: 44px;
-    min-height: 44px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
     z-index: 999;
-    position: relative;
+    animation: fadeIn 0.3s ease;
 }
 
-.menu-btn:hover {
-    background: rgba(0, 0, 0, 0.05);
+.sidebar-overlay.active {
+    display: block !important;
 }
 
-.menu-btn:active {
-    background: rgba(0, 0, 0, 0.1);
-    transform: scale(0.95);
+/* ============================================
+   SIDEBAR SCROLLBAR
+   ============================================ */
+.sidebar::-webkit-scrollbar {
+    width: 4px;
 }
 
-.menu-btn i {
-    font-size: 24px;
-    pointer-events: none;
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
 }
 
-.sidebar-toggle {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    display: none;
-    padding: 10px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    touch-action: manipulation;
-    min-width: 44px;
-    min-height: 44px;
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
 }
 
-.sidebar-toggle:hover {
-    background: rgba(255, 255, 255, 0.1);
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 
-.sidebar-toggle:active {
-    transform: scale(0.95);
-}
-
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 992px) {
     .sidebar {
         transform: translateX(-100%);
@@ -707,21 +866,67 @@ body {
     .menu-btn {
         display: block !important;
     }
-    
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        animation: fadeIn 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .top-bar {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+        padding: 15px;
     }
     
-    .sidebar-overlay.active {
-        display: block !important;
+    .top-bar-right {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .table-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .search-input {
+        max-width: 100%;
+        width: 100%;
+    }
+    
+    .add-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .teachers-table {
+        font-size: 13px;
+    }
+    
+    .teachers-table th,
+    .teachers-table td {
+        padding: 8px 10px;
+    }
+    
+    .modal-content {
+        margin: 15px;
+        max-width: 100%;
+    }
+    
+    .modal-header {
+        padding: 20px;
+    }
+    
+    .modal-header h2 {
+        font-size: 18px;
+    }
+    
+    .modal-body {
+        padding: 20px;
     }
 }
 
@@ -745,9 +950,7 @@ body {
         font-size: 10px;
     }
     
-    .top-bar-right .admin-name,
-    .top-bar-right .teacher-name,
-    .top-bar-right .student-name {
+    .top-bar-right .admin-name {
         display: none;
     }
     
@@ -755,44 +958,104 @@ body {
         font-size: 11px;
     }
     
+    .date-time i {
+        display: none;
+    }
+    
     .profile-img {
         width: 32px;
         height: 32px;
     }
+    
+    .teachers-table {
+        font-size: 12px;
+    }
+    
+    .teachers-table th,
+    .teachers-table td {
+        padding: 6px 8px;
+    }
+    
+    .avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .action-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .modal-content {
+        margin: 10px;
+        border-radius: 16px;
+    }
+    
+    .modal-header {
+        padding: 16px 20px;
+        border-radius: 16px 16px 0 0;
+    }
+    
+    .modal-header h2 {
+        font-size: 16px;
+    }
+    
+    .modal-body {
+        padding: 16px;
+    }
+    
+    .form-group input {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+    
+    .submit-btn {
+        padding: 12px;
+        font-size: 14px;
+    }
 }
 
+/* Touch-friendly for mobile */
 .menu-btn,
 .sidebar-toggle,
 .nav-item,
 .action-btn,
 .add-btn,
-.submit-btn {
+.submit-btn,
+.show-password-btn,
+.modal-close {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-}
-
-.nav-item {
-    cursor: pointer;
-    touch-action: manipulation;
 }
 
 .nav-item:active {
     transform: scale(0.98);
 }
 
-.sidebar::-webkit-scrollbar {
-    width: 4px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+/* Print styles */
+@media print {
+    .sidebar {
+        display: none;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        padding: 10px;
+    }
+    
+    .top-bar {
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .teachers-container {
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .action-buttons {
+        display: none;
+    }
 }
