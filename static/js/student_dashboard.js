@@ -399,3 +399,146 @@ window.showWhatsApp = showWhatsApp;
 window.selectGender = selectGender;
 window.startOnlineExam = startOnlineExam;
 window.initializeTimers = initializeTimers;
+
+
+
+
+
+
+// =============================================
+// CHANGE PASSWORD FUNCTIONS
+// =============================================
+
+// Show Change Password Modal
+function showChangePassword() {
+    const modal = document.getElementById('changePasswordModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Clear previous form data
+        document.getElementById('changePasswordForm').reset();
+        document.getElementById('passwordError').style.display = 'none';
+        document.getElementById('passwordSuccess').style.display = 'none';
+        
+        // Remove any previous error states
+        document.querySelectorAll('.password-input-wrapper input').forEach(input => {
+            input.style.borderColor = '#e2e8f0';
+        });
+    }
+}
+
+// Close Change Password Modal
+function closeChangePassword() {
+    const modal = document.getElementById('changePasswordModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Toggle password visibility
+function togglePasswordVisibility(inputId, button) {
+    const input = document.getElementById(inputId);
+    const icon = button.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+
+// Change Password Form Submit
+function changePassword(event) {
+    event.preventDefault();
+    
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const errorDiv = document.getElementById('passwordError');
+    const successDiv = document.getElementById('passwordSuccess');
+    
+    // Reset error states
+    errorDiv.style.display = 'none';
+    successDiv.style.display = 'none';
+    document.querySelectorAll('.password-input-wrapper input').forEach(input => {
+        input.style.borderColor = '#e2e8f0';
+    });
+    
+    // Validate new password
+    if (newPassword.length < 6) {
+        errorDiv.textContent = '⚠️ New password must be at least 6 characters long';
+        errorDiv.style.display = 'block';
+        document.getElementById('newPassword').style.borderColor = '#f56565';
+        return;
+    }
+    
+    // Validate confirm password
+    if (newPassword !== confirmPassword) {
+        errorDiv.textContent = '⚠️ New password and confirm password do not match';
+        errorDiv.style.display = 'block';
+        document.getElementById('confirmPassword').style.borderColor = '#f56565';
+        return;
+    }
+    
+    // Disable submit button
+    const submitBtn = document.querySelector('.submit-password-btn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+    
+    // Send request to server
+    fetch('/change_password', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            current_password: currentPassword,
+            new_password: newPassword
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            successDiv.textContent = '✅ ' + data.message;
+            successDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            
+            // Reset form
+            document.getElementById('changePasswordForm').reset();
+            
+            // Auto close after 2 seconds
+            setTimeout(() => {
+                closeChangePassword();
+            }, 2000);
+        } else {
+            errorDiv.textContent = '❌ ' + data.message;
+            errorDiv.style.display = 'block';
+            document.getElementById('currentPassword').style.borderColor = '#f56565';
+        }
+    })
+    .catch(error => {
+        errorDiv.textContent = '❌ An error occurred. Please try again.';
+        errorDiv.style.display = 'block';
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Password';
+    });
+}
+
+// Make functions globally available
+window.showChangePassword = showChangePassword;
+window.closeChangePassword = closeChangePassword;
+window.togglePasswordVisibility = togglePasswordVisibility;
+window.changePassword = changePassword;
+
+// Close modal on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeChangePassword();
+    }
+});
