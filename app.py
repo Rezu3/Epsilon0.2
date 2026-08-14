@@ -5,6 +5,9 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "tution_management_secret_key_2026"
+# ===== যোগ করুন =====
+ADMIN_USERNAME = "Epsilon"
+ADMIN_PASSWORD = "885410"
 
 # ------------------------
 # Database configuration
@@ -21,15 +24,6 @@ def init_database():
     """Initialize database with all required tables"""
     conn = get_db_connection()
     cursor = conn.cursor()
-    
-    # Admin table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS admin (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL
-        )
-    ''')
     
     # Teachers table
     cursor.execute('''
@@ -115,12 +109,6 @@ def init_database():
         )
     ''')
     
-    # Insert default admin
-    cursor.execute('SELECT * FROM admin WHERE username = ?', ('admin',))
-    if not cursor.fetchone():
-        cursor.execute('INSERT INTO admin (username, password) VALUES (?, ?)', 
-                      ('Epsilon', '885410'))
-    
     conn.commit()
     conn.close()
 
@@ -145,6 +133,9 @@ def download_database():
 # ------------------------
 # Login Page
 # ------------------------
+# ------------------------
+# Login Page
+# ------------------------
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -155,18 +146,22 @@ def login():
         conn = get_db_connection()
         cursor = conn.cursor()
         
+        # ===== এই অংশটি পরিবর্তন করুন =====
         if login_type == "admin":
-            cursor.execute('SELECT * FROM admin WHERE username = ? AND password = ?', 
-                          (phone, password))
-            user = cursor.fetchone()
-            if user:
+            # Check against hardcoded admin credentials
+            if phone == ADMIN_USERNAME and password == ADMIN_PASSWORD:
                 session['user_type'] = 'admin'
-                session['user_id'] = user['id']
-                session['username'] = user['username']
+                session['user_id'] = 0
+                session['username'] = ADMIN_USERNAME
                 conn.close()
                 flash('Login successful! Welcome Admin.', 'success')
                 return redirect(url_for('admin_dashboard'))
-                
+            else:
+                conn.close()
+                flash('Invalid admin credentials! Please try again.', 'error')
+                return redirect(url_for('login'))
+        # ===== পরিবর্তন শেষ =====
+        
         elif login_type == "teacher":
             cursor.execute('SELECT * FROM teachers WHERE phone = ? AND password = ?', 
                           (phone, password))
@@ -196,7 +191,6 @@ def login():
         return redirect(url_for('login'))
     
     return render_template('login.html')
-
 # ------------------------
 # Registration Pages
 # ------------------------
