@@ -229,9 +229,11 @@ function editStudent(id) {
 // ============================================
 function closeEditModal() {
     const modal = document.getElementById('editStudentModal');
-    modal.classList.remove('show');
-    modal.style.display = 'none';
-    document.body.style.overflow = '';
+    if (modal) {
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
 }
 
 // ============================================
