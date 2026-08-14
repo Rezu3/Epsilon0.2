@@ -1371,7 +1371,60 @@ def change_password():
         return jsonify({'success': False, 'message': 'An error occurred. Please try again.'}), 500
 
  
-
+# ------------------------
+# Change Password Route for Teacher
+# ------------------------
+@app.route("/change_password_teacher", methods=["POST"])
+def change_password_teacher():
+    # Check if user is logged in as teacher
+    if 'user_type' not in session or session['user_type'] != 'teacher':
+        return jsonify({'success': False, 'message': 'Please login as teacher first!'}), 401
+    
+    data = request.get_json()
+    
+    # Check if data exists
+    if not data:
+        return jsonify({'success': False, 'message': 'Invalid request'}), 400
+    
+    current_password = data.get('current_password')
+    new_password = data.get('new_password')
+    
+    # Validate inputs
+    if not current_password or not new_password:
+        return jsonify({'success': False, 'message': 'All fields are required'})
+    
+    if len(new_password) < 6:
+        return jsonify({'success': False, 'message': 'Password must be at least 6 characters'})
+    
+    teacher_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get current password from database
+        cursor.execute('SELECT password FROM teachers WHERE id = ?', (teacher_id,))
+        teacher = cursor.fetchone()
+        
+        if not teacher:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Teacher not found'})
+        
+        # Check if current password matches
+        if teacher['password'] != current_password:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Current password is incorrect'})
+        
+        # Update password
+        cursor.execute('UPDATE teachers SET password = ? WHERE id = ?', (new_password, teacher_id))
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Password changed successfully'})
+        
+    except Exception as e:
+        conn.close()
+        print(f"Error changing password: {e}")
+        return jsonify({'success': False, 'message': 'An error occurred. Please try again.'}), 500
 
 # ------------------------
 # Logout
