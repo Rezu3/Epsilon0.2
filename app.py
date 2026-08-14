@@ -1315,6 +1315,61 @@ def get_student_data(student_id):
 
 
 
+# ------------------------
+# Change Password Route
+# ------------------------
+@app.route("/change_password", methods=["POST"])
+def change_password():
+    # Check if user is logged in
+    if 'user_type' not in session or session['user_type'] != 'student':
+        return jsonify({'success': False, 'message': 'Please login as student first!'}), 401
+    
+    data = request.get_json()
+    
+    # Check if data exists
+    if not data:
+        return jsonify({'success': False, 'message': 'Invalid request'}), 400
+    
+    current_password = data.get('current_password')
+    new_password = data.get('new_password')
+    
+    # Validate inputs
+    if not current_password or not new_password:
+        return jsonify({'success': False, 'message': 'All fields are required'})
+    
+    if len(new_password) < 6:
+        return jsonify({'success': False, 'message': 'Password must be at least 6 characters'})
+    
+    student_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get current password from database
+        cursor.execute('SELECT password FROM students WHERE id = ?', (student_id,))
+        student = cursor.fetchone()
+        
+        if not student:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Student not found'})
+        
+        # Check if current password matches
+        if student['password'] != current_password:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Current password is incorrect'})
+        
+        # Update password
+        cursor.execute('UPDATE students SET password = ? WHERE id = ?', (new_password, student_id))
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Password changed successfully'})
+        
+    except Exception as e:
+        conn.close()
+        print(f"Error changing password: {e}")  # For debugging
+        return jsonify({'success': False, 'message': 'An error occurred. Please try again.'}), 500
+
  
 
 
