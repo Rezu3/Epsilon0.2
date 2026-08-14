@@ -119,7 +119,7 @@ def init_database():
     cursor.execute('SELECT * FROM admin WHERE username = ?', ('admin',))
     if not cursor.fetchone():
         cursor.execute('INSERT INTO admin (username, password) VALUES (?, ?)', 
-                      ('admin', 'admin123'))
+                      ('Epsilon, '885410'))
     
     conn.commit()
     conn.close()
