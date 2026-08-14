@@ -1313,7 +1313,71 @@ def get_student_data(student_id):
     else:
         return jsonify({'error': 'Student not found'}), 404
 
+# ------------------------
+# Edit Teacher Route
+# ------------------------
+@app.route("/edit_teacher", methods=["POST"])
+def edit_teacher():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        flash('Unauthorized access!', 'error')
+        return redirect(url_for('login'))
+    
+    teacher_id = request.form.get('teacher_id')
+    name = request.form.get('name')
+    phone = request.form.get('phone')
+    password = request.form.get('password')
+    
+    if not all([teacher_id, name, phone]):
+        flash('Name and Phone are required!', 'error')
+        return redirect(url_for('admin_teachers'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        if password and len(password) >= 6:
+            cursor.execute('''UPDATE teachers 
+                          SET name = ?, phone = ?, password = ?
+                          WHERE id = ?''',
+                          (name, phone, password, teacher_id))
+            flash('Teacher updated successfully with new password!', 'success')
+        else:
+            cursor.execute('''UPDATE teachers 
+                          SET name = ?, phone = ?
+                          WHERE id = ?''',
+                          (name, phone, teacher_id))
+            flash('Teacher updated successfully!', 'success')
+        
+        conn.commit()
+    except sqlite3.IntegrityError:
+        flash('Phone number already exists!', 'error')
+    except Exception as e:
+        flash('Error updating teacher: ' + str(e), 'error')
+    finally:
+        conn.close()
+    
+    return redirect(url_for('admin_teachers'))
 
+@app.route("/get_teacher_data/<int:teacher_id>")
+def get_teacher_data(teacher_id):
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM teachers WHERE id = ?', (teacher_id,))
+    teacher = cursor.fetchone()
+    conn.close()
+    
+    if teacher:
+        return jsonify({
+            'id': teacher['id'],
+            'name': teacher['name'],
+            'phone': teacher['phone'],
+            'password': teacher['password']
+        })
+    else:
+        return jsonify({'error': 'Teacher not found'}), 404
 
 # ------------------------
 # Change Password Route
