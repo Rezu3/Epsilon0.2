@@ -665,6 +665,86 @@ def delete_exam(exam_id):
         conn.close()
     
     return redirect(url_for('exam'))
+
+
+
+# =============================================
+# 🔥 GET EXAM DATA FOR EDITING
+# =============================================
+@app.route("/get_exam_data/<int:exam_id>")
+def get_exam_data(exam_id):
+    if 'user_type' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM exams WHERE id = ?', (exam_id,))
+    exam = cursor.fetchone()
+    conn.close()
+    
+    if exam:
+        return jsonify(dict(exam))
+    else:
+        return jsonify({'error': 'Exam not found'}), 404
+
+# =============================================
+# 🔥 EDIT EXAM
+# =============================================
+@app.route("/edit_exam/<int:exam_id>", methods=["POST"])
+def edit_exam(exam_id):
+    if 'user_type' not in session:
+        flash('Please login first!', 'error')
+        return redirect(url_for('login'))
+    
+    exam_name = request.form.get('exam_name')
+    teacher_name = request.form.get('teacher_name')
+    subject = request.form.get('subject')
+    full_marks = request.form.get('full_marks')
+    exam_date = request.form.get('exam_date')
+    exam_type = request.form.get('exam_type', 'offline')
+    
+    # Online exam fields
+    exam_time = request.form.get('exam_time', '')
+    duration = request.form.get('duration', '')
+    exam_class = request.form.get('class', '')
+    
+    if not all([exam_name, teacher_name, subject, full_marks, exam_date]):
+        flash('All fields are required!', 'error')
+        return redirect(url_for('exam'))
+    
+    # Online exam validation
+    if exam_type == 'online':
+        if not exam_time or not duration or not exam_class:
+            flash('For online exam, Time, Duration and Class are required!', 'error')
+            return redirect(url_for('exam'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        if exam_type == 'offline':
+            exam_time = None
+            duration = None
+            exam_class = None
+        
+        cursor.execute('''
+            UPDATE exams 
+            SET exam_name = ?, teacher_name = ?, subject = ?, full_marks = ?, 
+                exam_date = ?, exam_type = ?, exam_time = ?, duration = ?, class = ?
+            WHERE id = ?
+        ''', (exam_name, teacher_name, subject, full_marks, exam_date, exam_type, 
+              exam_time, duration, exam_class, exam_id))
+        
+        conn.commit()
+        flash('Exam updated successfully!', 'success')
+        
+    except Exception as e:
+        flash('Error updating exam: ' + str(e), 'error')
+        print(f"❌ Error: {e}")
+    finally:
+        conn.close()
+    
+    return redirect(url_for('exam'))
 # ------------------------
 # Result Routes
 # ------------------------
