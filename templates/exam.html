@@ -304,16 +304,18 @@
         </div>
     </div>
 
-    <!-- Add Exam Modal -->
+    <!-- Add/Edit Exam Modal -->
     <div class="modal" id="addExamModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-plus-circle"></i> Add New Exam</h2>
+                <h2 id="examModalTitle"><i class="fas fa-plus-circle"></i> Add New Exam</h2>
                 <button class="modal-close" onclick="closeAddExamModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="examForm" method="POST" action="{{ url_for('add_exam') }}">
+                    <input type="hidden" id="exam_id" name="exam_id" value="">
                     <input type="hidden" id="exam_type" name="exam_type" value="offline">
+                    <input type="hidden" id="edit_mode" name="edit_mode" value="0">
                     
                     <div class="form-group">
                         <label><i class="fas fa-pencil-alt"></i> Exam Name</label>
@@ -374,14 +376,32 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="submit-btn"><i class="fas fa-plus"></i> Create Exam</button>
+                    <button type="submit" class="submit-btn" id="submitExamBtn"><i class="fas fa-plus"></i> Create Exam</button>
                 </form>
             </div>
         </div>
     </div>
 
+    <!-- Edit Confirmation Modal -->
+    <div class="modal" id="editConfirmModal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Confirm Edit</h2>
+                <button class="modal-close" onclick="closeEditConfirmModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="text-align: center; padding: 30px 20px;">
+                <p style="font-size: 18px; margin-bottom: 10px;">⚠️ Editing this exam will affect all associated results.</p>
+                <p style="color: #888; font-size: 14px;">Are you sure you want to continue?</p>
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 25px;">
+                    <button class="btn btn-secondary" onclick="closeEditConfirmModal()" style="padding: 10px 30px; border-radius: 8px; border: none; background: #e0e0e0; cursor: pointer; font-weight: 600;">Cancel</button>
+                    <button class="btn btn-primary" onclick="proceedEdit()" style="padding: 10px 30px; border-radius: 8px; border: none; background: #667eea; color: white; cursor: pointer; font-weight: 600;">Yes, Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/exam.js') }}"></script>
-     <script>
+    <script>
         function showMyStudents() {
             window.location.href = "{{ url_for('teacher_home') }}#students";
         }
