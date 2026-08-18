@@ -142,12 +142,12 @@
                                 <span class="btn-shimmer"></span>
                             </button>
 
-                            <!-- Register links - শুধুমাত্র Student এর লিংক visible -->
+                            <!-- Register links - সম্পূর্ণ শর্তাধীন দেখানোর ব্যবস্থা করা হয়েছে -->
                             <div class="register-links">
                                 <p class="register-text" id="registerText" style="display: none;">
                                     New here? <a href="{{ url_for('teacher_register') }}" id="registerLink"> </a>
                                 </p>
-                                <p class="register-text student-register" id="studentRegisterText">
+                                <p class="register-text student-register" id="studentRegisterText" style="display: none;">
                                     New here? <a href="{{ url_for('student_register') }}">Register as Student</a>
                                 </p>
                             </div>
@@ -162,14 +162,32 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
-</body>
-</html>
     <!-- ============================================ -->
     <!-- SCRIPTS -->
     <!-- ============================================ -->
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
     
+    <!-- Register Links Toggle Logic -->
+    <script>
+        const originalSelectLoginType = window.selectLoginType;
+        window.selectLoginType = function(type) {
+            if (typeof originalSelectLoginType === 'function') {
+                originalSelectLoginType(type);
+            }
+            
+            const registerText = document.getElementById('registerText');
+            const studentRegisterText = document.getElementById('studentRegisterText');
+            
+            if (type === 'student') {
+                if (registerText) registerText.style.display = 'none';
+                if (studentRegisterText) studentRegisterText.style.display = 'block';
+            } else {
+                if (registerText) registerText.style.display = 'none';
+                if (studentRegisterText) studentRegisterText.style.display = 'none';
+            }
+        };
+    </script>
+
     <!-- ============================================ -->
     <!-- SERVICE WORKER REGISTER (নতুন যোগ) -->
     <!-- ============================================ -->
