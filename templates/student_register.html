@@ -47,20 +47,31 @@
                     <input type="text" id="name" name="name" placeholder="Enter your full name" required>
                 </div>
 
+                <!-- Updated Class/Batch Field -->
                 <div class="form-group">
                     <label for="class">
                         <i class="fas fa-graduation-cap"></i>
-                        Class
+                        Class/Batch
                     </label>
-                    <input type="text" id="class" name="class" placeholder="Enter your class (e.g., Class 8)" required>
+                    <select id="class" name="class" required>
+                        <option value="" disabled selected>Select your Class/Batch</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="GNM/ANM">GNM/ANM</option>
+                    </select>
                 </div>
 
+                <!-- Updated Current Institute Field -->
                 <div class="form-group">
                     <label for="school">
                         <i class="fas fa-school"></i>
-                        School Name
+                        Current institute
                     </label>
-                    <input type="text" id="school" name="school" placeholder="Enter your school name" required>
+                    <input type="text" id="school" name="school" placeholder="Enter your current institute" required>
                 </div>
 
                 <div class="form-group">
