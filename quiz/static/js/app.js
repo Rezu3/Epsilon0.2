@@ -1,9 +1,6 @@
 // ==========================================
-// QUIZ SYSTEM - COMPLETE JAVASCRIPT
-// (No Save, No Result - Only Back Button)
+// STATE VARIABLES
 // ==========================================
-
-// State Variables
 let currentBatchId = null;
 let currentBatchName = '';
 let currentSubjectId = null;
@@ -16,305 +13,186 @@ let currentQuestionIndex = 0;
 let userAnswers = {};
 
 // ==========================================
-// API BASE URL
-// ==========================================
-const API_BASE = '/quiz/api';
-
-// ==========================================
-// INITIALIZATION
+// INITIAL LOAD
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('✅ Quiz System Initialized');
     loadBatches();
-    document.addEventListener('keydown', handleKeyboardShortcuts);
 });
 
 // ==========================================
 // 1. API CALLS & DATA LOADING
 // ==========================================
 
-// ===== ব্যাচ সর্ট করার ফাংশন =====
-function sortBatches(batches) {
-    return batches.sort((a, b) => {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        
-        const numA = parseInt(nameA.match(/\d+/)?.[0] || 0);
-        const numB = parseInt(nameB.match(/\d+/)?.[0] || 0);
-        
-        if (numA > 0 && numB > 0) {
-            return numA - numB;
-        }
-        return nameA.localeCompare(nameB);
-    });
-}
-
+// Load Batches
 async function loadBatches() {
     try {
-        console.log('📡 Fetching batches...');
-        const response = await fetch(`${API_BASE}/batches`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        let batches = await response.json();
-        console.log('✅ Batches loaded:', batches);
-        
-        batches = sortBatches(batches);
+        const response = await fetch('/api/batches');
+        const batches = await response.json();
         
         const grid = document.getElementById('batches-grid');
-        if (!grid) {
-            console.error('❌ batches-grid element not found!');
-            return;
-        }
-        
         grid.innerHTML = '';
 
-        if (batches && batches.length > 0) {
-            batches.forEach(batch => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `<i class="fas fa-users"></i> ${batch.name}`;
-                card.onclick = () => selectBatch(batch.id, batch.name);
-                grid.appendChild(card);
-            });
-        } else {
-            grid.innerHTML = `
-                <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #718096;">
-                    <i class="fas fa-folder-open" style="font-size: 48px; display: block; margin-bottom: 10px;"></i>
-                    <h3>No Batches Found</h3>
-                    <p>Please add some quiz data to get started.</p>
-                </div>
-            `;
-        }
+        batches.forEach(batch => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerText = batch.name;
+            card.onclick = () => selectBatch(batch.id, batch.name);
+            grid.appendChild(card);
+        });
 
         showView('batches-view');
         updateBreadcrumb();
     } catch (error) {
-        console.error('❌ Error loading batches:', error);
-        showError('Failed to load batches. Please try again.');
+        console.error('Error loading batches:', error);
     }
 }
 
+// Select Batch & Load Subjects
 async function selectBatch(batchId, batchName) {
     currentBatchId = batchId;
     currentBatchName = batchName;
-    console.log(`📚 Selected batch: ${batchName}`);
 
     try {
-        const response = await fetch(`${API_BASE}/batches/${batchId}/subjects`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
+        const response = await fetch(`/api/batches/${batchId}/subjects`);
         const subjects = await response.json();
-        console.log('✅ Subjects loaded:', subjects);
 
         const grid = document.getElementById('subjects-grid');
-        if (!grid) {
-            console.error('❌ subjects-grid element not found!');
-            return;
-        }
-        
         grid.innerHTML = '';
 
-        if (subjects && subjects.length > 0) {
-            subjects.forEach(subject => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `<i class="fas fa-book"></i> ${subject.name}`;
-                card.onclick = () => selectSubject(subject.id, subject.name);
-                grid.appendChild(card);
-            });
-        } else {
-            grid.innerHTML = `
-                <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #718096;">
-                    <i class="fas fa-book" style="font-size: 48px; display: block; margin-bottom: 10px;"></i>
-                    <h3>No Subjects Found</h3>
-                    <p>This batch has no subjects yet.</p>
-                </div>
-            `;
-        }
+        subjects.forEach(subject => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerText = subject.name;
+            card.onclick = () => selectSubject(subject.id, subject.name);
+            grid.appendChild(card);
+        });
 
         showView('subjects-view');
         updateBreadcrumb();
     } catch (error) {
-        console.error('❌ Error loading subjects:', error);
-        showError('Failed to load subjects. Please try again.');
+        console.error('Error loading subjects:', error);
     }
 }
 
+// Select Subject & Load Chapters
 async function selectSubject(subjectId, subjectName) {
     currentSubjectId = subjectId;
     currentSubjectName = subjectName;
-    console.log(`📖 Selected subject: ${subjectName}`);
 
     try {
-        const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${subjectId}/chapters`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
+        const response = await fetch(`/api/batches/${currentBatchId}/subjects/${subjectId}/chapters`);
         const chapters = await response.json();
-        console.log('✅ Chapters loaded:', chapters);
 
         const grid = document.getElementById('chapters-grid');
-        if (!grid) {
-            console.error('❌ chapters-grid element not found!');
-            return;
-        }
-        
         grid.innerHTML = '';
 
-        if (chapters && chapters.length > 0) {
-            chapters.forEach(chapter => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `<i class="fas fa-list"></i> ${chapter.name}`;
-                card.onclick = () => selectChapter(chapter.id, chapter.name);
-                grid.appendChild(card);
-            });
-        } else {
-            grid.innerHTML = `
-                <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #718096;">
-                    <i class="fas fa-list" style="font-size: 48px; display: block; margin-bottom: 10px;"></i>
-                    <h3>No Chapters Found</h3>
-                    <p>This subject has no chapters yet.</p>
-                </div>
-            `;
-        }
+        chapters.forEach(chapter => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerText = chapter.name;
+            card.onclick = () => selectChapter(chapter.id, chapter.name);
+            grid.appendChild(card);
+        });
 
         showView('chapters-view');
         updateBreadcrumb();
     } catch (error) {
-        console.error('❌ Error loading chapters:', error);
-        showError('Failed to load chapters. Please try again.');
+        console.error('Error loading chapters:', error);
     }
 }
 
+// Select Chapter & Start Quiz
 async function selectChapter(chapterId, chapterName) {
     currentChapterId = chapterId;
     currentChapterName = chapterName;
-    console.log(`📝 Selected chapter: ${chapterName}`);
 
     try {
-        const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${chapterId}/questions`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
+        const response = await fetch(`/api/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${chapterId}/questions`);
         questions = await response.json();
-        console.log('✅ Questions loaded:', questions.length);
 
         currentQuestionIndex = 0;
         userAnswers = {};
 
         if (questions.length > 0) {
-            document.getElementById('quiz-chapter-title').innerHTML = `<i class="fas fa-pencil-alt"></i> ${currentChapterName}`;
+            document.getElementById('quiz-chapter-title').innerText = currentChapterName;
             showQuestion(currentQuestionIndex);
             showView('quiz-view');
             updateBreadcrumb();
             
-            // Reset navigation buttons
-            const nextBtn = document.getElementById('next-btn');
-            nextBtn.innerHTML = 'পরবর্তী →';
-            nextBtn.onclick = nextQuestion;
+            // Reset footer visibility
             document.querySelector('.quiz-footer').style.display = 'flex';
         } else {
-            alert('❌ এই অধ্যায়ে কোনো প্রশ্ন পাওয়া যায়নি!');
+            alert('এই অধ্যায়ে কোনো প্রশ্ন পাওয়া যায়নি!');
         }
     } catch (error) {
-        console.error('❌ Error loading questions:', error);
-        showError('Failed to load questions. Please try again.');
+        console.error('Error loading questions:', error);
     }
 }
 
 // ==========================================
-// 2. QUIZ DISPLAY
+// 2. QUIZ DISPLAY & MATHJAX LOGIC
 // ==========================================
 
 function showQuestion(index) {
     if (!questions || questions.length === 0) {
-        console.error('❌ No questions to display');
+        console.error('No questions to display');
         return;
     }
     
     const q = questions[index];
     if (!q) {
-        console.error(`❌ Question at index ${index} not found`);
+        console.error(`Question at index ${index} not found`);
         return;
     }
     
     // Update Progress
-    const progressElem = document.getElementById('quiz-progress');
-    if (progressElem) {
-        progressElem.innerText = `প্রশ্ন ${index + 1} / ${questions.length}`;
-    }
+    document.getElementById('quiz-progress').innerText = `প্রশ্ন ${index + 1} / ${questions.length}`;
 
     // Update Question Text
     const qTextElem = document.getElementById('question-text');
-    if (qTextElem) {
-        qTextElem.innerHTML = `${index + 1}. ${q.question || q.text || 'Question not available'}`;
-    }
+    qTextElem.innerHTML = `${index + 1}. ${q.question || q.text || 'Question not available'}`;
 
     // Update Image (If exists)
     const imgContainer = document.getElementById('question-image-container');
     const imgElem = document.getElementById('question-image');
-    if (q.image && imgElem) {
+    if (q.image) {
         imgElem.src = `/static/images/${q.image}`;
-        if (imgContainer) {
-            imgContainer.style.display = 'block';
-        }
-    } else if (imgContainer) {
+        imgContainer.style.display = 'block';
+    } else {
         imgContainer.style.display = 'none';
     }
 
     // Render Options
     const optionsGrid = document.getElementById('options-container');
-    if (!optionsGrid) {
-        console.error('❌ options-container element not found!');
-        return;
-    }
-    
     optionsGrid.innerHTML = '';
 
-    if (q.options && Array.isArray(q.options)) {
-        const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
-        
-        q.options.forEach((optText, optIdx) => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerHTML = `<span class="option-label">${String.fromCharCode(65 + optIdx)}</span> ${optText}`;
-            btn.dataset.correct = (optIdx === correctAnswer) ? 'true' : 'false';
-            btn.dataset.index = optIdx;
-            
-            // Check if user already answered
-            if (userAnswers[index] !== undefined) {
-                btn.classList.add('disabled');
-                if (optIdx === correctAnswer) {
-                    btn.classList.add('correct');
-                }
-                if (userAnswers[index] === optIdx && optIdx !== correctAnswer) {
-                    btn.classList.add('wrong');
-                }
-                if (userAnswers[index] === optIdx) {
-                    btn.classList.add('selected');
-                }
-            } else {
-                btn.onclick = function(e) {
-                    handleAnswer(optIdx, correctAnswer, index);
-                };
-            }
+    const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
 
-            optionsGrid.appendChild(btn);
-        });
-    } else {
-        optionsGrid.innerHTML = '<p style="color: #a0aec0;">No options available for this question.</p>';
-    }
+    q.options.forEach((optText, optIdx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="option-label">${String.fromCharCode(65 + optIdx)}</span> ${optText}`;
+        btn.dataset.correct = (optIdx === correctAnswer) ? 'true' : 'false';
+        btn.dataset.index = optIdx;
+
+        // Check if user already answered
+        if (userAnswers[index] !== undefined) {
+            btn.classList.add('disabled');
+            if (optIdx === correctAnswer) {
+                btn.classList.add('correct');
+            }
+            if (userAnswers[index] === optIdx && optIdx !== correctAnswer) {
+                btn.classList.add('wrong');
+            }
+            if (userAnswers[index] === optIdx) {
+                btn.classList.add('selected');
+            }
+        } else {
+            btn.onclick = () => handleAnswer(optIdx);
+        }
+
+        optionsGrid.appendChild(btn);
+    });
 
     // Navigation Buttons State
     const prevBtn = document.getElementById('prev-btn');
@@ -327,7 +205,7 @@ function showQuestion(index) {
     
     if (nextBtn) {
         if (allAnswered && index === questions.length - 1) {
-            // সব প্রশ্নের উত্তর দেওয়া হয়েছে - শুধু "সম্পন্ন" বাটন দেখাবে
+            // সব প্রশ্নের উত্তর দেওয়া হয়েছে - "সম্পন্ন" বাটন দেখাবে
             nextBtn.innerHTML = '✅ সম্পন্ন';
             nextBtn.className = 'nav-btn success';
             nextBtn.onclick = showQuizComplete;
@@ -345,23 +223,19 @@ function showQuestion(index) {
         }
     }
 
-    // Re-render MathJax Equations
+    // Re-render MathJax Equations for dynamic content
     if (window.MathJax && window.MathJax.typesetPromise) {
-        try {
-            window.MathJax.typesetPromise([qTextElem, optionsGrid]).catch((err) => console.log('MathJax error:', err));
-        } catch (e) {
-            console.log('MathJax not available');
-        }
+        window.MathJax.typesetPromise([qTextElem, optionsGrid]).catch((err) => console.log(err));
     }
 }
 
-// ==========================================
-// 3. HANDLE ANSWER
-// ==========================================
-
-function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
+function handleAnswer(selectedIndex) {
+    // Get correct answer
+    const q = questions[currentQuestionIndex];
+    const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
+    
     // Save user answer
-    userAnswers[questionIndex] = selectedIndex;
+    userAnswers[currentQuestionIndex] = selectedIndex;
     
     // Get all option buttons
     const optionsGrid = document.getElementById('options-container');
@@ -386,12 +260,10 @@ function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
         }
     });
     
-    // 🎉 Check if answer is correct - show celebration
+    // 🎉 Check if answer is correct
     if (selectedIndex === correctAnswer) {
-        console.log('🎉 Correct Answer! Showing celebration...');
+        console.log('🎉 Correct Answer!');
         showCelebration();
-    } else {
-        console.log('❌ Wrong Answer');
     }
     
     // Check if all questions are answered
@@ -405,46 +277,45 @@ function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
 }
 
 // ==========================================
-// 4. QUIZ COMPLETE - শুধু Back Button
+// 3. QUIZ COMPLETE - শুধু Back Button
 // ==========================================
 
 function showQuizComplete() {
     const quizCard = document.getElementById('quiz-card');
     const footer = document.querySelector('.quiz-footer');
+    const progressElem = document.getElementById('quiz-progress');
     
     // Hide footer
     if (footer) {
         footer.style.display = 'none';
     }
     
+    // Update progress
+    if (progressElem) {
+        progressElem.innerText = '✅ সম্পন্ন';
+        progressElem.style.background = '#d4edda';
+        progressElem.style.color = '#155724';
+        progressElem.style.borderColor = '#28a745';
+    }
+    
     // Show completion message with Back button
     quizCard.innerHTML = `
         <div class="quiz-complete">
             <div class="complete-icon">🎉</div>
-            <h2 style="color: #2d3748; margin: 15px 0 10px 0; font-size: 1.5rem;">
-                কুইজ সম্পন্ন হয়েছে!
-            </h2>
-            <p style="color: #718096; font-size: 1rem; margin-bottom: 20px;">
-                আপনি সব প্রশ্নের উত্তর দিয়েছেন।
-            </p>
+            <h2>কুইজ সম্পন্ন হয়েছে!</h2>
+            <p>আপনি সব প্রশ্নের উত্তর দিয়েছেন।</p>
             <button onclick="goBackToChapters()" class="nav-btn primary" style="width: 100%; max-width: 300px; margin: 0 auto;">
                 <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
             </button>
         </div>
     `;
     
-    // Update progress
-    const progressElem = document.getElementById('quiz-progress');
-    if (progressElem) {
-        progressElem.innerText = `✅ সম্পন্ন`;
-        progressElem.style.background = '#d4edda';
-        progressElem.style.color = '#155724';
-        progressElem.style.borderColor = '#28a745';
-    }
+    // Celebration
+    setTimeout(showCelebration, 300);
 }
 
 // ==========================================
-// 5. GO BACK TO CHAPTERS
+// 4. GO BACK TO CHAPTERS
 // ==========================================
 
 function goBackToChapters() {
@@ -452,6 +323,15 @@ function goBackToChapters() {
     questions = [];
     userAnswers = {};
     currentQuestionIndex = 0;
+    
+    // Reset progress style
+    const progressElem = document.getElementById('quiz-progress');
+    if (progressElem) {
+        progressElem.style.background = '';
+        progressElem.style.color = '';
+        progressElem.style.borderColor = '';
+        progressElem.innerText = 'প্রশ্ন ১ / ১০';
+    }
     
     // Go back to chapters view
     if (currentSubjectId && currentSubjectName) {
@@ -462,8 +342,51 @@ function goBackToChapters() {
 }
 
 // ==========================================
-// 6. NAVIGATION
+// 5. NAVIGATION & BREADCRUMB
 // ==========================================
+
+function showView(viewId) {
+    document.querySelectorAll('.view-section').forEach(view => {
+        view.classList.remove('active');
+    });
+    document.getElementById(viewId).classList.add('active');
+}
+
+function updateBreadcrumb() {
+    const bc = document.getElementById('breadcrumb');
+    const bcBatch = document.getElementById('bc-batch');
+    const bcSub = document.getElementById('bc-subject');
+    const bcChap = document.getElementById('bc-chapter');
+    const sep1 = document.getElementById('sep1');
+    const sep2 = document.getElementById('sep2');
+
+    bc.style.display = 'flex';
+
+    if (currentBatchId && !currentSubjectId) {
+        bcBatch.innerText = currentBatchName;
+        bcSub.style.display = 'none';
+        bcChap.style.display = 'none';
+        sep1.style.display = 'none';
+        sep2.style.display = 'none';
+    } else if (currentSubjectId && !currentChapterId) {
+        bcBatch.innerText = currentBatchName;
+        bcSub.innerText = currentSubjectName;
+        bcSub.style.display = 'inline';
+        bcChap.style.display = 'none';
+        sep1.style.display = 'inline';
+        sep2.style.display = 'none';
+    } else if (currentChapterId) {
+        bcBatch.innerText = currentBatchName;
+        bcSub.innerText = currentSubjectName;
+        bcChap.innerText = currentChapterName;
+        bcSub.style.display = 'inline';
+        bcChap.style.display = 'inline';
+        sep1.style.display = 'inline';
+        sep2.style.display = 'inline';
+    } else {
+        bc.style.display = 'none';
+    }
+}
 
 function nextQuestion() {
     if (currentQuestionIndex < questions.length - 1) {
@@ -476,62 +399,6 @@ function prevQuestion() {
     if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
         showQuestion(currentQuestionIndex);
-    }
-}
-
-function showView(viewId) {
-    document.querySelectorAll('.view-section').forEach(view => {
-        view.classList.remove('active');
-    });
-    const targetView = document.getElementById(viewId);
-    if (targetView) {
-        targetView.classList.add('active');
-    } else {
-        console.error(`❌ View "${viewId}" not found!`);
-    }
-}
-
-function updateBreadcrumb() {
-    const bc = document.getElementById('breadcrumb');
-    const bcBatch = document.getElementById('bc-batch');
-    const bcSub = document.getElementById('bc-subject');
-    const bcChap = document.getElementById('bc-chapter');
-    const sep1 = document.getElementById('sep1');
-    const sep2 = document.getElementById('sep2');
-
-    if (!bc) return;
-
-    bc.style.display = 'flex';
-
-    if (currentBatchId && !currentSubjectId) {
-        if (bcBatch) bcBatch.innerText = currentBatchName;
-        if (bcSub) bcSub.style.display = 'none';
-        if (bcChap) bcChap.style.display = 'none';
-        if (sep1) sep1.style.display = 'none';
-        if (sep2) sep2.style.display = 'none';
-    } else if (currentSubjectId && !currentChapterId) {
-        if (bcBatch) bcBatch.innerText = currentBatchName;
-        if (bcSub) {
-            bcSub.innerText = currentSubjectName;
-            bcSub.style.display = 'inline';
-        }
-        if (bcChap) bcChap.style.display = 'none';
-        if (sep1) sep1.style.display = 'inline';
-        if (sep2) sep2.style.display = 'none';
-    } else if (currentChapterId) {
-        if (bcBatch) bcBatch.innerText = currentBatchName;
-        if (bcSub) {
-            bcSub.innerText = currentSubjectName;
-            bcSub.style.display = 'inline';
-        }
-        if (bcChap) {
-            bcChap.innerText = currentChapterName;
-            bcChap.style.display = 'inline';
-        }
-        if (sep1) sep1.style.display = 'inline';
-        if (sep2) sep2.style.display = 'inline';
-    } else {
-        bc.style.display = 'none';
     }
 }
 
@@ -566,7 +433,7 @@ function resetToBatches() {
 }
 
 // ==========================================
-// 7. CELEBRATION ANIMATIONS
+// 6. CELEBRATION ANIMATIONS
 // ==========================================
 
 function createEmojiBurst() {
@@ -708,10 +575,38 @@ function showCelebration() {
 }
 
 // ==========================================
+// 7. FULLSCREEN API
+// ==========================================
+
+function toggleFullscreen() {
+    let elem = document.documentElement;
+
+    if (!document.fullscreenElement) {
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        }
+        document.getElementById('fullscreenBtn').innerText = '✕ এক্সিট ফুল স্ক্রিন';
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+        document.getElementById('fullscreenBtn').innerText = '🖥️ ফুল স্ক্রিন';
+    }
+}
+
+// ==========================================
 // 8. KEYBOARD SHORTCUTS
 // ==========================================
 
-function handleKeyboardShortcuts(e) {
+document.addEventListener('keydown', function(e) {
     const quizView = document.getElementById('quiz-view');
     if (!quizView || !quizView.classList.contains('active')) return;
 
@@ -738,36 +633,10 @@ function handleKeyboardShortcuts(e) {
             prevBtn.click();
         }
     }
-}
+});
 
 // ==========================================
-// 9. ERROR HANDLING
-// ==========================================
-
-function showError(message) {
-    const container = document.querySelector('.main-container') || document.body;
-    const errorDiv = document.createElement('div');
-    errorDiv.style.cssText = `
-        background: #fed7d7;
-        color: #c53030;
-        padding: 15px;
-        border-radius: 10px;
-        margin: 15px 0;
-        text-align: center;
-        border: 2px solid #fc8181;
-    `;
-    errorDiv.innerHTML = `
-        <i class="fas fa-exclamation-triangle" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
-        <p>${message}</p>
-        <button onclick="this.parentElement.remove(); loadBatches();" style="margin-top: 8px; padding: 8px 20px; background: #c53030; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">
-            🔄 পুনরায় চেষ্টা করুন
-        </button>
-    `;
-    container.prepend(errorDiv);
-}
-
-// ==========================================
-// 10. EXPOSE TO GLOBAL SCOPE
+// 9. EXPOSE TO GLOBAL SCOPE
 // ==========================================
 
 window.loadBatches = loadBatches;
@@ -784,9 +653,12 @@ window.showBatchesView = showBatchesView;
 window.showSubjectsView = showSubjectsView;
 window.showChaptersView = showChaptersView;
 window.resetToBatches = resetToBatches;
-window.showError = showError;
+window.toggleFullscreen = toggleFullscreen;
 window.goBackToChapters = goBackToChapters;
 window.showQuizComplete = showQuizComplete;
 window.showCelebration = showCelebration;
+window.createEmojiBurst = createEmojiBurst;
+window.createFireworks = createFireworks;
+window.createConfetti = createConfetti;
 
 console.log('✅ Quiz System Ready!');
