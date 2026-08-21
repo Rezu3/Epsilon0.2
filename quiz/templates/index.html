@@ -30,7 +30,7 @@
 </head>
 <body>
 
-    <!-- Header Section -->
+    <!-- Header Section - শুধুমাত্র এখানে লোগো থাকবে -->
     <header class="app-header">
         <div class="logo-container" onclick="resetToBatches()">
             <h1>🎓𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟</h1>
@@ -113,123 +113,10 @@
 
     </main>
 
-    <!-- Main JavaScript -->
-    <script src="{{ url_for('quiz.static', filename='js/app.js') }}"></script>
-    
-    <!DOCTYPE html>
-<html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Portal</title>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Main CSS -->
-    <link rel="stylesheet" href="{{ url_for('quiz.static', filename='css/style.css') }}">
-
-    <!-- MathJax for rendering Mathematical Equations & Integrals -->
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']]
-            },
-            svg: {
-                fontCache: 'global'
-            }
-        };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-</head>
-<body>
-
-    <!-- Header Section -->
-    <header class="app-header">
-        <div class="logo-container" onclick="resetToBatches()">
-            <h1>🎓𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟</h1>
-        </div>
-        <button id="backBtn" class="back-btn" onclick="goBackToDashboard()">
-            <i class="fas fa-arrow-left"></i> <span id="backButtonText">ড্যাশবোর্ড</span>
-        </button>
-    </header>
-
-    <!-- Main Container -->
-    <main class="main-container">
-
-        <!-- Navigation Breadcrumb -->
-        <nav class="breadcrumb" id="breadcrumb" style="display: none;">
-            <span id="bc-batch" onclick="showBatchesView()">ব্যাচ</span>
-            <span class="separator" id="sep1">›</span>
-            <span id="bc-subject" onclick="showSubjectsView()">বিষয়</span>
-            <span class="separator" id="sep2">›</span>
-            <span id="bc-chapter" onclick="showChaptersView()">অধ্যায়</span>
-        </nav>
-
-        <!-- 1. Batches Selection View -->
-        <section id="batches-view" class="view-section active">
-            <h2><i class="fas fa-users"></i> আপনার ব্যাচ নির্বাচন করুন</h2>
-            <div id="batches-grid" class="cards-grid">
-                <!-- Dynamic Batch Cards Will Be Inserted Here -->
-            </div>
-        </section>
-
-        <!-- 2. Subjects Selection View -->
-        <section id="subjects-view" class="view-section">
-            <h2><i class="fas fa-book"></i> বিষয় নির্বাচন করুন</h2>
-            <div id="subjects-grid" class="cards-grid">
-                <!-- Dynamic Subject Cards Will Be Inserted Here -->
-            </div>
-        </section>
-
-        <!-- 3. Chapters Selection View -->
-        <section id="chapters-view" class="view-section">
-            <h2><i class="fas fa-list"></i> অধ্যায় নির্বাচন করুন</h2>
-            <div id="chapters-grid" class="cards-grid">
-                <!-- Dynamic Chapter Cards Will Be Inserted Here -->
-            </div>
-        </section>
-
-        <!-- 4. Quiz Questions View -->
-        <section id="quiz-view" class="view-section">
-            <div class="quiz-header">
-                <h3 id="quiz-chapter-title"><i class="fas fa-pencil-alt"></i> কুইজ</h3>
-                <div class="quiz-progress" id="quiz-progress">প্রশ্ন ১ / ১০</div>
-            </div>
-
-            <div id="quiz-card" class="quiz-card">
-                <!-- Question Text -->
-                <div id="question-text" class="question-text">
-                    <!-- Question string with LaTeX Math will be loaded here -->
-                </div>
-
-                <!-- Optional Question Image -->
-                <div id="question-image-container" class="image-container" style="display: none;">
-                    <img id="question-image" src="" alt="Question Image">
-                </div>
-
-                <!-- Options List -->
-                <div id="options-container" class="options-grid">
-                    <!-- Dynamic Option Buttons Will Be Inserted Here -->
-                </div>
-            </div>
-
-            <!-- Quiz Footer Controls -->
-            <div class="quiz-footer">
-                <button id="prev-btn" class="nav-btn secondary" onclick="prevQuestion()">
-                    <i class="fas fa-arrow-left"></i> পূর্ববর্তী
-                </button>
-                <button id="next-btn" class="nav-btn primary" onclick="nextQuestion()">
-                    পরবর্তী <i class="fas fa-arrow-right"></i>
-                </button>
-            </div>
-        </section>
-
-    </main>
+    <!-- ✅ Footer - কোনো লোগো নেই, শুধু কপিরাইট (ঐচ্ছিক) -->
+    <!-- <footer style="text-align: center; padding: 10px; color: #a0aec0; font-size: 0.7rem;">
+        &copy; 2026 All Rights Reserved
+    </footer> -->
 
     <!-- Main JavaScript -->
     <script src="{{ url_for('quiz.static', filename='js/app.js') }}"></script>
@@ -237,49 +124,37 @@
     <!-- Back Button JavaScript -->
     <script>
         function goBackToDashboard() {
-            // Check URL parameters for return URL
             const urlParams = new URLSearchParams(window.location.search);
             const returnUrl = urlParams.get('return');
             
-            console.log('Return URL from params:', returnUrl);
-            
             if (returnUrl) {
-                // If return URL is provided, go there
                 window.location.href = returnUrl;
                 return;
             }
             
-            // Check sessionStorage
             const storedUrl = sessionStorage.getItem('dashboardUrl');
             if (storedUrl) {
                 window.location.href = storedUrl;
                 return;
             }
             
-            // Check referrer
             const referrer = document.referrer;
             if (referrer && referrer.includes('/student_dashboard')) {
                 window.location.href = referrer;
                 return;
             }
             
-            // Fallback: Go to student_dashboard
             window.location.href = '/student_dashboard';
         }
         
-        // Store URL when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            // Check for return URL in parameters
             const urlParams = new URLSearchParams(window.location.search);
             const returnUrl = urlParams.get('return');
             
             if (returnUrl) {
-                // Store it for later use
                 sessionStorage.setItem('dashboardUrl', returnUrl);
-                console.log('✅ Dashboard URL stored:', returnUrl);
             }
             
-            // Update back button text
             const backBtnText = document.getElementById('backButtonText');
             if (backBtnText) {
                 const referrer = document.referrer;
@@ -294,7 +169,6 @@
                 }
             }
             
-            // Keyboard shortcut: Escape key
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && !e.target.matches('input, textarea, select')) {
                     goBackToDashboard();
