@@ -1,6 +1,5 @@
 // ==========================================
 // QUIZ SYSTEM - COMPLETE JAVASCRIPT
-// (No Save, No Result - Only Back Button)
 // ==========================================
 
 // State Variables
@@ -13,11 +12,21 @@ let currentChapterName = '';
 
 let questions = [];
 let currentQuestionIndex = 0;
-let userAnswers = {};
+let userAnswers = {}; // শুধু current chapter এর জন্য
+let completedChapters = {}; // Track completed chapters per subject
 
-// Initial Load
+// ==========================================
+// API BASE URL
+// ==========================================
+const API_BASE = '/quiz/api';
+
+// ==========================================
+// INITIALIZATION
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('✅ Quiz System Initialized');
     loadBatches();
+    document.addEventListener('keydown', handleKeyboardShortcuts);
 });
 
 // ==========================================
@@ -29,36 +38,27 @@ function sortBatches(batches) {
     return batches.sort((a, b) => {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
-        
         const numA = parseInt(nameA.match(/\d+/)?.[0] || 0);
         const numB = parseInt(nameB.match(/\d+/)?.[0] || 0);
-        
-        if (numA > 0 && numB > 0) {
-            return numA - numB;
-        }
+        if (numA > 0 && numB > 0) return numA - numB;
         return nameA.localeCompare(nameB);
     });
 }
 
-// Load Batches
 async function loadBatches() {
     try {
         console.log('📡 Fetching batches...');
-        const response = await fetch('/api/batches');
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const response = await fetch(`${API_BASE}/batches`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         let batches = await response.json();
-        console.log('✅ Batches loaded:', batches);
-        
-        // Sort batches
         batches = sortBatches(batches);
+        console.log('✅ Sorted batches:', batches);
         
         const grid = document.getElementById('batches-grid');
+        if (!grid) return;
+        
         grid.innerHTML = '';
-
         if (batches && batches.length > 0) {
             batches.forEach(batch => {
                 const card = document.createElement('div');
@@ -76,32 +76,31 @@ async function loadBatches() {
                 </div>
             `;
         }
-
         showView('batches-view');
         updateBreadcrumb();
     } catch (error) {
-        console.error('Error loading batches:', error);
+        console.error('❌ Error loading batches:', error);
         showError('Failed to load batches. Please try again.');
     }
 }
 
-// Select Batch & Load Subjects
 async function selectBatch(batchId, batchName) {
     currentBatchId = batchId;
     currentBatchName = batchName;
     console.log(`📚 Selected batch: ${batchName}`);
+    
+    // Reset completed chapters for new batch
+    completedChapters = {};
 
     try {
-        const response = await fetch(`/api/batches/${batchId}/subjects`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const response = await fetch(`${API_BASE}/batches/${batchId}/subjects`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const subjects = await response.json();
         console.log('✅ Subjects loaded:', subjects);
 
         const grid = document.getElementById('subjects-grid');
+        if (!grid) return;
         grid.innerHTML = '';
 
         if (subjects && subjects.length > 0) {
@@ -121,39 +120,44 @@ async function selectBatch(batchId, batchName) {
                 </div>
             `;
         }
-
         showView('subjects-view');
         updateBreadcrumb();
     } catch (error) {
-        console.error('Error loading subjects:', error);
+        console.error('❌ Error loading subjects:', error);
         showError('Failed to load subjects. Please try again.');
     }
 }
 
-// Select Subject & Load Chapters
 async function selectSubject(subjectId, subjectName) {
     currentSubjectId = subjectId;
     currentSubjectName = subjectName;
     console.log(`📖 Selected subject: ${subjectName}`);
+    
+    // Reset completed chapters for new subject
+    completedChapters = {};
 
     try {
-        const response = await fetch(`/api/batches/${currentBatchId}/subjects/${subjectId}/chapters`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${subjectId}/chapters`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const chapters = await response.json();
         console.log('✅ Chapters loaded:', chapters);
 
         const grid = document.getElementById('chapters-grid');
+        if (!grid) return;
         grid.innerHTML = '';
 
         if (chapters && chapters.length > 0) {
             chapters.forEach(chapter => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `<i class="fas fa-list"></i> ${chapter.name}`;
+                
+                // Check if chapter is completed
+                const isCompleted = completedChapters[chapter.id] || false;
+                card.innerHTML = `
+                    <i class="fas fa-list"></i> ${chapter.name}
+                    ${isCompleted ? '<span style="color:#28a745;font-size:0.7rem;display:block;">✅ Completed</span>' : ''}
+                `;
                 card.onclick = () => selectChapter(chapter.id, chapter.name);
                 grid.appendChild(card);
             });
@@ -166,57 +170,53 @@ async function selectSubject(subjectId, subjectName) {
                 </div>
             `;
         }
-
         showView('chapters-view');
         updateBreadcrumb();
     } catch (error) {
-        console.error('Error loading chapters:', error);
+        console.error('❌ Error loading chapters:', error);
         showError('Failed to load chapters. Please try again.');
     }
 }
 
-// Select Chapter & Start Quiz
 async function selectChapter(chapterId, chapterName) {
     currentChapterId = chapterId;
     currentChapterName = chapterName;
     console.log(`📝 Selected chapter: ${chapterName}`);
+    
+    // ✅ RESET for this chapter
+    questions = [];
+    currentQuestionIndex = 0;
+    userAnswers = {}; // ✅ Reset userAnswers for this chapter
 
     try {
-        const response = await fetch(`/api/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${chapterId}/questions`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${chapterId}/questions`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         questions = await response.json();
         console.log('✅ Questions loaded:', questions.length);
 
-        currentQuestionIndex = 0;
-        userAnswers = {};
-
         if (questions.length > 0) {
             document.getElementById('quiz-chapter-title').innerHTML = `<i class="fas fa-pencil-alt"></i> ${currentChapterName}`;
-            showQuestion(currentQuestionIndex);
+            showQuestion(0);
             showView('quiz-view');
             updateBreadcrumb();
             
             // Reset navigation buttons
             const nextBtn = document.getElementById('next-btn');
             nextBtn.innerHTML = 'পরবর্তী →';
-            nextBtn.className = 'nav-btn primary';
             nextBtn.onclick = nextQuestion;
             document.querySelector('.quiz-footer').style.display = 'flex';
         } else {
             alert('❌ এই অধ্যায়ে কোনো প্রশ্ন পাওয়া যায়নি!');
         }
     } catch (error) {
-        console.error('Error loading questions:', error);
+        console.error('❌ Error loading questions:', error);
         showError('Failed to load questions. Please try again.');
     }
 }
 
 // ==========================================
-// 2. QUIZ DISPLAY & MATHJAX LOGIC
+// 2. QUIZ DISPLAY
 // ==========================================
 
 function showQuestion(index) {
@@ -233,25 +233,29 @@ function showQuestion(index) {
     
     // Update Progress
     const progressElem = document.getElementById('quiz-progress');
-    progressElem.innerText = `প্রশ্ন ${index + 1} / ${questions.length}`;
-    progressElem.className = 'quiz-progress';
+    if (progressElem) {
+        progressElem.innerText = `প্রশ্ন ${index + 1} / ${questions.length}`;
+    }
 
     // Update Question Text
     const qTextElem = document.getElementById('question-text');
-    qTextElem.innerHTML = `${index + 1}. ${q.question || q.text || 'Question not available'}`;
+    if (qTextElem) {
+        qTextElem.innerHTML = `${index + 1}. ${q.question || q.text || 'Question not available'}`;
+    }
 
-    // Update Image (If exists)
+    // Update Image
     const imgContainer = document.getElementById('question-image-container');
     const imgElem = document.getElementById('question-image');
-    if (q.image) {
+    if (q.image && imgElem) {
         imgElem.src = `/static/images/${q.image}`;
-        imgContainer.style.display = 'block';
-    } else {
+        if (imgContainer) imgContainer.style.display = 'block';
+    } else if (imgContainer) {
         imgContainer.style.display = 'none';
     }
 
     // Render Options
     const optionsGrid = document.getElementById('options-container');
+    if (!optionsGrid) return;
     optionsGrid.innerHTML = '';
 
     if (q.options && Array.isArray(q.options)) {
@@ -263,172 +267,166 @@ function showQuestion(index) {
             btn.innerHTML = `<span class="option-label">${String.fromCharCode(65 + optIdx)}</span> ${optText}`;
             btn.dataset.correct = (optIdx === correctAnswer) ? 'true' : 'false';
             btn.dataset.index = optIdx;
-
-            // Check if user already answered
+            
+            // Check if user already answered this question
             if (userAnswers[index] !== undefined) {
                 btn.classList.add('disabled');
-                if (optIdx === correctAnswer) {
-                    btn.classList.add('correct');
-                }
-                if (userAnswers[index] === optIdx && optIdx !== correctAnswer) {
-                    btn.classList.add('wrong');
-                }
-                if (userAnswers[index] === optIdx) {
-                    btn.classList.add('selected');
-                }
+                if (optIdx === correctAnswer) btn.classList.add('correct');
+                if (userAnswers[index] === optIdx && optIdx !== correctAnswer) btn.classList.add('wrong');
+                if (userAnswers[index] === optIdx) btn.classList.add('selected');
             } else {
-                btn.onclick = () => handleAnswer(optIdx);
+                btn.onclick = function() {
+                    handleAnswer(optIdx, correctAnswer, index);
+                };
             }
-
             optionsGrid.appendChild(btn);
         });
     } else {
         optionsGrid.innerHTML = '<p style="color: #a0aec0;">No options available for this question.</p>';
     }
 
-    // Navigation Buttons State
+    // Navigation Buttons
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     
-    prevBtn.disabled = (index === 0);
-    
-    // Check if all questions are answered
-    const allAnswered = Object.keys(userAnswers).length === questions.length;
-    
-    if (allAnswered && index === questions.length - 1) {
-        // সব প্রশ্নের উত্তর দেওয়া হয়েছে - "সম্পন্ন" বাটন দেখাবে
-        nextBtn.innerHTML = '✅ সম্পন্ন';
-        nextBtn.className = 'nav-btn success';
-        nextBtn.onclick = showQuizComplete;
-        nextBtn.disabled = false;
-    } else if (index === questions.length - 1) {
-        nextBtn.innerHTML = 'শেষ প্রশ্ন';
-        nextBtn.className = 'nav-btn primary';
-        nextBtn.onclick = nextQuestion;
-        nextBtn.disabled = false;
-    } else {
-        nextBtn.innerHTML = 'পরবর্তী →';
-        nextBtn.className = 'nav-btn primary';
-        nextBtn.onclick = nextQuestion;
-        nextBtn.disabled = false;
+    if (prevBtn) prevBtn.disabled = (index === 0);
+    if (nextBtn) {
+        if (index === questions.length - 1) {
+            // Check if ALL questions are answered
+            const allAnswered = Object.keys(userAnswers).length === questions.length;
+            if (allAnswered) {
+                nextBtn.innerHTML = '📊 দেখুন ফলাফল';
+                nextBtn.onclick = showResults;
+            } else {
+                nextBtn.innerHTML = 'শেষ প্রশ্ন';
+                nextBtn.onclick = nextQuestion;
+            }
+        } else {
+            nextBtn.innerHTML = 'পরবর্তী →';
+            nextBtn.onclick = nextQuestion;
+        }
     }
 
-    // Re-render MathJax Equations
+    // Re-render MathJax
     if (window.MathJax && window.MathJax.typesetPromise) {
-        window.MathJax.typesetPromise([qTextElem, optionsGrid]).catch((err) => console.log('MathJax error:', err));
+        try {
+            window.MathJax.typesetPromise([qTextElem, optionsGrid]).catch(err => console.log('MathJax error:', err));
+        } catch (e) {
+            console.log('MathJax not available');
+        }
     }
 }
 
-function handleAnswer(selectedIndex) {
-    const currentQ = questions[currentQuestionIndex];
-    const correctAnswer = currentQ.answer !== undefined ? currentQ.answer : currentQ.correct_answer;
-    
+// ==========================================
+// 3. HANDLE ANSWER
+// ==========================================
+
+function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
     // Save user answer
-    userAnswers[currentQuestionIndex] = selectedIndex;
+    userAnswers[questionIndex] = selectedIndex;
     
-    // Get all option buttons
     const optionsGrid = document.getElementById('options-container');
     const allBtns = optionsGrid.querySelectorAll('.option-btn');
     
-    // Disable all buttons
     allBtns.forEach(btn => {
         btn.classList.add('disabled');
         btn.onclick = null;
     });
     
-    // Show correct and wrong answers
     allBtns.forEach((btn, idx) => {
-        if (idx === correctAnswer) {
-            btn.classList.add('correct');
-        }
-        if (idx === selectedIndex && idx !== correctAnswer) {
-            btn.classList.add('wrong');
-        }
-        if (idx === selectedIndex) {
-            btn.classList.add('selected');
-        }
+        if (idx === correctAnswer) btn.classList.add('correct');
+        if (idx === selectedIndex && idx !== correctAnswer) btn.classList.add('wrong');
+        if (idx === selectedIndex) btn.classList.add('selected');
     });
     
-    // 🎉 Check if answer is correct - show celebration
     if (selectedIndex === correctAnswer) {
-        console.log('🎉 Correct Answer! Showing celebration...');
+        console.log('🎉 Correct Answer!');
         showCelebration();
-    } else {
-        console.log('❌ Wrong Answer');
     }
     
     // Check if all questions are answered
     if (Object.keys(userAnswers).length === questions.length) {
         const nextBtn = document.getElementById('next-btn');
-        nextBtn.innerHTML = '✅ সম্পন্ন';
-        nextBtn.className = 'nav-btn success';
-        nextBtn.onclick = showQuizComplete;
-        nextBtn.disabled = false;
+        nextBtn.innerHTML = '📊 দেখুন ফলাফল';
+        nextBtn.onclick = showResults;
     }
 }
 
 // ==========================================
-// 3. QUIZ COMPLETE - শুধু Back Button
+// 4. SHOW RESULTS
 // ==========================================
 
-function showQuizComplete() {
+function showResults() {
+    let correct = 0;
+    let total = questions.length;
+    
+    questions.forEach((q, idx) => {
+        const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
+        if (userAnswers[idx] === correctAnswer) {
+            correct++;
+        }
+    });
+    
+    const percentage = Math.round((correct / total) * 100);
+    let grade = '';
+    let emoji = '';
+    let gradeClass = '';
+    
+    if (percentage >= 80) { grade = 'A+'; emoji = '🌟'; gradeClass = 'grade-a-plus'; showCelebration(); }
+    else if (percentage >= 70) { grade = 'A'; emoji = '⭐'; gradeClass = 'grade-a'; }
+    else if (percentage >= 60) { grade = 'B'; emoji = '👍'; gradeClass = 'grade-b'; setTimeout(showCelebration, 300); }
+    else if (percentage >= 50) { grade = 'C'; emoji = '📖'; gradeClass = 'grade-c'; }
+    else if (percentage >= 40) { grade = 'D'; emoji = '💪'; gradeClass = 'grade-d'; }
+    else { grade = 'F'; emoji = '📚'; gradeClass = 'grade-f'; }
+    
+    // ✅ Mark chapter as completed
+    completedChapters[currentChapterId] = true;
+    console.log('✅ Chapter completed:', currentChapterName);
+    
     const quizCard = document.getElementById('quiz-card');
     const footer = document.querySelector('.quiz-footer');
-    const header = document.querySelector('.quiz-header');
     
-    // Hide header progress
-    const progressElem = document.getElementById('quiz-progress');
-    if (progressElem) {
-        progressElem.innerText = '✅ সম্পন্ন';
-        progressElem.className = 'quiz-progress complete';
-    }
-    
-    // Hide footer
-    if (footer) {
-        footer.style.display = 'none';
-    }
-    
-    // Show completion message with Back button
     quizCard.innerHTML = `
-        <div class="quiz-complete">
-            <div class="complete-icon">🎉</div>
-            <h2>কুইজ সম্পন্ন হয়েছে!</h2>
-            <p>আপনি সব প্রশ্নের উত্তর দিয়েছেন।</p>
-            <button onclick="goBackToChapters()" class="nav-btn primary" style="width: 100%; max-width: 300px; margin: 20px auto 0 auto; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
-            </button>
+        <div class="quiz-results">
+            <span class="result-icon">${emoji}</span>
+            <h2 style="color: #2d3748; margin-bottom: 10px; font-size: 1.3rem;">কুইজ সম্পন্ন! 🎯</h2>
+            <div class="result-score">${correct} / ${total}</div>
+            <div class="result-detail">✅ সঠিক উত্তর: ${correct}</div>
+            <div class="result-detail">❌ ভুল উত্তর: ${total - correct}</div>
+            <div class="result-detail">📊 নম্বর: ${percentage}%</div>
+            <div class="result-grade ${gradeClass}">গ্রেড: ${grade}</div>
+            <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+                <button onclick="goBackToChapters()" class="nav-btn secondary" style="flex:1;">
+                    <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
+                </button>
+                <button onclick="resetToBatches()" class="nav-btn primary" style="flex:1;">
+                    🔄 নতুন কুইজ
+                </button>
+            </div>
         </div>
     `;
     
-    // Celebration
-    setTimeout(showCelebration, 300);
-}
-
-// ==========================================
-// 4. GO BACK TO CHAPTERS
-// ==========================================
-
-function goBackToChapters() {
-    // Reset quiz state
-    questions = [];
-    userAnswers = {};
-    currentQuestionIndex = 0;
+    if (footer) footer.style.display = 'none';
     
-    // Reset progress
-    const progressElem = document.getElementById('quiz-progress');
-    progressElem.className = 'quiz-progress';
-    
-    // Go back to chapters view
-    if (currentSubjectId && currentSubjectName) {
-        selectSubject(currentSubjectId, currentSubjectName);
-    } else {
-        loadBatches();
+    // Extra celebration for good results
+    if (percentage >= 80) {
+        setTimeout(showCelebration, 500);
+        setTimeout(showCelebration, 1200);
     }
 }
 
 // ==========================================
-// 5. NAVIGATION & BREADCRUMB
+// 5. NAVIGATION
 // ==========================================
+
+function goBackToChapters() {
+    // Go back to chapters view with updated completion status
+    if (currentSubjectId && currentSubjectName) {
+        selectSubject(currentSubjectId, currentSubjectName);
+    } else {
+        showSubjectsView();
+    }
+}
 
 function nextQuestion() {
     if (currentQuestionIndex < questions.length - 1) {
@@ -448,7 +446,8 @@ function showView(viewId) {
     document.querySelectorAll('.view-section').forEach(view => {
         view.classList.remove('active');
     });
-    document.getElementById(viewId).classList.add('active');
+    const targetView = document.getElementById(viewId);
+    if (targetView) targetView.classList.add('active');
 }
 
 function updateBreadcrumb() {
@@ -459,6 +458,7 @@ function updateBreadcrumb() {
     const sep1 = document.getElementById('sep1');
     const sep2 = document.getElementById('sep2');
 
+    if (!bc) return;
     bc.style.display = 'flex';
 
     if (currentBatchId && !currentSubjectId) {
@@ -477,8 +477,8 @@ function updateBreadcrumb() {
     } else if (currentChapterId) {
         bcBatch.innerText = currentBatchName;
         bcSub.innerText = currentSubjectName;
-        bcChap.innerText = currentChapterName;
         bcSub.style.display = 'inline';
+        bcChap.innerText = currentChapterName;
         bcChap.style.display = 'inline';
         sep1.style.display = 'inline';
         sep2.style.display = 'inline';
@@ -522,7 +522,7 @@ function resetToBatches() {
 // ==========================================
 
 function createEmojiBurst() {
-    const emojis = ['🎉', '🎊', '⭐', '✨', '🌟', '💫', '🎆', '🎇', '❤️', '🔥', '🥳', '🎈'];
+    const emojis = ['🎉', '🎊', '⭐', '✨', '🌟', '💫', '🎆', '🎇', '❤️', '🔥', '🥳', '🎈', '🏆', '💯'];
     const container = document.createElement('div');
     container.className = 'emoji-burst-container';
     document.body.appendChild(container);
@@ -541,8 +541,8 @@ function createEmojiBurst() {
         const ex = Math.cos(angle) * distance;
         const ey = Math.sin(angle) * distance - 120;
         const erotate = (Math.random() - 0.5) * 720;
-        
         const size = 24 + Math.random() * 36;
+        
         emoji.style.fontSize = size + 'px';
         emoji.style.setProperty('--ex', ex + 'px');
         emoji.style.setProperty('--ey', ey + 'px');
@@ -554,12 +554,7 @@ function createEmojiBurst() {
         
         container.appendChild(emoji);
     }
-    
-    setTimeout(() => {
-        if (container.parentNode) {
-            container.remove();
-        }
-    }, 3000);
+    setTimeout(() => { if (container.parentNode) container.remove(); }, 3000);
 }
 
 function createFireworks() {
@@ -567,7 +562,7 @@ function createFireworks() {
     container.className = 'firework-container';
     document.body.appendChild(container);
     
-    const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#ff6348', '#7bed9f'];
+    const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#ff6348', '#7bed9f', '#ff4757', '#2ed573', '#f368e0', '#00d2d3'];
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
     const burstCount = 3 + Math.floor(Math.random() * 3);
@@ -582,14 +577,13 @@ function createFireworks() {
         for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
             particle.className = 'firework-particle';
-            
             const angle = Math.random() * 2 * Math.PI;
             const distance = 80 + Math.random() * 250;
             const tx = Math.cos(angle) * distance;
             const ty = Math.sin(angle) * distance;
-            
             const size = 4 + Math.random() * 8;
             const useColor = Math.random() > 0.5 ? color : color2;
+            
             particle.style.width = size + 'px';
             particle.style.height = size + 'px';
             particle.style.background = useColor;
@@ -599,16 +593,11 @@ function createFireworks() {
             particle.style.setProperty('--ty', ty + 'px');
             particle.style.animationDelay = (Math.random() * 0.3) + 's';
             particle.style.boxShadow = `0 0 ${size * 2}px ${useColor}`;
-            
+            particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
             container.appendChild(particle);
         }
     }
-    
-    setTimeout(() => {
-        if (container.parentNode) {
-            container.remove();
-        }
-    }, 2000);
+    setTimeout(() => { if (container.parentNode) container.remove(); }, 2000);
 }
 
 function createConfetti() {
@@ -616,13 +605,12 @@ function createConfetti() {
     container.className = 'confetti-container';
     document.body.appendChild(container);
     
-    const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#ff6348', '#7bed9f', '#ff4757', '#2ed573'];
+    const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#ff6348', '#7bed9f', '#ff4757', '#2ed573', '#f368e0', '#ff9f43', '#00d2d3'];
     const count = 80 + Math.floor(Math.random() * 60);
     
     for (let i = 0; i < count; i++) {
         const piece = document.createElement('div');
         piece.className = 'confetti-piece';
-        
         const color = colors[Math.floor(Math.random() * colors.length)];
         const width = 6 + Math.random() * 10;
         const height = 6 + Math.random() * 10;
@@ -641,15 +629,9 @@ function createConfetti() {
         piece.style.setProperty('--rotation', rotation + 'deg');
         piece.style.animationDelay = delay + 's';
         piece.style.opacity = 0.7 + Math.random() * 0.3;
-        
         container.appendChild(piece);
     }
-    
-    setTimeout(() => {
-        if (container.parentNode) {
-            container.remove();
-        }
-    }, 5500);
+    setTimeout(() => { if (container.parentNode) container.remove(); }, 5500);
 }
 
 function showCelebration() {
@@ -660,7 +642,36 @@ function showCelebration() {
 }
 
 // ==========================================
-// 7. ERROR HANDLING
+// 7. KEYBOARD SHORTCUTS
+// ==========================================
+
+function handleKeyboardShortcuts(e) {
+    const quizView = document.getElementById('quiz-view');
+    if (!quizView || !quizView.classList.contains('active')) return;
+
+    if (e.key >= '1' && e.key <= '4') {
+        const optionIndex = parseInt(e.key) - 1;
+        const optionsGrid = document.getElementById('options-container');
+        const btns = optionsGrid.querySelectorAll('.option-btn');
+        if (btns[optionIndex] && !btns[optionIndex].classList.contains('disabled')) {
+            btns[optionIndex].click();
+        }
+        e.preventDefault();
+    }
+
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        const nextBtn = document.getElementById('next-btn');
+        if (nextBtn && !nextBtn.disabled) nextBtn.click();
+    } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const prevBtn = document.getElementById('prev-btn');
+        if (prevBtn && !prevBtn.disabled) prevBtn.click();
+    }
+}
+
+// ==========================================
+// 8. ERROR HANDLING
 // ==========================================
 
 function showError(message) {
@@ -686,7 +697,7 @@ function showError(message) {
 }
 
 // ==========================================
-// 8. EXPOSE TO GLOBAL SCOPE
+// 9. EXPOSE TO GLOBAL SCOPE
 // ==========================================
 
 window.loadBatches = loadBatches;
@@ -703,9 +714,12 @@ window.showBatchesView = showBatchesView;
 window.showSubjectsView = showSubjectsView;
 window.showChaptersView = showChaptersView;
 window.resetToBatches = resetToBatches;
-window.goBackToChapters = goBackToChapters;
-window.showQuizComplete = showQuizComplete;
-window.showCelebration = showCelebration;
 window.showError = showError;
+window.showResults = showResults;
+window.showCelebration = showCelebration;
+window.createEmojiBurst = createEmojiBurst;
+window.createFireworks = createFireworks;
+window.createConfetti = createConfetti;
+window.goBackToChapters = goBackToChapters;
 
-console.log('✅ Quiz System Ready!');
+console.log('✅ Quiz System with Chapter Completion Tracking Ready!');
