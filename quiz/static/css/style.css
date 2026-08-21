@@ -1,6 +1,5 @@
 /* ==========================================
    COMPLETE STYLE.CSS - QUIZ SYSTEM
-   FULL SCREEN MOBILE FRIENDLY & TELEGRAM STYLE
    ========================================== */
 
 /* ==========================================
@@ -25,98 +24,19 @@ body {
 }
 
 /* ==========================================
-   USER INFO BAR
-   ========================================== */
-.quiz-user-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 24px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 0 0 16px 16px;
-    margin: 0 20px 16px 20px;
-    flex-wrap: wrap;
-    gap: 10px;
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.25);
-}
-
-.quiz-user-bar .user-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.quiz-user-bar .user-info i {
-    font-size: 28px;
-    color: rgba(255, 255, 255, 0.9);
-}
-
-.quiz-user-bar .user-info span {
-    font-weight: 500;
-    font-size: 15px;
-}
-
-.quiz-user-bar .user-badge {
-    background: rgba(255, 255, 255, 0.25);
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: capitalize;
-    letter-spacing: 0.5px;
-    backdrop-filter: blur(5px);
-}
-
-.quiz-user-bar .class-badge {
-    background: rgba(255, 215, 0, 0.3);
-    border: 1px solid rgba(255, 215, 0, 0.4);
-}
-
-.quiz-user-bar .back-dashboard {
-    color: white;
-    text-decoration: none;
-    padding: 8px 18px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    font-size: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(5px);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.quiz-user-bar .back-dashboard:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-}
-
-.quiz-user-bar .back-dashboard:active {
-    transform: scale(0.95);
-}
-
-/* ==========================================
-   HEADER - WITH BACK BUTTON
+   HEADER - TOP BAR
    ========================================== */
 .app-header {
-    background: #ffffff;
-    padding: 14px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 12px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
     position: sticky;
     top: 0;
     z-index: 100;
-    border-radius: 16px;
-    margin: 0 20px 16px 20px;
-    min-height: 72px;
-    border: 1px solid rgba(226, 232, 240, 0.5);
+    min-height: 60px;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
 }
 
 .logo-container {
@@ -127,40 +47,81 @@ body {
 }
 
 .logo-container h1 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     white-space: nowrap;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.user-info-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 6px 16px 6px 12px;
+    border-radius: 30px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-info-header i {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.user-info-header .username {
+    font-weight: 500;
+    font-size: 14px;
+    color: white;
+}
+
+.user-info-header .user-badge-header {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    white-space: nowrap;
+}
+
+.user-info-header .user-badge-header i {
+    font-size: 12px;
+    margin-right: 4px;
 }
 
 /* ==========================================
    BACK BUTTON
    ========================================== */
 .back-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: rgba(255, 255, 255, 0.2);
     color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-weight: 500;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     white-space: nowrap;
-    min-height: 44px;
     touch-action: manipulation;
 }
 
 .back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .back-btn:active {
@@ -168,7 +129,7 @@ body {
 }
 
 .back-btn i {
-    font-size: 16px;
+    font-size: 14px;
 }
 
 /* ==========================================
@@ -178,7 +139,7 @@ body {
     max-width: 1000px;
     width: 100%;
     margin: 0 auto;
-    padding: 0 20px 20px 20px;
+    padding: 20px 20px 20px 20px;
     flex: 1;
 }
 
@@ -189,15 +150,15 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #718096;
     margin-bottom: 20px;
     background: #ffffff;
-    padding: 14px 20px;
+    padding: 12px 20px;
     border-radius: 14px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     flex-wrap: wrap;
-    min-height: 54px;
+    min-height: 48px;
     border: 1px solid rgba(226, 232, 240, 0.5);
 }
 
@@ -207,7 +168,7 @@ body {
     cursor: pointer;
     transition: color 0.3s;
     padding: 4px 0;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .breadcrumb span[id^="bc-"]:hover {
@@ -218,7 +179,7 @@ body {
     color: #4facfe;
     font-weight: 400;
     opacity: 0.5;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
 /* ==========================================
@@ -245,7 +206,7 @@ body {
 }
 
 .view-section h2 {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     font-weight: 700;
     margin-bottom: 18px;
     color: #2d3748;
@@ -256,7 +217,7 @@ body {
 
 .view-section h2 i {
     color: #4facfe;
-    font-size: 1.6rem;
+    font-size: 1.5rem;
 }
 
 /* ==========================================
@@ -264,25 +225,25 @@ body {
    ========================================== */
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 16px;
 }
 
 .card {
     background: #ffffff;
-    padding: 24px 16px;
+    padding: 20px 16px;
     border-radius: 16px;
     border: 1px solid #e9edf7;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
     cursor: pointer;
     text-align: center;
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #2d3748;
     transition: all 0.3s ease-in-out;
     position: relative;
     overflow: hidden;
-    min-height: 90px;
+    min-height: 80px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -319,12 +280,12 @@ body {
 
 .card i {
     display: block;
-    font-size: 32px;
-    margin-bottom: 8px;
+    font-size: 28px;
+    margin-bottom: 6px;
     color: #4facfe;
 }
 
-/* Matched Batch Card - Student এর জন্য */
+/* Matched Batch Card */
 .card.matched-batch {
     border: 2px solid #4facfe;
     background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%);
@@ -349,7 +310,7 @@ body {
     align-items: center;
     margin-bottom: 18px;
     background: #ffffff;
-    padding: 14px 22px;
+    padding: 12px 20px;
     border-radius: 16px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     flex-wrap: wrap;
@@ -358,7 +319,7 @@ body {
 }
 
 .quiz-header h3 {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: #2d3748;
 }
@@ -371,9 +332,9 @@ body {
 .quiz-progress {
     background: #f7fafc;
     color: #4facfe;
-    padding: 6px 18px;
+    padding: 4px 16px;
     border-radius: 20px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     border: 2px solid #e2e8f0;
 }
@@ -391,12 +352,12 @@ body {
 }
 
 .question-text {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: #2d3748;
     line-height: 1.7;
     margin-bottom: 20px;
-    padding: 16px 20px;
+    padding: 14px 18px;
     background: #f7fafc;
     border-radius: 14px;
     border-left: 5px solid #4facfe;
@@ -431,10 +392,10 @@ body {
 .option-btn {
     background: #f7fafc;
     border: 2px solid #e2e8f0;
-    padding: 16px 20px;
+    padding: 14px 18px;
     border-radius: 14px;
     text-align: left;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 500;
     color: #2d3748;
     cursor: pointer;
@@ -442,7 +403,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    min-height: 56px;
+    min-height: 50px;
     touch-action: manipulation;
     position: relative;
 }
@@ -461,12 +422,12 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     background: #e2e8f0;
     border-radius: 50%;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #4a5568;
     flex-shrink: 0;
     transition: all 0.3s ease;
@@ -477,7 +438,7 @@ body {
     color: white;
 }
 
-/* Telegram Correct Option */
+/* Correct Option */
 .option-btn.correct {
     background-color: #e6f4ea !important;
     border-color: #34a853 !important;
@@ -499,16 +460,16 @@ body {
     transform: translateY(-50%);
     background: #34a853;
     color: white;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 12px;
 }
 
-/* Telegram Wrong Option */
+/* Wrong Option */
 .option-btn.wrong {
     background-color: #fce8e6 !important;
     border-color: #ea4335 !important;
@@ -529,13 +490,13 @@ body {
     transform: translateY(-50%);
     background: #ea4335;
     color: white;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .option-btn.disabled {
@@ -567,21 +528,9 @@ body {
 }
 
 .quiz-results .result-icon {
-    font-size: 64px;
+    font-size: 60px;
     display: block;
     margin-bottom: 10px;
-}
-
-.quiz-results .result-score {
-    font-size: 3rem;
-    font-weight: 800;
-    color: #4facfe;
-}
-
-.quiz-results .result-detail {
-    font-size: 1.1rem;
-    color: #718096;
-    margin: 5px 0;
 }
 
 /* ==========================================
@@ -599,17 +548,17 @@ body {
 .nav-btn {
     flex: 1;
     max-width: 48%;
-    padding: 16px 24px;
+    padding: 14px 20px;
     border: none;
     border-radius: 14px;
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 10px;
-    min-height: 56px;
+    min-height: 50px;
     touch-action: manipulation;
     white-space: nowrap;
 }
@@ -619,7 +568,7 @@ body {
     color: #2d3748;
     border: 2px solid #e2e8f0;
     justify-content: flex-start;
-    padding-left: 24px;
+    padding-left: 20px;
 }
 
 .nav-btn.secondary:hover:not(:disabled) {
@@ -634,7 +583,7 @@ body {
     color: #ffffff;
     box-shadow: 0 4px 20px rgba(79, 172, 254, 0.35);
     justify-content: flex-end;
-    padding-right: 24px;
+    padding-right: 20px;
 }
 
 .nav-btn.primary:hover:not(:disabled) {
@@ -647,6 +596,7 @@ body {
     cursor: not-allowed;
     transform: none !important;
     box-shadow: none !important;
+    pointer-events: none;
 }
 
 .nav-btn:only-child {
@@ -657,91 +607,102 @@ body {
 }
 
 /* ==========================================
+   FOOTER
+   ========================================== */
+.app-footer {
+    text-align: center;
+    padding: 15px;
+    color: #a0aec0;
+    font-size: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 20px;
+}
+
+/* ==========================================
    RESPONSIVE DESIGN
    ========================================== */
 @media (max-width: 768px) {
-    .quiz-user-bar {
+    .app-header {
         padding: 10px 16px;
-        margin: 0 12px 12px 12px;
-        border-radius: 0 0 12px 12px;
+        min-height: 54px;
     }
     
-    .quiz-user-bar .user-info {
-        gap: 8px;
+    .logo-container h1 {
+        font-size: 1.1rem;
     }
     
-    .quiz-user-bar .user-info i {
-        font-size: 22px;
+    .user-info-header {
+        padding: 4px 12px 4px 10px;
     }
     
-    .quiz-user-bar .user-info span {
-        font-size: 13px;
+    .user-info-header i {
+        font-size: 16px;
     }
     
-    .quiz-user-bar .back-dashboard {
+    .user-info-header .username {
+        font-size: 12px;
+    }
+    
+    .user-info-header .user-badge-header {
+        font-size: 10px;
+        padding: 1px 10px;
+    }
+    
+    .back-btn {
         padding: 6px 14px;
         font-size: 12px;
     }
     
-    .app-header {
-        padding: 10px 16px;
-        margin: 0 12px 12px 12px;
-        border-radius: 14px;
-        min-height: 60px;
-    }
-    
-    .logo-container h1 {
-        font-size: 1.15rem;
-    }
-    
-    .back-btn {
-        padding: 8px 14px;
-        font-size: 0.8rem;
-        min-height: 38px;
-    }
-    
     .main-container {
-        padding: 0 12px 14px 12px;
+        padding: 14px 12px 14px 12px;
     }
     
     .cards-grid {
-        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 12px;
     }
     
     .option-btn {
-        padding: 14px 16px;
-        font-size: 0.95rem;
-        min-height: 50px;
+        padding: 12px 14px;
+        font-size: 0.9rem;
+        min-height: 46px;
     }
     
     .nav-btn {
-        padding: 14px 18px;
-        font-size: 0.95rem;
-        min-height: 48px;
+        padding: 12px 16px;
+        font-size: 0.9rem;
+        min-height: 44px;
     }
 }
 
 @media (max-width: 600px) {
+    .header-right {
+        gap: 10px;
+    }
+    
+    .user-info-header .username {
+        display: none;
+    }
+    
     .cards-grid {
         grid-template-columns: 1fr 1fr;
         gap: 10px;
     }
     
     .option-btn {
-        padding: 12px 14px;
-        font-size: 0.9rem;
-        min-height: 44px;
+        padding: 10px 12px;
+        font-size: 0.85rem;
+        min-height: 42px;
     }
     
     .quiz-header {
-        padding: 12px 16px;
+        padding: 10px 16px;
         flex-direction: column;
         text-align: center;
     }
     
     .quiz-header h3 {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
     
     .quiz-footer {
@@ -753,19 +714,19 @@ body {
         max-width: 100%;
         width: 100%;
         justify-content: center;
-        padding: 14px 20px;
-        font-size: 0.95rem;
-        min-height: 48px;
+        padding: 12px 16px;
+        font-size: 0.9rem;
+        min-height: 44px;
     }
     
     .nav-btn.secondary {
         justify-content: center;
-        padding-left: 20px;
+        padding-left: 16px;
     }
     
     .nav-btn.primary {
         justify-content: center;
-        padding-right: 20px;
+        padding-right: 16px;
     }
 }
 
@@ -774,17 +735,15 @@ body {
         grid-template-columns: 1fr;
     }
     
-    .quiz-user-bar {
-        flex-direction: column;
-        align-items: stretch;
-        text-align: center;
-    }
-    
-    .quiz-user-bar .user-info {
+    .app-header {
+        flex-wrap: wrap;
+        gap: 8px;
         justify-content: center;
+        padding: 8px 12px;
     }
     
-    .quiz-user-bar .back-dashboard {
+    .header-right {
+        width: 100%;
         justify-content: center;
     }
 }
@@ -807,64 +766,4 @@ body {
 
 html {
     scroll-behavior: smooth;
-}
-
-/* ==========================================
-   BUTTON FIX - DISABLED STATE
-   ========================================== */
-.nav-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none !important;
-    box-shadow: none !important;
-    pointer-events: none;
-}
-
-.nav-btn.secondary:disabled {
-    background: #f7fafc;
-    border-color: #e2e8f0;
-    color: #a0aec0;
-}
-
-.nav-btn.primary:disabled {
-    background: #cbd5e0;
-    box-shadow: none;
-    color: #a0aec0;
-}
-
-/* ==========================================
-   RESULT PAGE - BUTTON FIX
-   ========================================== */
-.quiz-results .nav-btn {
-    display: inline-flex;
-    margin: 5px auto;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 30px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.quiz-results .nav-btn.primary {
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-    color: white;
-    box-shadow: 0 4px 20px rgba(79, 172, 254, 0.35);
-}
-
-.quiz-results .nav-btn.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(79, 172, 254, 0.45);
-}
-
-.quiz-results .nav-btn.secondary {
-    background: #f7fafc;
-    color: #2d3748;
-    border: 2px solid #e2e8f0;
-}
-
-.quiz-results .nav-btn.secondary:hover {
-    background: #edf2f7;
-    border-color: #4facfe;
 }
