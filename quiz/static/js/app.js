@@ -21,7 +21,7 @@ let questions = [];
 let currentQuestionIndex = 0;
 let userAnswers = {};
 let currentSubjectChapters = [];
-let isSubmitting = false; // Prevent double submit
+let isSubmitting = false;
 
 // ==========================================
 // CELEBRATION
@@ -336,7 +336,11 @@ function showView(viewId) {
 function restoreQuizLayout() {
     const quizCard = document.getElementById('quiz-card');
     const footer = document.getElementById('quizFooter');
-    if (footer) footer.style.display = 'flex';
+    if (footer) {
+        footer.style.display = 'flex';
+        footer.style.visibility = 'visible';
+        footer.style.opacity = '1';
+    }
 
     quizCard.innerHTML = `
         <div id="question-text" class="question-text"></div>
@@ -379,6 +383,7 @@ function showQuestion(index) {
             btn.className = 'option-btn';
             btn.innerHTML = `<span class="option-label">${String.fromCharCode(65 + optIdx)}</span> ${optText}`;
             
+            // Check if this question was already answered
             if (userAnswers[index] !== undefined) {
                 btn.classList.add('disabled');
                 if (optIdx === correctAnswer) btn.classList.add('correct');
@@ -390,19 +395,28 @@ function showQuestion(index) {
         });
     }
 
+    // ===== FIX: Proper button management =====
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     
-    // Reset button states
+    // Previous button
     if (prevBtn) {
-        prevBtn.disabled = (index === 0);
-        prevBtn.style.display = (index === 0) ? 'none' : 'flex';
+        if (index === 0) {
+            prevBtn.disabled = true;
+            prevBtn.style.display = 'none';
+        } else {
+            prevBtn.disabled = false;
+            prevBtn.style.display = 'flex';
+            prevBtn.style.opacity = '1';
+        }
     }
     
+    // Next button
     if (nextBtn) {
         nextBtn.disabled = false;
         nextBtn.style.display = 'flex';
         nextBtn.style.opacity = '1';
+        nextBtn.style.visibility = 'visible';
         
         if (index === questions.length - 1) {
             const allAnswered = Object.keys(userAnswers).length === questions.length;
@@ -414,6 +428,7 @@ function showQuestion(index) {
         }
     }
 
+    // Re-render MathJax
     if (window.MathJax && window.MathJax.typesetPromise) {
         window.MathJax.typesetPromise([qTextElem, optionsGrid]).catch(() => {});
     }
@@ -431,19 +446,21 @@ function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
 
     showQuestion(questionIndex);
 
+    // Update next button if all questions are answered
     if (Object.keys(userAnswers).length === questions.length) {
         const nextBtn = document.getElementById('next-btn');
         if (nextBtn) {
             nextBtn.innerHTML = '📤 Submit';
             nextBtn.onclick = submitQuiz;
             nextBtn.disabled = false;
+            nextBtn.style.display = 'flex';
             nextBtn.style.opacity = '1';
         }
     }
 }
 
 // ==========================================
-// SUBMIT QUIZ - FIXED
+// SUBMIT QUIZ
 // ==========================================
 async function submitQuiz() {
     // Prevent double submit
@@ -462,6 +479,7 @@ async function submitQuiz() {
     const nextBtn = document.getElementById('next-btn');
     const prevBtn = document.getElementById('prev-btn');
     
+    // Disable buttons during submission
     if (nextBtn) {
         nextBtn.disabled = true;
         nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
@@ -485,16 +503,6 @@ async function submitQuiz() {
         });
         
         const result = await response.json();
-        
-        // Reset button states
-        if (nextBtn) {
-            nextBtn.disabled = false;
-            nextBtn.innerHTML = 'Next →';
-            nextBtn.style.display = 'flex';
-        }
-        if (prevBtn) {
-            prevBtn.disabled = false;
-        }
         
         if (result.success) {
             // Chapter completed successfully
@@ -538,7 +546,7 @@ async function submitQuiz() {
             if (footer) footer.style.display = 'none';
             
         } else {
-            // Not passed
+            // Not passed - show retry option
             const quizCard = document.getElementById('quiz-card');
             
             if (result.already_completed) {
@@ -554,6 +562,7 @@ async function submitQuiz() {
                 const footer = document.getElementById('quizFooter');
                 if (footer) footer.style.display = 'none';
             } else {
+                // ===== RETRY BUTTON - FIXED =====
                 quizCard.innerHTML = `
                     <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
                         <div style="font-size: 60px; margin-bottom: 10px;">😅</div>
@@ -573,9 +582,16 @@ async function submitQuiz() {
             }
         }
         
+        // Reset submitting flag
+        isSubmitting = false;
+        
     } catch (error) {
         console.error('❌ Error submitting quiz:', error);
         showError('Failed to submit. Please try again.');
+        
+        // Reset buttons on error
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
         if (nextBtn) {
             nextBtn.disabled = false;
             nextBtn.innerHTML = '📤 Submit';
@@ -584,36 +600,74 @@ async function submitQuiz() {
         if (prevBtn) {
             prevBtn.disabled = false;
         }
-    } finally {
         isSubmitting = false;
     }
 }
 
 // ==========================================
-// RESET QUIZ
+// RESET QUIZ - FIXED
 // ==========================================
 function resetQuiz() {
+    // Reset all state
     userAnswers = {};
+    currentQuestionIndex = 0;
     isSubmitting = false;
-    restoreQuizLayout();
-    showQuestion(0);
-    const footer = document.getElementById('quizFooter');
-    if (footer) footer.style.display = 'flex';
     
-    // Reset buttons
+    // Restore quiz layout
+    restoreQuizLayout();
+    
+    // Show first question
+    showQuestion(0);
+    
+    // ===== FIX: Ensure footer and buttons are properly reset =====
+    const footer = document.getElementById('quizFooter');
+    if (footer) {
+        footer.style.display = 'flex';
+        footer.style.visibility = 'visible';
+        footer.style.opacity = '1';
+    }
+    
+    // Reset Previous button (hidden for first question)
     const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
     if (prevBtn) {
         prevBtn.disabled = true;
         prevBtn.style.display = 'none';
+        prevBtn.style.opacity = '1';
     }
+    
+    // Reset Next button
+    const nextBtn = document.getElementById('next-btn');
     if (nextBtn) {
         nextBtn.disabled = false;
+        nextBtn.style.display = 'flex';
+        nextBtn.style.visibility = 'visible';
+        nextBtn.style.opacity = '1';
         nextBtn.innerHTML = 'Next →';
         nextBtn.onclick = nextQuestion;
-        nextBtn.style.display = 'flex';
-        nextBtn.style.opacity = '1';
     }
+    
+    // Reset progress
+    const progressElem = document.getElementById('quiz-progress');
+    if (progressElem) {
+        progressElem.innerText = `Question 1 / ${questions.length}`;
+    }
+    
+    // Re-render MathJax
+    if (window.MathJax && window.MathJax.typesetPromise) {
+        const qTextElem = document.getElementById('question-text');
+        const optionsGrid = document.getElementById('options-container');
+        if (qTextElem && optionsGrid) {
+            window.MathJax.typesetPromise([qTextElem, optionsGrid]).catch(() => {});
+        }
+    }
+    
+    // Scroll to top of quiz
+    const quizView = document.getElementById('quiz-view');
+    if (quizView) {
+        quizView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    console.log('🔄 Quiz reset successfully');
 }
 
 // ==========================================
@@ -734,11 +788,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const backBtnText = document.getElementById('backButtonText');
     if (backBtnText) {
-        if (USER_TYPE === 'student') {
-            backBtnText.textContent = 'Dashboard';
-        } else if (USER_TYPE === 'teacher') {
-            backBtnText.textContent = 'Dashboard';
-        } else if (USER_TYPE === 'admin') {
+        if (USER_TYPE === 'student' || USER_TYPE === 'teacher' || USER_TYPE === 'admin') {
             backBtnText.textContent = 'Dashboard';
         } else {
             backBtnText.textContent = 'Dashboard';
