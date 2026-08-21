@@ -1,5 +1,5 @@
 // ==========================================
-// QUIZ SYSTEM - OPTIMIZED JAVASCRIPT
+// QUIZ SYSTEM - FULL APP.JS WITH TELEGRAM CELEBRATION
 // ==========================================
 
 let currentBatchId = null;
@@ -15,6 +15,42 @@ let userAnswers = {};
 let completedChapters = {}; 
 
 const API_BASE = '/quiz/api';
+
+// Telegram style celebration Audio (Web Audio API synthesis for quick sound)
+function playCorrectSound() {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+        
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+    } catch (e) {
+        console.log("Audio play blocked or unsupported");
+    }
+}
+
+// Trigger Telegram Quiz style confetti celebration
+function triggerCelebration() {
+    playCorrectSound();
+    if (typeof confetti === 'function') {
+        confetti({
+            particleCount: 50,
+            spread: 60,
+            origin: { y: 0.7 }
+        });
+    }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('✅ Quiz System Initialized');
@@ -34,7 +70,19 @@ function sortBatches(batches) {
     });
 }
 
+// ==========================================
+// STEP-BY-STEP NAVIGATION & DATA LOADING
+// ==========================================
+
+// 1. Batches View
 async function loadBatches() {
+    currentBatchId = null;
+    currentBatchName = '';
+    currentSubjectId = null;
+    currentSubjectName = '';
+    currentChapterId = null;
+    currentChapterName = '';
+
     try {
         const response = await fetch(`${API_BASE}/batches`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -55,24 +103,24 @@ async function loadBatches() {
                 grid.appendChild(card);
             });
         } else {
-            grid.innerHTML = `
-                <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #718096;">
-                    <i class="fas fa-folder-open" style="font-size: 48px; display: block; margin-bottom: 10px;"></i>
-                    <h3>No Batches Found</h3>
-                </div>`;
+            grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #718096;"><h3>No Batches Found</h3></div>`;
         }
         showView('batches-view');
         updateBreadcrumb();
     } catch (error) {
         console.error('❌ Error loading batches:', error);
-        showError('Failed to load batches. Please try again.');
+        showError('Failed to load batches.');
     }
 }
 
+// 2. Select Batch -> Load Subjects
 async function selectBatch(batchId, batchName) {
     currentBatchId = batchId;
     currentBatchName = batchName;
-    completedChapters = {};
+    currentSubjectId = null;
+    currentSubjectName = '';
+    currentChapterId = null;
+    currentChapterName = '';
 
     try {
         const response = await fetch(`${API_BASE}/batches/${batchId}/subjects`);
@@ -102,9 +150,12 @@ async function selectBatch(batchId, batchName) {
     }
 }
 
+// 3. Select Subject -> Load Chapters
 async function selectSubject(subjectId, subjectName) {
     currentSubjectId = subjectId;
     currentSubjectName = subjectName;
+    currentChapterId = null;
+    currentChapterName = '';
 
     try {
         const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${subjectId}/chapters`);
@@ -138,6 +189,7 @@ async function selectSubject(subjectId, subjectName) {
     }
 }
 
+// 4. Select Chapter -> Load Quiz Questions
 async function selectChapter(chapterId, chapterName) {
     currentChapterId = chapterId;
     currentChapterName = chapterName;
@@ -153,9 +205,6 @@ async function selectChapter(chapterId, chapterName) {
         questions = await response.json();
 
         if (questions.length > 0) {
-            document.getElementById('quiz-chapter-title').innerHTML = `<i class="fas fa-pencil-alt"></i> ${currentChapterName}`;
-            
-            // Re-instantiate base Quiz UI layout if destroyed previously
             restoreQuizLayout();
             showQuestion(0);
             showView('quiz-view');
@@ -169,13 +218,62 @@ async function selectChapter(chapterId, chapterName) {
     }
 }
 
+// ==========================================
+// STEP BACK FUNCTIONS (ধাপে ধাপে ব্যাক আসার নেভিগেশন)
+// ==========================================
+
+function showBatchesView() {
+    loadBatches();
+}
+
+function showSubjectsView() {
+    if (!currentBatchId) {
+        showBatchesView();
+        return;
+    }
+    selectBatch(currentBatchId, currentBatchName);
+}
+
+function showChaptersView() {
+    if (!currentSubjectId) {
+        showSubjectsView();
+        return;
+    }
+    selectSubject(currentSubjectId, currentSubjectName);
+}
+
+// Breadcrumb with Clickable Step Back Logic
+function updateBreadcrumb() {
+    const bc = document.getElementById('breadcrumb');
+    if (!bc) return;
+
+    let html = `<span onclick="showBatchesView()" style="cursor:pointer;"><i class="fas fa-home"></i> Batches</span>`;
+
+    if (currentBatchId) {
+        html += ` <span class="sep">/</span> <span onclick="showSubjectsView()" style="cursor:pointer;">${currentBatchName}</span>`;
+    }
+    if (currentSubjectId) {
+        html += ` <span class="sep">/</span> <span onclick="showChaptersView()" style="cursor:pointer;">${currentSubjectName}</span>`;
+    }
+    if (currentChapterId) {
+        html += ` <span class="sep">/</span> <span style="font-weight:bold;">${currentChapterName}</span>`;
+    }
+
+    bc.innerHTML = html;
+    bc.style.display = 'flex';
+}
+
+// ==========================================
+// QUIZ LOGIC & CELEBRATION
+// ==========================================
+
 function restoreQuizLayout() {
     const quizCard = document.getElementById('quiz-card');
     const footer = document.querySelector('.quiz-footer');
     if (footer) footer.style.display = 'flex';
 
     quizCard.innerHTML = `
-        <div class="quiz-header" style="display:flex; justify-between; align-items:center;">
+        <div class="quiz-header" style="display:flex; justify-content:space-between; align-items:center;">
             <h3 id="quiz-chapter-title"><i class="fas fa-pencil-alt"></i> ${currentChapterName}</h3>
             <span id="quiz-progress"></span>
         </div>
@@ -253,6 +351,12 @@ function showQuestion(index) {
 
 function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
     userAnswers[questionIndex] = selectedIndex;
+
+    // Telegram style celebration if answer is correct
+    if (selectedIndex === correctAnswer) {
+        triggerCelebration();
+    }
+
     showQuestion(questionIndex);
 
     if (Object.keys(userAnswers).length === questions.length) {
@@ -269,23 +373,18 @@ function showResults() {
     const quizCard = document.getElementById('quiz-card');
     const footer = document.querySelector('.quiz-footer');
     
+    // Final chapter completion celebration
+    triggerCelebration();
+
     quizCard.innerHTML = `
         <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
-            <h2 style="color: #2d3748; margin-bottom: 20px; font-size: 1.3rem;">অধ্যায়ের সকল প্রশ্ন সমাপ্ত হয়েছে!</h2>
-            <button onclick="goBackToChapters()" class="nav-btn primary" style="padding: 10px 25px;">
+            <h2 style="color: #28a745; margin-bottom: 20px; font-size: 1.5rem;">🎉 অভিনন্দন! অধ্যায়ের সকল প্রশ্ন সম্পন্ন হয়েছে!</h2>
+            <button onclick="showChaptersView()" class="nav-btn primary" style="padding: 10px 25px; border-radius: 8px; cursor: pointer;">
                 <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
             </button>
         </div>
     `;
     if (footer) footer.style.display = 'none';
-}
-
-function goBackToChapters() {
-    if (currentSubjectId && currentSubjectName) {
-        selectSubject(currentSubjectId, currentSubjectName);
-    } else {
-        showSubjectsView();
-    }
 }
 
 function nextQuestion() {
@@ -306,35 +405,6 @@ function showView(viewId) {
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     const targetView = document.getElementById(viewId);
     if (targetView) targetView.classList.add('active');
-}
-
-function updateBreadcrumb() {
-    const bc = document.getElementById('breadcrumb');
-    const bcBatch = document.getElementById('bc-batch');
-    const bcSub = document.getElementById('bc-subject');
-    const bcChap = document.getElementById('bc-chapter');
-    const sep1 = document.getElementById('sep1');
-    const sep2 = document.getElementById('sep2');
-
-    if (!bc) return;
-    bc.style.display = 'flex';
-
-    if (currentBatchId && !currentSubjectId) {
-        bcBatch.innerText = currentBatchName;
-        bcSub.style.display = bcChap.style.display = sep1.style.display = sep2.style.display = 'none';
-    } else if (currentSubjectId && !currentChapterId) {
-        bcBatch.innerText = currentBatchName;
-        bcSub.innerText = currentSubjectName;
-        bcSub.style.display = sep1.style.display = 'inline';
-        bcChap.style.display = sep2.style.display = 'none';
-    } else if (currentChapterId) {
-        bcBatch.innerText = currentBatchName;
-        bcSub.innerText = currentSubjectName;
-        bcChap.innerText = currentChapterName;
-        bcSub.style.display = bcChap.style.display = sep1.style.display = sep2.style.display = 'inline';
-    } else {
-        bc.style.display = 'none';
-    }
 }
 
 function handleKeyboardShortcuts(e) {
