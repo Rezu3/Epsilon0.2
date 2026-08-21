@@ -1,0 +1,41 @@
+{
+  "batches": {
+    "class_10": {
+      "name": "Class 10",
+      "subjects": {
+        "physical_science": {
+          "name": "Physical Science",
+          "chapters": {
+            "light": {
+              "name": "Light & Optics",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "The power of a lens with focal length $f = 0.5\\, \\text{m}$ is:",
+                  "options": ["+1 D", "+2 D", "-2 D", "+0.5 D"],
+                  "answer": 1
+                }
+              ]
+            }
+          }
+        },
+        "mathematics": {
+          "name": "Mathematics",
+          "chapters": {
+            "quadratic_equations": {
+              "name": "Quadratic Equations",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "What are the roots of $x^2 - 5x + 6 = 0$?",
+                  "options": ["x = 2, 3", "x = -2, -3", "x = 1, 6", "x = -1, -6"],
+                  "answer": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "batches": {
+    "class_12": {
+      "name": "Class 12",
+      "subjects": {
+        "physics": {
+          "name": "Physics",
+          "chapters": {
+            "electrostatics": {
+              "name": "Electrostatics",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "Unit of electric field intensity is:",
+                  "options": ["Coulomb", "Volt/meter", "Joule", "Farad"],
+                  "answer": 1
+                }
+              ]
+            }
+          }
+        },
+        "mathematics": {
+          "name": "Mathematics",
+          "chapters": {
+            "matrices": {
+              "name": "Matrices & Determinants",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "If matrix $A$ is orthogonal, then $A A^T = $",
+                  "options": ["$O$", "$I$", "$A$", "$A^{-1}$"],
+                  "answer": 1
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

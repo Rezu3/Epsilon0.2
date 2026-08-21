@@ -1,0 +1,41 @@
+{
+  "batches": {
+    "class_9": {
+      "name": "Class 9",
+      "subjects": {
+        "physical_science": {
+          "name": "Physical Science",
+          "chapters": {
+            "atomic_structure": {
+              "name": "Atomic Structure",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "Who discovered the electron?",
+                  "options": ["J.J. Thomson", "Rutherford", "Neils Bohr", "James Chadwick"],
+                  "answer": 0
+                }
+              ]
+            }
+          }
+        },
+        "mathematics": {
+          "name": "Mathematics",
+          "chapters": {
+            "real_numbers": {
+              "name": "Real Numbers",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "Which of the following is an irrational number?",
+                  "options": ["$\\sqrt{4}$", "$\\sqrt{3}$", "$\\frac{2}{3}$", "0.25"],
+                  "answer": 1
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

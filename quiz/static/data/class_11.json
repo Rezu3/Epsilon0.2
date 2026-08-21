@@ -1,0 +1,41 @@
+{
+  "batches": {
+    "class_11": {
+      "name": "Class 11",
+      "subjects": {
+        "physics": {
+          "name": "Physics",
+          "chapters": {
+            "kinematics": {
+              "name": "Kinematics",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "If displacement $s = 3t^2 + 2t$, what is the velocity at $t = 2\\, \\text{s}$?",
+                  "options": ["14 m/s", "10 m/s", "12 m/s", "16 m/s"],
+                  "answer": 0
+                }
+              ]
+            }
+          }
+        },
+        "mathematics": {
+          "name": "Mathematics",
+          "chapters": {
+            "trigonometry": {
+              "name": "Trigonometric Functions",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "What is the value of $\\sin^2(\\theta) + \\cos^2(\\theta)$?",
+                  "options": ["0", "1", "2", "$\\tan(\\theta)$"],
+                  "answer": 1
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

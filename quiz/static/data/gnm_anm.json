@@ -1,0 +1,25 @@
+{
+  "batches": {
+    "gnm_anm": {
+      "name": "GNM / ANM",
+      "subjects": {
+        "life_science": {
+          "name": "Life Science",
+          "chapters": {
+            "human_body": {
+              "name": "Human Physiology",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "Normal body temperature of a healthy human is:",
+                  "options": ["98.6 °F", "37 °C", "Both A & B", "96.8 °F"],
+                  "answer": 2
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

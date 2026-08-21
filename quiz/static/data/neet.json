@@ -1,0 +1,25 @@
+{
+  "batches": {
+    "neet": {
+      "name": "NEET",
+      "subjects": {
+        "biology": {
+          "name": "Biology",
+          "chapters": {
+            "genetics": {
+              "name": "Genetics & Evolution",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "Who proposed the Chromosomal Theory of Inheritance?",
+                  "options": ["Mendel", "Sutton and Boveri", "Watson and Crick", "Morgan"],
+                  "answer": 1
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

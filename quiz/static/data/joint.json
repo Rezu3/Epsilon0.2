@@ -1,0 +1,133 @@
+{
+  "batches": {
+    "joint": {
+      "name": "JOINT (WBJEE / JEE)",
+      "subjects": {
+        "mathematics": {
+          "name": "Mathematics",
+          "chapters": {
+            "integration": {
+              "name": "Integral Calculus",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "Evaluate the indefinite integral: $\\int x^2 e^x \\, dx$",
+                  "options": [
+                    "$e^x (x^2 - 2x + 2) + C$",
+                    "$e^x (x^2 + 2x - 2) + C$",
+                    "$x^2 e^x - 2x + C$",
+                    "$\\frac{x^3}{3} e^x + C$"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "id": 2,
+                  "question": "What is the value of $\\int_{0}^{\\pi/2} \\sin(x) \\, dx$?",
+                  "options": [
+                    "0",
+                    "1",
+                    "-1",
+                    "$\\pi/2$"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            "differential_equations": {
+              "name": "Differential Equations",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "What is the degree of the differential equation: $\\frac{d^2y}{dx^2} + \\left(\\frac{dy}{dx}\\right)^3 = x$?",
+                  "options": [
+                    "1",
+                    "2",
+                    "3",
+                    "Not defined"
+                  ],
+                  "answer": 0
+                }
+              ]
+            }
+          }
+        },
+        "physics": {
+          "name": "Physics",
+          "chapters": {
+            "electrostatics": {
+              "name": "Electrostatics",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "Two point charges $q_1$ and $q_2$ are placed at a distance $r$. What is the electrostatic force between them?",
+                  "options": [
+                    "$\\frac{1}{4\\pi\\varepsilon_0} \\frac{q_1 q_2}{r^2}$",
+                    "$\\frac{1}{4\\pi\\varepsilon_0} \\frac{q_1 q_2}{r}$",
+                    "$\\frac{q_1 q_2}{r^2}$",
+                    "$\\frac{1}{2\\pi\\varepsilon_0} \\frac{q_1 q_2}{r^2}$"
+                  ],
+                  "answer": 0
+                }
+              ]
+            },
+            "current_electricity": {
+              "name": "Current Electricity",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "Identify the equivalent resistance of the given circuit diagram.",
+                  "image": "circuit_diag_01.png",
+                  "options": [
+                    "$5\\, \\Omega$",
+                    "$10\\, \\Omega$",
+                    "$2.5\\, \\Omega$",
+                    "$20\\, \\Omega$"
+                  ],
+                  "answer": 0
+                }
+              ]
+            }
+          }
+        },
+        "chemistry": {
+          "name": "Chemistry",
+          "chapters": {
+            "chemical_bonding": {
+              "name": "Chemical Bonding",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "What is the geometry and hybridization of a $SF_6$ molecule?",
+                  "options": [
+                    "Octahedral, $sp^3d^2$",
+                    "Trigonal bipyramidal, $sp^3d$",
+                    "Tetrahedral, $sp^3$",
+                    "Square planar, $dsp^2$"
+                  ],
+                  "answer": 0
+                }
+              ]
+            },
+            "organic_chemistry": {
+              "name": "Organic Chemistry",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "Which product is formed in the reaction shown below?",
+                  "image": "organic_reaction_01.png",
+                  "options": [
+                    "Benzene",
+                    "Toluene",
+                    "Phenol",
+                    "Aniline"
+                  ],
+                  "answer": 2
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
