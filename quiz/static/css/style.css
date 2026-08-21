@@ -625,65 +625,67 @@ body {
 }
 
 /* ==========================================
-   QUIZ FOOTER - LEFT & RIGHT
+   QUIZ FOOTER - LEFT & RIGHT BUTTONS
    ========================================== */
 .quiz-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 14px;
-    margin-top: 10px;
+    gap: 15px;
+    margin-top: 20px;
     width: 100%;
 }
 
 .nav-btn {
     flex: 1;
-    padding: 14px 20px;
+    max-width: 48%;
+    padding: 16px 24px;
     border: none;
     border-radius: 14px;
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 52px;
+    gap: 10px;
+    min-height: 56px;
     touch-action: manipulation;
-    max-width: 48%;
+    white-space: nowrap;
 }
 
-/* বাম দিকের বাটন (পূর্ববর্তী) */
+/* ===== বাম দিকে (পূর্ববর্তী) ===== */
 .nav-btn.secondary {
     background: #f7fafc;
     color: #2d3748;
     border: 2px solid #e2e8f0;
     justify-content: flex-start;
-    padding-left: 20px;
+    padding-left: 24px;
 }
 
 .nav-btn.secondary:hover:not(:disabled) {
     background: #edf2f7;
-    transform: translateX(-3px);
+    border-color: #4facfe;
+    transform: translateX(-4px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .nav-btn.secondary:active:not(:disabled) {
     transform: scale(0.97);
 }
 
-/* ডান দিকের বাটন (পরবর্তী) */
+/* ===== ডান দিকে (পরবর্তী) ===== */
 .nav-btn.primary {
     background: linear-gradient(135deg, #4facfe, #00f2fe);
     color: #ffffff;
-    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+    box-shadow: 0 4px 20px rgba(79, 172, 254, 0.35);
     justify-content: flex-end;
-    padding-right: 20px;
+    padding-right: 24px;
 }
 
 .nav-btn.primary:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(79, 172, 254, 0.35);
+    transform: translateY(-3px) translateX(3px);
+    box-shadow: 0 8px 30px rgba(79, 172, 254, 0.45);
 }
 
 .nav-btn.primary:active:not(:disabled) {
@@ -691,91 +693,111 @@ body {
 }
 
 .nav-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
     transform: none !important;
+    box-shadow: none !important;
+}
+
+.nav-btn i {
+    font-size: 18px;
 }
 
 /* ==========================================
-   RESPONSIVE - TABLET & MOBILE
+   মোবাইল রেসপন্সিভ (ছোট স্ক্রিন)
    ========================================== */
 
-/* Tablet Portrait */
+/* ট্যাবলেট */
 @media (max-width: 768px) {
+    .quiz-footer {
+        gap: 12px;
+        margin-top: 16px;
+    }
+
     .nav-btn {
-        padding: 12px 16px;
-        font-size: 0.9rem;
-        min-height: 46px;
+        padding: 14px 18px;
+        font-size: 0.95rem;
+        min-height: 50px;
         border-radius: 12px;
         max-width: 48%;
     }
-    
+
     .nav-btn.secondary {
-        padding-left: 16px;
+        padding-left: 18px;
     }
-    
+
     .nav-btn.primary {
-        padding-right: 16px;
+        padding-right: 18px;
+    }
+
+    .nav-btn i {
+        font-size: 16px;
     }
 }
 
-/* Mobile Large */
-@media (max-width: 480px) {
+/* মোবাইল (বেশিরভাগ ফোন) */
+@media (max-width: 600px) {
     .quiz-footer {
-        flex-direction: row;
         gap: 10px;
-        margin-top: 8px;
+        flex-wrap: nowrap;
+        margin-top: 14px;
     }
-    
+
     .nav-btn {
+        flex: 1;
+        max-width: 50%;
         padding: 12px 14px;
         font-size: 0.85rem;
-        min-height: 44px;
+        min-height: 46px;
         border-radius: 10px;
-        max-width: 48%;
-        flex: 1;
+        justify-content: center;
+        white-space: nowrap;
+        gap: 6px;
     }
-    
+
     .nav-btn.secondary {
         padding-left: 14px;
         justify-content: center;
     }
-    
+
     .nav-btn.primary {
         padding-right: 14px;
         justify-content: center;
     }
-    
+
     .nav-btn i {
         font-size: 14px;
     }
 }
 
-/* Mobile Small */
-@media (max-width: 380px) {
+/* খুব ছোট ফোন (৩৮০px এর নিচে) */
+@media (max-width: 400px) {
     .quiz-footer {
         gap: 8px;
+        margin-top: 12px;
     }
-    
+
     .nav-btn {
         padding: 10px 10px;
         font-size: 0.75rem;
-        min-height: 38px;
+        min-height: 40px;
         border-radius: 8px;
-        max-width: 48%;
+        max-width: 50%;
+        gap: 4px;
     }
-    
+
     .nav-btn i {
         font-size: 12px;
     }
 }
 
-/* যখন শুধু একটি বাটন দরকার (শেষ প্রশ্নে) */
-.quiz-footer .nav-btn:only-child {
+/* যখন শুধু একটি বাটন থাকে (শেষ প্রশ্নে ফলাফল দেখান) */
+.nav-btn:only-child {
     max-width: 100%;
     justify-content: center;
+    padding-left: 20px;
+    padding-right: 20px;
 }
-
 /* ==========================================
    RESPONSIVE - TABLET & MOBILE
    ========================================== */
