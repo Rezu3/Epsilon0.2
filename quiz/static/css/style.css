@@ -341,42 +341,6 @@ body {
 }
 
 /* ==========================================
-   CHAPTER STATUS STYLES
-   ========================================== */
-.card .chapter-status {
-    font-size: 0.7rem;
-    margin-top: 4px;
-}
-
-.card[data-locked="true"] {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.card[data-completed="true"] {
-    border-color: #28a745;
-    background: #f0fff4;
-}
-
-/* ==========================================
-   SUBJECT PROGRESS BAR
-   ========================================== */
-.subject-progress {
-    width: 100%;
-    height: 4px;
-    background: #e2e8f0;
-    border-radius: 2px;
-    margin-top: 6px;
-    overflow: hidden;
-}
-
-.subject-progress .progress-fill {
-    height: 100%;
-    border-radius: 2px;
-    transition: width 0.5s ease;
-}
-
-/* ==========================================
    QUIZ HEADER
    ========================================== */
 .quiz-header {
@@ -779,6 +743,30 @@ body {
     .quiz-header h3 {
         font-size: 1rem;
     }
+    
+    .quiz-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .nav-btn {
+        max-width: 100%;
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px;
+        font-size: 0.95rem;
+        min-height: 48px;
+    }
+    
+    .nav-btn.secondary {
+        justify-content: center;
+        padding-left: 20px;
+    }
+    
+    .nav-btn.primary {
+        justify-content: center;
+        padding-right: 20px;
+    }
 }
 
 @media (max-width: 400px) {
@@ -819,4 +807,64 @@ body {
 
 html {
     scroll-behavior: smooth;
+}
+
+/* ==========================================
+   BUTTON FIX - DISABLED STATE
+   ========================================== */
+.nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+    pointer-events: none;
+}
+
+.nav-btn.secondary:disabled {
+    background: #f7fafc;
+    border-color: #e2e8f0;
+    color: #a0aec0;
+}
+
+.nav-btn.primary:disabled {
+    background: #cbd5e0;
+    box-shadow: none;
+    color: #a0aec0;
+}
+
+/* ==========================================
+   RESULT PAGE - BUTTON FIX
+   ========================================== */
+.quiz-results .nav-btn {
+    display: inline-flex;
+    margin: 5px auto;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quiz-results .nav-btn.primary {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+    box-shadow: 0 4px 20px rgba(79, 172, 254, 0.35);
+}
+
+.quiz-results .nav-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(79, 172, 254, 0.45);
+}
+
+.quiz-results .nav-btn.secondary {
+    background: #f7fafc;
+    color: #2d3748;
+    border: 2px solid #e2e8f0;
+}
+
+.quiz-results .nav-btn.secondary:hover {
+    background: #edf2f7;
+    border-color: #4facfe;
 }
