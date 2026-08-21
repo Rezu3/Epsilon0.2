@@ -4,432 +4,289 @@
       "name": "GNM / ANM",
       "subjects": {
         "life_science": {
-          "name": "জীবন বিজ্ঞান",
+          "name": "Life Science",
           "chapters": {
-            "life_and_diversity": {
-              "name": "জীবন ও তার বৈচিত্র্য",
+            "cell_biology": {
+              "name": "কোষ ও কোষ বিভাজন (Cell & Cell Division)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "পাঁচ রাজ্য শ্রেণীবিন্যাস (Five Kingdom Classification) কে প্রবর্তন করেন?",
-                  "options": ["লিনিয়াস", "হোইটেকার", "ডারউইন", "ল্যামার্ক"],
+                  "question": "কোষের শক্তিঘর (Powerhouse) কাকে বলা হয়?",
+                  "options": ["রাইবোজোম", "লাইসোজোম", "মাইটোকন্ড্রিয়া", "গলগি বডি"],
+                  "answer": 2
+                },
+                {
+                  "id": 2,
+                  "question": "কোন অঙ্গাণুকে আত্মঘাতী থলি (Suicidal Bag) বলা হয়?",
+                  "options": ["লাইসোজোম", "রাইবোজোম", "সেন্ট্রোজোম", "প্লাস্টিড"],
+                  "answer": 0
+                },
+                {
+                  "id": 3,
+                  "question": "উদ্ভিদ কোষের কোষপ্রাচীর কী দিয়ে গঠিত?",
+                  "options": ["কাইটিন", "সেলুলোজ", "প্রোটিন", "লিপিড"],
                   "answer": 1
+                },
+                {
+                  "id": 4,
+                  "question": "মানুষের দেহকোষে ক্রোমোজোম সংখ্যা কত?",
+                  "options": ["২৩ টি", "৪৬ টি", "৪৪ টি", "৪৮ টি"],
+                  "answer": 1
+                },
+                {
+                  "id": 5,
+                  "question": "মাইটোসিস (Mitosis) কোষ বিভাজনের ফলে কী কী তৈরি হয়?",
+                  "options": ["২টি অভিন্ন কোষ", "৪টি অভিন্ন কোষ", "২টি ভিন্ন কোষ", "৪টি ভিন্ন কোষ"],
+                  "answer": 0
                 }
               ]
             },
-            "life_processes": {
-              "name": "জৈবনিক প্রক্রিয়া",
+            "human_physiology": {
+              "name": "মানব শারীরবিদ্যা ও সংবহনতন্ত্র (Human Physiology)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "শালোকসংশ্লেষের আলোক দশা কোথায় ঘটে?",
-                  "options": ["স্ট্রোমা", "গ্রানা", "সাইটোপ্লাজম", "মাইটোকন্ড্রিয়া"],
+                  "question": "সর্বজনীন দাতা (Universal Donor) রক্তশ্রেণী কোনটি?",
+                  "options": ["AB+", "O-", "A+", "B-"],
                   "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "মানবদেহের বৃহত্তম গ্রন্থি (Gland) কোনটি?",
+                  "options": ["অগ্ন্যাশয়", "যকৃৎ (Liver)", "থাইরয়েড", "পিটুইটারি"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "রক্ত তঞ্চনে (Blood Clotting) সাহায্য করে কোন ভিটামিন?",
+                  "options": ["ভিটামিন A", "ভিটামিন C", "ভিটামিন K", "ভিটামিন D"],
+                  "answer": 2
+                },
+                {
+                  "id": 4,
+                  "question": "বৃক্কের গঠনগত ও কার্যগত একককে কী বলে?",
+                  "options": ["নিউরণ", "নেফ্রন", "অ্যালভিওলাই", "অ্যাক্সন"],
+                  "answer": 1
+                },
+                {
+                  "id": 5,
+                  "question": "ইনসুলিন হরমোন কোথা থেকে নিঃসৃত হয়?",
+                  "options": ["অগ্ন্যাশয়", "পিটুইটারি গ্রন্থি", "থাইরয়েড গ্রন্থি", "অ্যাড্রিনাল গ্রন্থি"],
+                  "answer": 0
                 }
               ]
             },
-            "levels_of_organization": {
-              "name": "জীবন সংগঠনের স্তর",
+            "genetics_and_evolution": {
+              "name": "বংশগতি ও অভিব্যক্তি (Genetics & Evolution)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "কোষের কোনো অঙ্গাণুকে 'প্রোটিন ফ্যাক্টরি' বলা হয়?",
-                  "options": ["লাইসোজোম", "রাইবোজোম", "গলগি বডি", "সেন্ট্রোজোম"],
+                  "question": "ডিএনএ (DNA)-এর পূর্ণরূপ কী?",
+                  "options": ["Deoxyribonucleic Acid", "Deoxyribose Nucleic Acid", "Dinucleic Acid", "Deoxynucleic Acid"],
+                  "answer": 0
+                },
+                {
+                  "id": 2,
+                  "question": "মেন্ডেলের (Mendel) সূত্র অনুযায়ী, একদলীয় সংকরায়নে F2 প্রজন্মের অনুপাত কত?",
+                  "options": ["১:২:১", "৩:১", "৯:৩:৩:১", "১:১"],
                   "answer": 1
-                }
-              ]
-            },
-            "biology_human_welfare": {
-              "name": "জীববিদ্যা ও মানব কল্যাণ",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "রোগের জীবাণু ধ্বংস করতে মানবদেহে কোনটি তৈরি হয়?",
-                  "options": ["অ্যান্টিজেন", "অ্যান্টিবডি", "হরমোন", "উৎসেচক"],
+                  "id": 3,
+                  "question": "ডারউইনের (Darwin) বিবর্তন তত্ত্বের মূল ভিত্তি কী?",
+                  "options": ["প্রাকৃতিক নির্বাচন", "অভিযোজন", "মিউটেশন", "জিন প্রবাহ"],
+                  "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "মানুষের কত জোড়া ক্রোমোজোম থাকে?",
+                  "options": ["২২ জোড়া", "২৩ জোড়া", "২৪ জোড়া", "৪৬ জোড়া"],
                   "answer": 1
-                }
-              ]
-            },
-            "environment_resources": {
-              "name": "পরিবেশ ও তার সম্পদ",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "একটি নবীকরণযোগ্য শক্তির উৎস হলো -",
-                  "options": ["কয়লা", "পেট্রোলিয়াম", "সৌরশক্তি", "প্রাকৃতিক গ্যাস"],
+                  "id": 5,
+                  "question": "হিমোফিলিয়া (Hemophilia) কী ধরনের রোগ?",
+                  "options": ["অটোসোমাল ডমিন্যান্ট", "অটোসোমাল রিসেসিভ", "সেক্স-লিংকড রিসেসিভ", "সেক্স-লিংকড ডমিন্যান্ট"],
                   "answer": 2
                 }
               ]
             },
-            "control_coordination": {
-              "name": "জীবজগতে নিয়ন্ত্রণ ও সমন্বয়",
+            "ecology_and_environment": {
+              "name": "পরিবেশ ও বাস্তুতন্ত্র (Ecology & Environment)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "উদ্ভিদের বৃদ্ধি নিয়ন্ত্রণে সাহায্যকারী হরমোন কোনটি?",
-                  "options": ["অক্সিন", "ইনসুলিন", "অ্যাড্রিনালিন", "থাইরক্সিন"],
+                  "question": "বাস্তুতন্ত্রের (Ecosystem) প্রধান উপাদান কী?",
+                  "options": ["জৈব ও অজৈব", "উদ্ভিদ ও প্রাণী", "মাটি ও পানি", "বায়ু ও সূর্যালোক"],
                   "answer": 0
-                }
-              ]
-            },
-            "continuity_of_life": {
-              "name": "জীবনের প্রবাহমানতা",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "DNA-এর পূর্ণরূপ কী?",
-                  "options": ["Deoxyribonucleic Acid", "Ribonucleic Acid", "Dynamic Nucleic Acid", "Dual Nucleic Acid"],
+                  "id": 2,
+                  "question": "খাদ্য শৃঙ্খলের (Food Chain) প্রথম স্তর কোনটি?",
+                  "options": ["উৎপাদক", "প্রাথমিক ভোক্তা", "দ্বিতীয় ভোক্তা", "বিয়োজক"],
                   "answer": 0
-                }
-              ]
-            },
-            "heredity_genetic_diseases": {
-              "name": "বংশগতি এবং জিনগত রোগ",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "বংশগতির জনক কাকে বলা হয়?",
-                  "options": ["গ্রেগর জোহান মেন্ডেল", "চার্লস ডারউইন", "ল্যামার্ক", "মোরাগান"],
-                  "answer": 0
-                }
-              ]
-            },
-            "evolution_adaptation": {
-              "name": "অভিব্যক্তি ও অভিযোজন",
-              "questions": [
+                  "id": 3,
+                  "question": "গ্রিনহাউস প্রভাবের (Greenhouse Effect) জন্য প্রধানত কোন গ্যাস দায়ী?",
+                  "options": ["অক্সিজেন", "নাইট্রোজেন", "কার্বন ডাই অক্সাইড", "হাইড্রোজেন"],
+                  "answer": 2
+                },
                 {
-                  "id": 1,
-                  "question": "'প্রাকৃতিক নির্বাচন তত্ত্ব'-এর প্রবক্তা কে?",
-                  "options": ["ডারউইন", "ল্যামার্ক", "ডি ভ্রিস", "মেন্ডেল"],
+                  "id": 4,
+                  "question": "ওজোন স্তরের (Ozone Layer) ক্ষতি করে কোন গ্যাস?",
+                  "options": ["CFC (ক্লোরোফ্লোরোকার্বন)", "CO₂", "CH₄", "NOₓ"],
                   "answer": 0
-                }
-              ]
-            },
-            "environment_conservation": {
-              "name": "পরিবেশ ও তার সংরক্ষণ",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "ভারতের প্রথম জাতীয় উদ্যান কোনটি?",
-                  "options": ["করবেট জাতীয় উদ্যান", "কাজিরাঙা", "সুন্দরবন", "গির"],
-                  "answer": 0
+                  "id": 5,
+                  "question": "জৈব বৈচিত্র্য (Biodiversity) বলতে কী বোঝায়?",
+                  "options": ["প্রজাতির বৈচিত্র্য", "বংশাণুগত বৈচিত্র্য", "বাস্তুতন্ত্রের বৈচিত্র্য", "উপরের সবকটি"],
+                  "answer": 3
                 }
               ]
             }
           }
         },
         "physical_science": {
-          "name": "ভৌত বিজ্ঞান",
+          "name": "Physical Science",
           "chapters": {
-            "measurement": {
-              "name": "পরিমাপ",
+            "matter_and_state": {
+              "name": "পদার্থের গঠন ও বৈশিষ্ট্য (Matter & Properties)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "দৈর্ঘ্যের SI একক কী?",
-                  "options": ["সেন্টিমিটার", "মিটার", "কিলোমিটার", "ইঞ্চি"],
+                  "question": "চাপের SI একক কী?",
+                  "options": ["নিউটন", "পাসকাল (Pascal)", "জুল", "ডাইন"],
                   "answer": 1
-                }
-              ]
-            },
-            "force_and_motion": {
-              "name": "বল ও গতি",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "নিউটনের কোন গতিসূত্র থেকে বলের পরিমাপ পাওয়া যায়?",
-                  "options": ["প্রথম", "দ্বিতীয়", "তৃতীয়", "কোনোটিই নয়"],
+                  "id": 2,
+                  "question": "বায়ুমণ্ডলীয় চাপ মাপার যন্ত্রের নাম কী?",
+                  "options": ["থার্মোমিটার", "ব্যারোমিটার", "ম্যানোমিটার", "হাইগ্রোমিটার"],
                   "answer": 1
-                }
-              ]
-            },
-            "matter_structure_properties": {
-              "name": "পদার্থ: গঠন ও ধর্ম",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "পদার্থের চতুর্থ অবস্থাকে কী বলা হয়?",
-                  "options": ["কঠিন", "তরল", "প্লাজমা", "গ্যাসীয়"],
-                  "answer": 2
-                }
-              ]
-            },
-            "atomic_structure_properties": {
-              "name": "পরমাণুর গঠন ও পদার্থের ভৌত ও রাসায়নিক ধর্ম",
-              "questions": [
+                  "id": 3,
+                  "question": "ইলেকট্রন কে আবিষ্কার করেন?",
+                  "options": ["জে জে থমসন", "রদারফোর্ড", "চ্যাডউইক", "জন ডাল্টন"],
+                  "answer": 0
+                },
                 {
-                  "id": 1,
-                  "question": "পরমাণুর ধনাত্মক আধানযুক্ত কণা কোনটি?",
-                  "options": ["ইলেকট্রন", "প্রোটন", "নিউট্রন", "পজিট্রন"],
+                  "id": 4,
+                  "question": "সবচেয়ে হালকা মৌল কোনটি?",
+                  "options": ["হিলিয়াম", "হাইড্রোজেন", "লিথিয়াম", "অক্সিজেন"],
+                  "answer": 1
+                },
+                {
+                  "id": 5,
+                  "question": "পরমাণুর নিউক্লিয়াস কী কী নিয়ে গঠিত?",
+                  "options": ["প্রোটন ও ইলেকট্রন", "প্রোটন ও নিউট্রন", "ইলেকট্রন ও নিউট্রন", "শুধু প্রোটন"],
                   "answer": 1
                 }
               ]
             },
             "work_power_energy": {
-              "name": "শক্তির কার্য ও ক্ষমতা",
+              "name": "কার্য, ক্ষমতা ও শক্তি (Work, Power & Energy)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "ক্ষমতার SI একক কী?",
-                  "options": ["জুল", "ওয়াট", "নিউটন", "ডাইন"],
+                  "question": "কার্যের CGS একক কী?",
+                  "options": ["জুল", "আর্গ (Erg)", "নিউটন", "ডাইন"],
                   "answer": 1
-                }
-              ]
-            },
-            "heat": {
-              "name": "তাপ",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "সি-জি-এস (CGS) পদ্ধতিতে তাপের একক কী?",
-                  "options": ["জুল", "ক্যালোরি", "সেলসিয়াস", "কেলভিন"],
+                  "id": 2,
+                  "question": "১ ওয়াট (Watt) সমান কত?",
+                  "options": ["১ জুল/সেকেন্ড", "১ আর্গ/সেকেন্ড", "১ নিউটন-মিটার", "১০ জুল/সেকেন্ড"],
+                  "answer": 0
+                },
+                {
+                  "id": 3,
+                  "question": "স্থিথিশক্তি ও গতিশক্তির সমষ্টিকে কী বলে?",
+                  "options": ["তাপশক্তি", "যান্ত্রিক শক্তি", "রাসায়নিক শক্তি", "আলোকশক্তি"],
                   "answer": 1
-                }
-              ]
-            },
-            "sound": {
-              "name": "শব্দ",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "শব্দের তীব্রতা মাপার একক কী?",
-                  "options": ["ডেসিবেল", "হার্টজ", "মিটার", "সেকেন্ড"],
+                  "id": 4,
+                  "question": "শব্দ তরঙ্গ হলো এক প্রকার -",
+                  "options": ["অনুদৈর্ঘ্য তরঙ্গ", "অনুপ্রস্থ তরঙ্গ", "তড়িৎ-চুম্বকীয় তরঙ্গ", "কোনোটিই নয়"],
+                  "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "শূন্যস্থানে আলোর বেগ কত?",
+                  "options": ["3×10⁸ m/s", "3×10⁵ m/s", "1.5×10⁸ m/s", "3×10¹⁰ m/s"],
                   "answer": 0
                 }
               ]
             },
-            "environmental_concerns": {
-              "name": "পরিবেশের জন্য ভাবনা",
+            "heat_and_thermodynamics": {
+              "name": "তাপ ও তাপগতিবিদ্যা (Heat & Thermodynamics)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "প্রধান গ্রিনহাউস গ্যাস কোনটি?",
-                  "options": ["অক্সিজেন", "নাইট্রোজেন", "কার্বন ডাই অক্সাইড", "হাইড্রোজেন"],
+                  "question": "তাপমাত্রার SI একক কী?",
+                  "options": ["সেলসিয়াস (°C)", "ফারেনহাইট (°F)", "কেলভিন (K)", "রেওমুর"],
                   "answer": 2
+                },
+                {
+                  "id": 2,
+                  "question": "তাপ সঞ্চালনের পদ্ধতি কয় প্রকার?",
+                  "options": ["১টি", "২টি", "৩টি", "৪টি"],
+                  "answer": 2
+                },
+                {
+                  "id": 3,
+                  "question": "বাষ্পীভবন (Evaporation) কিসের উদাহরণ?",
+                  "options": ["তাপ সঞ্চালন", "তাপ পরিবহন", "তাপ বিকিরণ", "তাপ শোষণ"],
+                  "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "পানির স্ফুটনাঙ্ক কত ডিগ্রি সেলসিয়াস?",
+                  "options": ["0°C", "32°C", "100°C", "212°C"],
+                  "answer": 2
+                },
+                {
+                  "id": 5,
+                  "question": "তাপ ইঞ্জিন (Heat Engine) কী কাজে ব্যবহৃত হয়?",
+                  "options": ["তাপকে যান্ত্রিক শক্তিতে", "যান্ত্রিক শক্তিকে তাপে", "তাপকে বিদ্যুতে", "বিদ্যুৎকে তাপে"],
+                  "answer": 0
                 }
               ]
             },
-            "behavior_of_gases": {
-              "name": "গ্যাসের আচরণ",
+            "light_and_sound": {
+              "name": "আলো ও শব্দ (Light & Sound)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "বয়েলের সূত্রে কোনটি ধ্রুবক থাকে?",
-                  "options": ["চাপ", "উষ্ণতা", "আয়তন", "ভর ও উষ্ণতা"],
+                  "question": "আলোর প্রতিফলনের সূত্র কয়টি?",
+                  "options": ["২টি", "৩টি", "৪টি", "১টি"],
+                  "answer": 0
+                },
+                {
+                  "id": 2,
+                  "question": "লেন্সের (Lens) প্রকারভেদ কত?",
+                  "options": ["২ প্রকার", "৩ প্রকার", "৪ প্রকার", "৫ প্রকার"],
+                  "answer": 0
+                },
+                {
+                  "id": 3,
+                  "question": "শব্দের গতি কিসের উপর নির্ভর করে?",
+                  "options": ["মাধ্যমের ঘনত্ব", "মাধ্যমের তাপমাত্রা", "মাধ্যমের স্থিতিস্থাপকতা", "উপরের সবকটি"],
                   "answer": 3
-                }
-              ]
-            },
-            "chemical_calculations": {
-              "name": "রাসায়নিক গণনা",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "অ্যাভোগাড্রো সংখ্যার মান কত?",
-                  "options": ["$6.022 \\times 10^{23}$", "$3 \\times 10^8$", "$1.6 \\times 10^{-19}$", "$9.8$"],
+                  "id": 4,
+                  "question": "প্রতিধ্বনি (Echo) তৈরির জন্য ন্যূনতম দূরত্ব কত?",
+                  "options": ["১৭ মিটার", "৩৪ মিটার", "৫০ মিটার", "১০০ মিটার"],
                   "answer": 0
-                }
-              ]
-            },
-            "thermal_phenomena": {
-              "name": "তাপের ঘটনাসমূহ",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "কোন পদার্থের তাপ পরিবাহিতাসংখ্যা সবচেয়ে বেশি?",
-                  "options": ["তামা", "রুপো", "লোহা", "অ্যালুমিনিয়াম"],
-                  "answer": 1
-                }
-              ]
-            },
-            "light": {
-              "name": "আলো",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "কোন রঙের আলোর তরঙ্গদৈর্ঘ্য সবচেয়ে বেশি?",
-                  "options": ["বেগুনি", "লাল", "সবুজ", "হলুদ"],
-                  "answer": 1
-                }
-              ]
-            },
-            "atomic_nucleus": {
-              "name": "পরমাণুর নিউক্লিয়াস",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "তেজস্ক্রিয়তা কে আবিষ্কার করেন?",
-                  "options": ["মাদাম কুরি", "হেনরি বেকারেল", "রন্টজেন", "রদারফোর্ড"],
-                  "answer": 1
-                }
-              ]
-            },
-            "physical_chemical_properties": {
-              "name": "পদার্থের ভৌত ও রাসায়নিক ধর্ম",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "পর্যায় সারণির জনক কাকে বলা হয়?",
-                  "options": ["মেন্ডেলিফ", "মোসলে", "ডাল্টন", "নিউল্যান্ডস"],
-                  "answer": 0
-                }
-              ]
-            }
-          }
-        },
-        "english": {
-          "name": "ইংরেজি",
-          "chapters": {
-            "articles": {
-              "name": "Articles",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "He gave me ______ one-rupee note.",
-                  "options": ["a", "an", "the", "no article"],
-                  "answer": 0
-                }
-              ]
-            },
-            "preposition": {
-              "name": "Preposition",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "The cat jumped ______ the table.",
-                  "options": ["in", "upon", "at", "to"],
-                  "answer": 1
-                }
-              ]
-            },
-            "phrasal_verbs": {
-              "name": "Phrasal Verbs",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "The fire was ______ by the firefighters.",
-                  "options": ["put off", "put out", "put on", "put up"],
-                  "answer": 1
-                }
-              ]
-            },
-            "voice_change": {
-              "name": "Voice Change",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "Change into passive: 'She sings a song.'",
-                  "options": ["A song is sung by her.", "A song was sung by her.", "A song sung by her.", "She is singing a song."],
-                  "answer": 0
-                }
-              ]
-            },
-            "narration_change": {
-              "name": "Narration Change",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "He said, 'I am busy.' (Indirect speech)",
-                  "options": ["He said that he is busy.", "He said that he was busy.", "He told he was busy.", "He says that he is busy."],
-                  "answer": 1
-                }
-              ]
-            },
-            "transformation_of_sentence": {
-              "name": "Transformation of sentence",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "He is too weak to walk. (Remove 'too')",
-                  "options": ["He is so weak that he cannot walk.", "He is very weak to walk.", "He cannot walk because weak.", "He is weak enough to walk."],
-                  "answer": 0
-                }
-              ]
-            },
-            "synonyms": {
-              "name": "Synonyms",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "Synonym of 'HAPPY':",
-                  "options": ["Sad", "Joyful", "Angry", "Tired"],
-                  "answer": 1
-                }
-              ]
-            },
-            "antonyms": {
-              "name": "Antonyms",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "Antonym of 'BRAVE':",
-                  "options": ["Bold", "Coward", "Strong", "Smart"],
-                  "answer": 1
-                }
-              ]
-            },
-            "one_word_substitution": {
-              "name": "One word substitution",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "A person who writes books:",
-                  "options": ["Author", "Painter", "Doctor", "Teacher"],
-                  "answer": 0
-                }
-              ]
-            },
-            "sentence_completion": {
-              "name": "Sentence completion",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "If it rains, we ______ stay at home.",
-                  "options": ["will", "would", "had", "have"],
-                  "answer": 0
-                }
-              ]
-            },
-            "spotting_errors": {
-              "name": "Spotting Errors",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "Identify error: 'Each of the boys (A) / are present (B) / today. (C)'",
-                  "options": ["Part A", "Part B", "Part C", "No Error"],
-                  "answer": 1
-                }
-              ]
-            },
-            "idioms_and_phrases": {
-              "name": "Idioms & Phrases",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "Meaning of 'Once in a blue moon':",
-                  "options": ["Frequently", "Very rarely", "Always", "Never"],
-                  "answer": 1
-                }
-              ]
-            },
-            "spelling_test": {
-              "name": "Spelling Test",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "Choose the correctly spelt word:",
-                  "options": ["Receive", "Recieve", "Receve", "Ricieve"],
-                  "answer": 0
-                }
-              ]
-            },
-            "sentence_improvement": {
-              "name": "Sentence Improvement",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "Improve underlined part: 'He is **more better** than his brother.'",
-                  "options": ["better", "good", "best", "No improvement"],
+                  "id": 5,
+                  "question": "মানুষের শ্রবণের কম্পাঙ্ক সীমা কত?",
+                  "options": ["20 Hz - 20,000 Hz", "10 Hz - 10,000 Hz", "50 Hz - 50,000 Hz", "1 Hz - 1000 Hz"],
                   "answer": 0
                 }
               ]
@@ -437,59 +294,289 @@
           }
         },
         "mathematics": {
-          "name": "অঙ্ক",
+          "name": "Mathematics",
           "chapters": {
-            "real_number_theory": {
-              "name": "বাস্তব সংখ্যাতত্ত্ব",
+            "percentage_and_profit": {
+              "name": "শতকরা ও লাভ-ক্ষতি (Percentage & Profit-Loss)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "সবচেয়ে ছোট মৌলিক সংখ্যা কোনটি?",
-                  "options": ["০", "১", "২", "৩"],
-                  "answer": 2
-                }
-              ]
-            },
-            "profit_and_loss": {
-              "name": "লাভ ও ক্ষতি",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "ক্রয়মূল্য ১০০ টাকা ও বিক্রয়মূল্য ১২০ টাকা হলে লাভের হার কত?",
+                  "question": "একটি দ্রব্যের ক্রয়মূল্য ৫০০ টাকা এবং বিক্রয়মূল্য ৬০০ টাকা হলে শতকরা লাভের হার কত?",
                   "options": ["১০%", "১৫%", "২০%", "২৫%"],
                   "answer": 2
+                },
+                {
+                  "id": 2,
+                  "question": "কোনো সংখ্যার ৪০% যদি ৮০ হয়, তবে সংখ্যাটি কত?",
+                  "options": ["১৫০", "২০০", "২৫০", "৩০০"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "ক্রয়মূল্যের ওপর ১০% ক্ষতি হলে বিক্রয়মূল্যের ওপর ক্ষতির হার কত?",
+                  "options": ["11⅑%", "9¹⁄₁₁%", "১০%", "১২%"],
+                  "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "একটি বই ২৫০ টাকায় কিনে ৩০০ টাকায় বিক্রি করলে কত শতাংশ লাভ হবে?",
+                  "options": ["২০%", "২৫%", "১৫%", "৩০%"],
+                  "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "বার্ষিক ৫% সরল সুদে ৪০০ টাকার ২ বছরের সুদ কত টাকা হবে?",
+                  "options": ["২০ টাকা", "৩০ টাকা", "৪০ টাকা", "৫০ টাকা"],
+                  "answer": 2
                 }
               ]
             },
-            "simple_interest": {
-              "name": "সরল সুদকষা",
+            "ratio_and_proportion": {
+              "name": "অনুপাত ও সমানুপাত (Ratio & Proportion)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "সরল সুদের ক্ষেত্রে আসল $P$, হার $R\%$, সময় $T$ হলে মোট সুদ $I = ?$",
-                  "options": ["$\\frac{PRT}{100}$", "$\\frac{100}{PRT}$", "$\\frac{PR}{100T}$", "$PRT$"],
+                  "question": "যদি A:B = 2:3 এবং B:C = 4:5 হয়, তবে A:B:C কত?",
+                  "options": ["8:12:15", "2:4:5", "6:8:10", "8:10:12"],
+                  "answer": 0
+                },
+                {
+                  "id": 2,
+                  "question": "৪ ও ৯ এর মধ্যসমানুপাতী (Mean Proportional) কত?",
+                  "options": ["৫", "৬", "৭", "৮"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "দুটি সংখ্যার অনুপাত ৩:৪ এবং তাদের যোগফল ৭০ হলে বড় সংখ্যাটি কত?",
+                  "options": ["৩০", "৪০", "৫০", "৪৫"],
+                  "answer": 1
+                },
+                {
+                  "id": 4,
+                  "question": "পিতা ও পুত্রের বর্তমান বয়সের অনুপাত ৭:২। ৫ বছর পর তাদের বয়সের অনুপাত ৮:৩ হলে পিতার বর্তমান বয়স কত?",
+                  "options": ["৩৫ বছর", "২৮ বছর", "৪২ বছর", "৪৯ বছর"],
+                  "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "১৬ এবং ২৪ এর তৃতীয় সমানুপাতী কত?",
+                  "options": ["৩২", "৩৬", "৪০", "৪৮"],
+                  "answer": 1
+                }
+              ]
+            },
+            "simple_and_compound_interest": {
+              "name": "সরল ও চক্রবৃদ্ধি সুদ (Simple & Compound Interest)",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "সরল সুদের সূত্র কী?",
+                  "options": ["SI = PRT", "SI = PRT/100", "SI = PTR/100", "SI = PR/100"],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "১০০০ টাকার ২ বছরের ১০% চক্রবৃদ্ধি সুদ কত?",
+                  "options": ["২০০ টাকা", "২১০ টাকা", "২২০ টাকা", "২৩০ টাকা"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "বার্ষিক ৮% সরল সুদে কত বছরে ৫০০ টাকার সুদ ১২০ টাকা হবে?",
+                  "options": ["২ বছর", "৩ বছর", "৪ বছর", "৫ বছর"],
+                  "answer": 1
+                },
+                {
+                  "id": 4,
+                  "question": "চক্রবৃদ্ধি সুদের ক্ষেত্রে সুদ-আসলের সূত্র কী?",
+                  "options": ["A = P(1+r/100)ⁿ", "A = P(1+r/100)n", "A = Prt", "A = P(1+rt)"],
+                  "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "বার্ষিক ৫% হারে ২০০০ টাকার ৩ বছরের সরল সুদ কত?",
+                  "options": ["২০০ টাকা", "২৫০ টাকা", "৩০০ টাকা", "৩৫০ টাকা"],
+                  "answer": 2
+                }
+              ]
+            },
+            "partnership_and_alligation": {
+              "name": "অংশীদারি ও মিশ্রণ (Partnership & Alligation)",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "দুই অংশীদারের মধ্যে লাভ কিসের ভিত্তিতে ভাগ করা হয়?",
+                  "options": ["মূলধনের অনুপাতে", "সময়ের অনুপাতে", "মূলধন ও সময়ের অনুপাতে", "ইচ্ছামতো"],
+                  "answer": 2
+                },
+                {
+                  "id": 2,
+                  "question": "A ও B এর বিনিয়োগের অনুপাত ৩:৪ এবং লাভের অনুপাত ৯:৮ হলে তাদের সময়ের অনুপাত কত?",
+                  "options": ["২:৩", "৩:২", "৩:৪", "৪:৩"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "মিশ্রণের (Alligation) মাধ্যমে কী নির্ণয় করা হয়?",
+                  "options": ["গড় মূল্য", "পরিমাণ", "ঘনত্ব", "তাপমাত্রা"],
+                  "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "৩ জন অংশীদারের মোট লাভ ৬০০০ টাকা, তাদের মূলধনের অনুপাত ২:৩:৫ হলে দ্বিতীয় জনের লাভ কত?",
+                  "options": ["১২০০ টাকা", "১৮০০ টাকা", "২৪০০ টাকা", "৩০০০ টাকা"],
+                  "answer": 1
+                },
+                {
+                  "id": 5,
+                  "question": "তরল মিশ্রণে অনুপাত ৪:৫ হলে মোট পরিমাণ ১৮০ লিটার, দ্বিতীয় তরলের পরিমাণ কত?",
+                  "options": ["৮০ লিটার", "৯০ লিটার", "১০০ লিটার", "১১০ লিটার"],
+                  "answer": 2
+                }
+              ]
+            }
+          }
+        },
+        "english": {
+          "name": "English",
+          "chapters": {
+            "grammar_and_articles": {
+              "name": "Articles & Prepositions",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "Choose the correct article: He is ______ M.B.B.S. doctor.",
+                  "options": ["a", "an", "the", "no article"],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "Fill in the blank: She has been living in Kolkata ______ 2018.",
+                  "options": ["for", "from", "since", "by"],
+                  "answer": 2
+                },
+                {
+                  "id": 3,
+                  "question": "Fill in the preposition: The boy is fond ______ sweets.",
+                  "options": ["of", "off", "with", "for"],
+                  "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "Choose the correct sentence:",
+                  "options": ["He is senior than me.", "He is senior to me.", "He is senior from me.", "He is senior with me."],
+                  "answer": 1
+                },
+                {
+                  "id": 5,
+                  "question": "Fill in the blank: Honesty is ______ best policy.",
+                  "options": ["a", "an", "the", "no article"],
+                  "answer": 2
+                }
+              ]
+            },
+            "synonyms_and_antonyms": {
+              "name": "Synonyms & Antonyms",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "What is the Synonym of 'ABANDON'?",
+                  "options": ["Keep", "Forsake", "Adopt", "Cherish"],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "What is the Antonym of 'ANCIENT'?",
+                  "options": ["Old", "Modern", "Historic", "Past"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "Select the correct Synonym for 'GIGANTIC':",
+                  "options": ["Small", "Huge", "Tiny", "Weak"],
+                  "answer": 1
+                },
+                {
+                  "id": 4,
+                  "question": "Find the Antonym of 'OPTIMIST':",
+                  "options": ["Pessimist", "Hopeful", "Realistic", "Idealist"],
+                  "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "What is the One Word Substitution for 'A person who does not believe in God'?",
+                  "options": ["Theist", "Atheist", "Agnostic", "Martyr"],
+                  "answer": 1
+                }
+              ]
+            },
+            "voice_and_narration": {
+              "name": "Voice Change & Narration Change",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "Change the voice: 'I write a letter.'",
+                  "options": ["A letter is written by me.", "A letter was written by me.", "A letter will be written by me.", "A letter has been written by me."],
+                  "answer": 0
+                },
+                {
+                  "id": 2,
+                  "question": "Change the narration: He said, 'I am happy.'",
+                  "options": ["He said that he is happy.", "He said that he was happy.", "He said that I am happy.", "He said that I was happy."],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "Change the voice: 'The boy was praised by the teacher.'",
+                  "options": ["The teacher praised the boy.", "The teacher praises the boy.", "The teacher will praise the boy.", "The teacher had praised the boy."],
+                  "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "Change the narration: She said, 'I will go to market.'",
+                  "options": ["She said that she will go to market.", "She said that she would go to market.", "She said that I will go to market.", "She said that I would go to market."],
+                  "answer": 1
+                },
+                {
+                  "id": 5,
+                  "question": "Change the voice: 'Open the door.'",
+                  "options": ["Let the door be opened.", "The door is opened.", "The door should be opened.", "Let the door open."],
                   "answer": 0
                 }
               ]
             },
-            "compound_interest": {
-              "name": "চক্রবৃদ্ধি সুদ ও সমহার বৃদ্ধি বা হ্রাস",
+            "sentence_transformation": {
+              "name": "Transformation of Sentences",
               "questions": [
                 {
                   "id": 1,
-                  "question": "সমহার বৃদ্ধির ক্ষেত্রে প্রতি বছর জনসংখ্যার পরিমাণ -",
-                  "options": ["বাড়ে", "কমে", "একই থাকে", "কোনোটিই নয়"],
+                  "question": "Transform to affirmative: 'He is not dishonest.'",
+                  "options": ["He is dishonest.", "He is honest.", "He is not honest.", "He was honest."],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "Transform to negative: 'She always helps others.'",
+                  "options": ["She never helps others.", "She does not always help others.", "She helps not others.", "She never help others."],
                   "answer": 0
-                }
-              ]
-            },
-            "partnership_business": {
-              "name": "অংশীদারি কারবার",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "অংশীদারি ব্যবসায় লভ্যাংশ কিসের অনুপাতে বন্টিত হয়?",
-                  "options": ["মূলধনের অনুপাত", "কাজের অনুপাত", "সময়ের অনুপাত", "সমান ভাগে"],
+                  "id": 3,
+                  "question": "Transform to interrogative: 'He went to school.'",
+                  "options": ["Did he go to school?", "Does he go to school?", "Will he go to school?", "Has he gone to school?"],
+                  "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "Transform to exclamatory: 'It is a very beautiful flower.'",
+                  "options": ["What a beautiful flower it is!", "How beautiful flower it is!", "What beautiful flower it is!", "How a beautiful flower it is!"],
+                  "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "Transform to simple sentence: 'He worked hard so that he might win.'",
+                  "options": ["He worked hard to win.", "He worked hard for win.", "He worked hard and won.", "He worked hard but lost."],
                   "answer": 0
                 }
               ]
@@ -497,197 +584,290 @@
           }
         },
         "general_knowledge": {
-          "name": "জেনারেল নলেজ",
+          "name": "General Knowledge",
           "chapters": {
-            "history": {
-              "name": "ইতিহাস",
+            "indian_history_geography": {
+              "name": "ভারতের ইতিহাস ও ভূগোল (History & Geography of India)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "মৌর্য বংশের প্রতিষ্ঠাতা কে ছিলেন?",
-                  "options": ["চন্দ্রগুপ্ত মৌর্য", "অশোক", "বিম্বিসার", "সমুদ্রগুপ্ত"],
+                  "question": "পশ্চিমবঙ্গের রাজধানী কোথায় অবস্থিত?",
+                  "options": ["শিলিগুড়ি", "কলকাতা", "আসানসোল", "দুর্গাপুর"],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "ভারতের জাতীয় নদী কোনটি?",
+                  "options": ["যমুনা", "গঙ্গা", "ব্রহ্মপুত্র", "গোদাবরী"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "স্বাধীন ভারতের প্রথম প্রধানমন্ত্রী কে ছিলেন?",
+                  "options": ["ড. বি আর আম্বেদকর", "পণ্ডিত জওহরলাল নেহেরু", "মহাত্মা গান্ধী", "সরদার বল্লভভাই প্যাটেল"],
+                  "answer": 1
+                },
+                {
+                  "id": 4,
+                  "question": "কয়লার উৎপাদনে পশ্চিমবঙ্গের কোন অঞ্চল বিখ্যাত?",
+                  "options": ["হুগলী", "রাণীগঞ্জ", "দার্জিলিং", "মেদিনীপুর"],
+                  "answer": 1
+                },
+                {
+                  "id": 5,
+                  "question": "সুন্দরবন কিসের জন্য বিখ্যাত?",
+                  "options": ["একশৃঙ্গ গণ্ডার", "রয়েল বেঙ্গল টাইগার", "হাতি", "হরিণ"],
+                  "answer": 1
+                }
+              ]
+            },
+            "health_science_gk": {
+              "name": "স্বাস্থ্যবিজ্ঞান ও দিবস (Health Science & Days)",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "বিশ্ব স্বাস্থ্য দিবস (World Health Day) পালিত হয় কোন তারিখে?",
+                  "options": ["৭ই এপ্রিল", "১ই মে", "৫ই জুন", "১ই ডিসেম্বর"],
+                  "answer": 0
+                },
+                {
+                  "id": 2,
+                  "question": "AIDS রোগের জন্য দায়ী ভাইরাস কোনটি?",
+                  "options": ["HIV", "H1N1", "Corona Virus", "Rhino Virus"],
+                  "answer": 0
+                },
+                {
+                  "id": 3,
+                  "question": "ম্যালেরিয়া রোগের বাহক কে?",
+                  "options": ["স্ত্রী অ্যানোফিলিস মশা", "এডিস মশা", "কিউলেক্স মশা", "মাছি"],
+                  "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "কোন ভিটামিনের অভাবে রাতকানা (Night Blindness) রোগ হয়?",
+                  "options": ["ভিটামিন B", "ভিটামিন C", "ভিটামিন A", "ভিটামিন D"],
+                  "answer": 2
+                },
+                {
+                  "id": 5,
+                  "question": "পোলিও প্রতিষেধক টিকার আবিষ্কারক কে?",
+                  "options": ["জোনাস সক (Jonas Salk)", "লুই পাস্তুর", "এডওয়ার্ড জেনার", "অ্যালেকজান্ডার ফ্লেমিং"],
                   "answer": 0
                 }
               ]
             },
-            "geography": {
-              "name": "ভূগোল",
+            "indian_polity_and_constitution": {
+              "name": "ভারতের রাজনীতি ও সংবিধান (Polity & Constitution)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "ভারতের দীর্ঘতম নদী কোনটি?",
-                  "options": ["গঙ্গা", "গো দাবরী", "যমুনা", "সিন্ধু"],
+                  "question": "ভারতের সংবিধান কবে গৃহীত হয়?",
+                  "options": ["২৬ জানুয়ারী ১৯৫০", "১৫ আগস্ট ১৯৪৭", "২৬ নভেম্বর ১৯৪৯", "২ অক্টোবর ১৯৪৮"],
+                  "answer": 2
+                },
+                {
+                  "id": 2,
+                  "question": "ভারতের রাষ্ট্রপতি কে?",
+                  "options": ["প্রধানমন্ত্রী", "রাষ্ট্রপতি", "উপরাষ্ট্রপতি", "লোকসভার স্পিকার"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "ভারতের জাতীয় প্রতীক কী?",
+                  "options": ["সিংহ", "হাতি", "ঘোড়া", "ময়ূর"],
+                  "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "সংবিধানের কোন ধারায় মৌলিক অধিকার বর্ণিত আছে?",
+                  "options": ["ধারা ১২-৩৫", "ধারা ৩৬-৫১", "ধারা ৫২-৭৮", "ধারা ৭৯-১২২"],
+                  "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "ভারতের জাতীয় সঙ্গীতের রচয়িতা কে?",
+                  "options": ["রবীন্দ্রনাথ ঠাকুর", "বঙ্কিমচন্দ্র চট্টোপাধ্যায়", "সুভাষচন্দ্র বসু", "মহাত্মা গান্ধী"],
                   "answer": 0
                 }
               ]
             },
-            "literature_culture": {
-              "name": "সাহিত্য ও সংস্কৃতি",
+            "current_affairs": {
+              "name": "সাম্প্রতিক ঘটনা (Current Affairs)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "'গীতাঞ্জলি' কাব্যের জন্য কে নোবেল পুরস্কার পান?",
-                  "options": ["রবীন্দ্রনাথ ঠাকুর", "কাজী নজরুল ইসলাম", "বঙ্কিমচন্দ্র চট্টোপাধ্যায়", "শরৎচন্দ্র চট্টোপাধ্যায়"],
+                  "question": "২০২৪ সালের G20 সম্মেলন কোথায় অনুষ্ঠিত হয়েছিল?",
+                  "options": ["ভারত", "ব্রাজিল", "ইন্দোনেশিয়া", "দক্ষিণ আফ্রিকা"],
                   "answer": 0
-                }
-              ]
-            },
-            "constitution": {
-              "name": "সংবিধান",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "ভারতীয় সংবিধানের স্থপতি কাকে বলা হয়?",
-                  "options": ["ড. বি. আর. আম্বেদকর", "ড. রাজেন্দ্র প্রসাদ", "জওহরলাল নেহেরু", "মহাত্মা গান্ধী"],
-                  "answer": 0
-                }
-              ]
-            },
-            "economy": {
-              "name": "অর্থনীতি",
-              "questions": [
+                  "id": 2,
+                  "question": "বাংলা ভাষার প্রথম সংবাদপত্রের নাম কী?",
+                  "options": ["বেঙ্গল গেজেট", "সংবাদ প্রভাকর", "সমাচার দর্পণ", "আমার দেশ"],
+                  "answer": 2
+                },
                 {
-                  "id": 1,
-                  "question": "ভারতের কেন্দ্রীয় ব্যাংকের নাম কী?",
-                  "options": ["রিজার্ভ ব্যাংক অফ ইন্ডিয়া (RBI)", "স্টেট ব্যাংক অফ ইন্ডিয়া", "ব্যাংক অফ বরোদা", "पंजाब ন্যাশনাল ব্যাংক"],
+                  "id": 3,
+                  "question": "বিশ্ব জলবায়ু সম্মেলন (COP) কত বছর অন্তর অনুষ্ঠিত হয়?",
+                  "options": ["প্রতি বছর", "প্রতি ২ বছর", "প্রতি ৩ বছর", "প্রতি ৫ বছর"],
                   "answer": 0
-                }
-              ]
-            },
-            "awards": {
-              "name": "পুরস্কার",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "ভারতের সর্বোচ্চ সামরিক সম্মান কোনটি?",
-                  "options": ["পরমবীর চক্র", "ভারত রত্ন", "পদ্মবিভূষণ", "বীর চক্র"],
-                  "answer": 0
-                }
-              ]
-            },
-            "environmental_science": {
-              "name": "পরিবেশ বিদ্যা",
-              "questions": [
+                  "id": 4,
+                  "question": "ভারতে প্রথম মহিলা রাষ্ট্রপতি কে ছিলেন?",
+                  "options": ["ইন্দিরা গান্ধী", "প্রতিভা পাটিল", "সুষমা স্বরাজ", "সরোজিনী নাইডু"],
+                  "answer": 1
+                },
                 {
-                  "id": 1,
-                  "question": "বিশ্ব পরিবেশ দিবস কবে পালিত হয়?",
-                  "options": ["৫ই জুন", "৭ই এপ্রিল", "২২শে এপ্রিল", "১ই ডিসেম্বর"],
-                  "answer": 0
-                }
-              ]
-            },
-            "computer": {
-              "name": "কম্পিউটার",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "কম্পিউটারের 'মস্তিষ্ক' কাকে বলা হয়?",
-                  "options": ["CPU", "RAM", "ROM", "Hard Disk"],
-                  "answer": 0
+                  "id": 5,
+                  "question": "পশ্চিমবঙ্গের বর্তমান মুখ্যমন্ত্রী কে?",
+                  "options": ["জ্যোতি বসু", "বুদ্ধদেব ভট্টাচার্য", "মমতা বন্দ্যোপাধ্যায়", "প্রফুল্ল চন্দ্র সেন"],
+                  "answer": 2
                 }
               ]
             }
           }
         },
         "logical_reasoning": {
-          "name": "লজিক্যাল রিজনিং",
+          "name": "Logical Reasoning",
           "chapters": {
-            "series": {
-              "name": "শ্রেণি",
+            "figure_series": {
+              "name": "Visual Pattern & Series (ছবি নির্ভর)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "অনুক্সমটি পূর্ণ করুন: ২, ৪, ৮, ১৬, ?",
-                  "options": ["২০", "২৪", "৩২", "৬৪"],
+                  "question": "প্রদত্ত ছবিতে খালি স্থানে (?) উপযুক্ত চিত্রটি নির্বাচন করুন।",
+                  "options": ["চিত্র A", "চিত্র B", "চিত্র C", "চিত্র D"],
+                  "answer": 0
+                },
+                {
+                  "id": 2,
+                  "question": "নিচের চিত্রে কতগুলি ত্রিভুজ (Triangles) রয়েছে গণনা করুন।",
+                  "options": ["৮ টি", "১০ টি", "১২ টি", "১৬ টি"],
+                  "answer": 3
+                },
+                {
+                  "id": 3,
+                  "question": "প্রদত্ত দর্পণ চিত্রটির (Mirror Image) সঠিক উত্তর কোনটি?",
+                  "options": ["অপশন ১", "অপশন ২", "অপশন ৩", "অপশন ৪"],
+                  "answer": 1
+                },
+                {
+                  "id": 4,
+                  "question": "চিত্রের অনুক্রমটি পূর্ণ করতে পরবর্তীতে কোন চিত্রটি আসবে?",
+                  "options": ["চিত্র A", "চিত্র B", "চিত্র C", "চিত্র D"],
                   "answer": 2
-                }
-              ]
-            },
-            "blood_relation": {
-              "name": "রক্তের সম্পর্ক",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "A হলো B-এর ভাই, B হলো C-এর পিতা। তবে A, C-এর কে হন?",
-                  "options": ["কাকা/জেঠা", "পিতা", "দাদা", "পিসা"],
-                  "answer": 0
-                }
-              ]
-            },
-            "analogy": {
-              "name": "সাদৃশ্য",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "ডাক্তার : হাসপাতাল :: শিক্ষক : ?",
-                  "options": ["স্কুল", "বই", "ছাত্র", "পড়াশোনা"],
-                  "answer": 0
-                }
-              ]
-            },
-            "classification": {
-              "name": "শ্রেণিবিভাজন",
-              "questions": [
-                {
-                  "id": 1,
-                  "question": "নিচের কোনটি বাকিদের থেকে আলাদা?",
-                  "options": ["আম", "আপেল", "কলা", "আলু"],
+                  "id": 5,
+                  "question": "নিচের ৪টি চিত্রের মধ্যে কোনটি বাকিসব থেকে আলাদা (Odd One Out)?",
+                  "options": ["চিত্র A", "চিত্র B", "চিত্র C", "চিত্র D"],
                   "answer": 3
                 }
               ]
             },
-            "missing_number": {
-              "name": "লুপ্ত সংখ্যা নির্ণয়",
+            "analogy_and_coding": {
+              "name": "Diagram Analogy & Venn Diagram (ছবি নির্ভর)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "লুপ্ত সংখ্যাটি নির্বাচন করুন: ৩, ৫, ৯, ১৭, ?",
-                  "options": ["৩৩", "২৫", "২৭", "৩১"],
+                  "question": "প্রদত্ত চিত্রে 'ডাক্তার', 'মানুষ' এবং 'মহিলা'-র সম্পর্ক প্রকাশকারী ভেনচিত্র (Venn Diagram) কোনটি?",
+                  "options": ["চিত্র A", "চিত্র B", "চিত্র C", "চিত্র D"],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "প্রথম দুটি চিত্রের সাদৃশ্য দেখে তৃতীয় চিত্রের সাথে চতুর্থ প্রশ্নচিহ্নিত চিত্রটি নির্বাচন করুন।",
+                  "options": ["অপশন A", "অপশন B", "অপশন C", "অপশন D"],
                   "answer": 0
+                },
+                {
+                  "id": 3,
+                  "question": "চিত্রটিতে লুপ্ত সংখ্যাটি (?) কত হবে?",
+                  "options": ["২৫", "৩৬", "৪৯", "৬৪"],
+                  "answer": 2
+                },
+                {
+                  "id": 4,
+                  "question": "কাগজের টুকরোটি ভাঁজ করে কাটলে খোলার পর কেমন দেখাবে?",
+                  "options": ["চিত্র A", "চিত্র B", "চিত্র C", "চিত্র D"],
+                  "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "প্রদত্ত ডাইস (Dice)-এর ৩ নম্বর মুখের বিপরীতে কত নম্বর মুখ থাকবে?",
+                  "options": ["১", "৪", "৫", "৬"],
+                  "answer": 2
                 }
               ]
             },
-            "matrix_coding": {
-              "name": "ম্যাট্রিক্স কোডিং",
+            "series_and_sequence": {
+              "name": "সংখ্যা ও সময়ের ক্রমবিন্যাস (Number & Time Series)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "ম্যাট্রিক্স কোডিং প্রধানত কিসের সাহায্যে নির্দেশ করা হয়?",
-                  "options": ["রো ও কলাম", "চিত্র", "শুধু বর্ণ", "শুধু সংখ্যা"],
+                  "question": "২, ৬, ১২, ২০, ৩০, ? - পরবর্তী সংখ্যাটি কত?",
+                  "options": ["৪০", "৪২", "৪৪", "৪৬"],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "৩, ৮, ১৫, ২৪, ৩৫, ? - পরবর্তী সংখ্যাটি কত?",
+                  "options": ["৪৪", "৪৬", "৪৮", "৫০"],
+                  "answer": 2
+                },
+                {
+                  "id": 3,
+                  "question": "A, C, F, J, O, ? - পরবর্তী অক্ষরটি কী?",
+                  "options": ["T", "U", "V", "W"],
+                  "answer": 1
+                },
+                {
+                  "id": 4,
+                  "question": "পরবর্তী সময়টি কী হবে: ১২:৩০, ১:৩০, ২:৩০, ৩:৩০, ?",
+                  "options": ["৪:৩০", "৫:৩০", "৬:৩০", "৭:৩০"],
                   "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "১, ৪, ৯, ১৬, ২৫, ? - পরবর্তী সংখ্যাটি কত?",
+                  "options": ["৩০", "৩৬", "৪০", "৪৯"],
+                  "answer": 1
                 }
               ]
             },
-            "coding_decoding": {
-              "name": "সাংকেতিকরণ ও অসাংকেতিকরণ",
+            "venn_diagram_and_syllogism": {
+              "name": "ভেনচিত্র ও শ্রেণিবিন্যাস (Venn Diagram & Syllogism)",
               "questions": [
                 {
                   "id": 1,
-                  "question": "কোনো সাংকেতিক ভাষায় CAT-কে DBU লেখা হলে, DOG-কে কী লেখা হবে?",
-                  "options": ["EPH", "EPH", "EPH", "EPH"],
-                  "answer": 0
-                }
-              ]
-            },
-            "number_time_sequence": {
-              "name": "সংখ্যা ও সময়ের ক্রমবিন্যাস",
-              "questions": [
+                  "question": "সকল গোলাপই ফুল। কিছু ফুল লাল। সঠিক সিদ্ধান্ত কোনটি?",
+                  "options": ["সকল গোলাপ লাল", "কিছু গোলাপ লাল", "সকল ফুল গোলাপ", "কোনোটিই নয়"],
+                  "answer": 3
+                },
                 {
-                  "id": 1,
-                  "question": "যদি গতকাল রবিবার হয়, তবে আগামীকালের পরের দিন কী বার হবে?",
-                  "options": ["বুধবার", "বৃহস্পতিবার", "মঙ্গলবাবে", "শুক্রবার"],
+                  "id": 2,
+                  "question": "প্রদত্ত বিবৃতি ও সিদ্ধান্তগুলোর মধ্যে সঠিক সম্পর্ক নির্বাচন করুন।",
+                  "options": ["শুধু সিদ্ধান্ত ১ সঠিক", "শুধু সিদ্ধান্ত ২ সঠিক", "উভয় সিদ্ধান্ত সঠিক", "উভয় সিদ্ধান্ত ভুল"],
                   "answer": 0
-                }
-              ]
-            },
-            "ranking_order": {
-              "name": "ক্রম নির্ণয়",
-              "questions": [
+                },
                 {
-                  "id": 1,
-                  "question": "একটি সারিতে রামের অবস্থান বাম দিক থেকে ১০ম এবং ডান দিক থেকে ১৫তম হলে সারিতে মোট কতজন আছে?",
-                  "options": ["২৪ জন", "২৫ জন", "২৩ জন", "২৬ জন"],
+                  "id": 3,
+                  "question": "ভেনচিত্রে 'গরু', 'প্রাণী', 'স্তন্যপায়ী'-এর সম্পর্ক প্রকাশ করুন।",
+                  "options": ["চিত্র A", "চিত্র B", "চিত্র C", "চিত্র D"],
                   "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "সিদ্ধান্ত: কিছু শিক্ষক পুরুষ। কিছু পুরুষ ডাক্তার। সঠিক সিদ্ধান্ত কী?",
+                  "options": ["কিছু শিক্ষক ডাক্তার", "সকল শিক্ষক ডাক্তার", "কোন শিক্ষক ডাক্তার নয়", "কোনোটিই নয়"],
+                  "answer": 3
+                },
+                {
+                  "id": 5,
+                  "question": "নিম্নলিখিত বিবৃতিগুলো পড়ুন এবং সঠিক সিদ্ধান্ত নির্বাচন করুন।",
+                  "options": ["সিদ্ধান্ত ১ সঠিক", "সিদ্ধান্ত ২ সঠিক", "উভয় সিদ্ধান্ত সঠিক", "উভয় সিদ্ধান্ত ভুল"],
+                  "answer": 2
                 }
               ]
             }
@@ -696,4 +876,4 @@
       }
     }
   }
-}
+            }
