@@ -295,7 +295,7 @@ function showQuestion(index) {
             // Check if ALL questions are answered
             const allAnswered = Object.keys(userAnswers).length === questions.length;
             if (allAnswered) {
-                nextBtn.innerHTML = '📊 দেখুন ফলাফল';
+                nextBtn.innerHTML = 'অধ্যায়ে ফিরুন';
                 nextBtn.onclick = showResults;
             } else {
                 nextBtn.innerHTML = 'শেষ প্রশ্ন';
@@ -339,46 +339,19 @@ function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
         if (idx === selectedIndex) btn.classList.add('selected');
     });
     
-    if (selectedIndex === correctAnswer) {
-        console.log('🎉 Correct Answer!');
-        showCelebration();
-    }
-    
     // Check if all questions are answered
     if (Object.keys(userAnswers).length === questions.length) {
         const nextBtn = document.getElementById('next-btn');
-        nextBtn.innerHTML = '📊 দেখুন ফলাফল';
+        nextBtn.innerHTML = 'অধ্যায়ে ফিরুন';
         nextBtn.onclick = showResults;
     }
 }
 
 // ==========================================
-// 4. SHOW RESULTS
+// 4. FINISH QUIZ (NO RESULTS DISPLAY)
 // ==========================================
 
 function showResults() {
-    let correct = 0;
-    let total = questions.length;
-    
-    questions.forEach((q, idx) => {
-        const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
-        if (userAnswers[idx] === correctAnswer) {
-            correct++;
-        }
-    });
-    
-    const percentage = Math.round((correct / total) * 100);
-    let grade = '';
-    let emoji = '';
-    let gradeClass = '';
-    
-    if (percentage >= 80) { grade = 'A+'; emoji = '🌟'; gradeClass = 'grade-a-plus'; showCelebration(); }
-    else if (percentage >= 70) { grade = 'A'; emoji = '⭐'; gradeClass = 'grade-a'; }
-    else if (percentage >= 60) { grade = 'B'; emoji = '👍'; gradeClass = 'grade-b'; setTimeout(showCelebration, 300); }
-    else if (percentage >= 50) { grade = 'C'; emoji = '📖'; gradeClass = 'grade-c'; }
-    else if (percentage >= 40) { grade = 'D'; emoji = '💪'; gradeClass = 'grade-d'; }
-    else { grade = 'F'; emoji = '📚'; gradeClass = 'grade-f'; }
-    
     // ✅ Mark chapter as completed
     completedChapters[currentChapterId] = true;
     console.log('✅ Chapter completed:', currentChapterName);
@@ -387,32 +360,17 @@ function showResults() {
     const footer = document.querySelector('.quiz-footer');
     
     quizCard.innerHTML = `
-        <div class="quiz-results">
-            <span class="result-icon">${emoji}</span>
-            <h2 style="color: #2d3748; margin-bottom: 10px; font-size: 1.3rem;">কুইজ সম্পন্ন! 🎯</h2>
-            <div class="result-score">${correct} / ${total}</div>
-            <div class="result-detail">✅ সঠিক উত্তর: ${correct}</div>
-            <div class="result-detail">❌ ভুল উত্তর: ${total - correct}</div>
-            <div class="result-detail">📊 নম্বর: ${percentage}%</div>
-            <div class="result-grade ${gradeClass}">গ্রেড: ${grade}</div>
-            <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
-                <button onclick="goBackToChapters()" class="nav-btn secondary" style="flex:1;">
+        <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
+            <h2 style="color: #2d3748; margin-bottom: 20px; font-size: 1.3rem;">অধ্যায়ের সকল প্রশ্ন সমাপ্ত হয়েছে!</h2>
+            <div style="display: flex; justify-content: center; margin-top: 20px;">
+                <button onclick="goBackToChapters()" class="nav-btn primary" style="padding: 10px 25px;">
                     <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
-                </button>
-                <button onclick="resetToBatches()" class="nav-btn primary" style="flex:1;">
-                    🔄 নতুন কুইজ
                 </button>
             </div>
         </div>
     `;
     
     if (footer) footer.style.display = 'none';
-    
-    // Extra celebration for good results
-    if (percentage >= 80) {
-        setTimeout(showCelebration, 500);
-        setTimeout(showCelebration, 1200);
-    }
 }
 
 // ==========================================
@@ -518,131 +476,7 @@ function resetToBatches() {
 }
 
 // ==========================================
-// 6. CELEBRATION ANIMATIONS
-// ==========================================
-
-function createEmojiBurst() {
-    const emojis = ['🎉', '🎊', '⭐', '✨', '🌟', '💫', '🎆', '🎇', '❤️', '🔥', '🥳', '🎈', '🏆', '💯'];
-    const container = document.createElement('div');
-    container.className = 'emoji-burst-container';
-    document.body.appendChild(container);
-    
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    const count = 25 + Math.floor(Math.random() * 20);
-    
-    for (let i = 0; i < count; i++) {
-        const emoji = document.createElement('div');
-        emoji.className = 'emoji-particle';
-        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-        
-        const angle = Math.random() * 2 * Math.PI;
-        const distance = 120 + Math.random() * 350;
-        const ex = Math.cos(angle) * distance;
-        const ey = Math.sin(angle) * distance - 120;
-        const erotate = (Math.random() - 0.5) * 720;
-        const size = 24 + Math.random() * 36;
-        
-        emoji.style.fontSize = size + 'px';
-        emoji.style.setProperty('--ex', ex + 'px');
-        emoji.style.setProperty('--ey', ey + 'px');
-        emoji.style.setProperty('--erotate', erotate + 'deg');
-        emoji.style.left = (centerX - 30 + (Math.random() - 0.5) * 60) + 'px';
-        emoji.style.top = (centerY - 30 + (Math.random() - 0.5) * 60) + 'px';
-        emoji.style.animationDelay = (Math.random() * 0.3) + 's';
-        emoji.style.animationDuration = (1.5 + Math.random() * 0.8) + 's';
-        
-        container.appendChild(emoji);
-    }
-    setTimeout(() => { if (container.parentNode) container.remove(); }, 3000);
-}
-
-function createFireworks() {
-    const container = document.createElement('div');
-    container.className = 'firework-container';
-    document.body.appendChild(container);
-    
-    const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#ff6348', '#7bed9f', '#ff4757', '#2ed573', '#f368e0', '#00d2d3'];
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    const burstCount = 3 + Math.floor(Math.random() * 3);
-    
-    for (let b = 0; b < burstCount; b++) {
-        const burstX = centerX + (Math.random() - 0.5) * 250;
-        const burstY = centerY + (Math.random() - 0.5) * 200;
-        const particleCount = 25 + Math.floor(Math.random() * 35);
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        const color2 = colors[Math.floor(Math.random() * colors.length)];
-        
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'firework-particle';
-            const angle = Math.random() * 2 * Math.PI;
-            const distance = 80 + Math.random() * 250;
-            const tx = Math.cos(angle) * distance;
-            const ty = Math.sin(angle) * distance;
-            const size = 4 + Math.random() * 8;
-            const useColor = Math.random() > 0.5 ? color : color2;
-            
-            particle.style.width = size + 'px';
-            particle.style.height = size + 'px';
-            particle.style.background = useColor;
-            particle.style.left = burstX + 'px';
-            particle.style.top = burstY + 'px';
-            particle.style.setProperty('--tx', tx + 'px');
-            particle.style.setProperty('--ty', ty + 'px');
-            particle.style.animationDelay = (Math.random() * 0.3) + 's';
-            particle.style.boxShadow = `0 0 ${size * 2}px ${useColor}`;
-            particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-            container.appendChild(particle);
-        }
-    }
-    setTimeout(() => { if (container.parentNode) container.remove(); }, 2000);
-}
-
-function createConfetti() {
-    const container = document.createElement('div');
-    container.className = 'confetti-container';
-    document.body.appendChild(container);
-    
-    const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#ff6348', '#7bed9f', '#ff4757', '#2ed573', '#f368e0', '#ff9f43', '#00d2d3'];
-    const count = 80 + Math.floor(Math.random() * 60);
-    
-    for (let i = 0; i < count; i++) {
-        const piece = document.createElement('div');
-        piece.className = 'confetti-piece';
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        const width = 6 + Math.random() * 10;
-        const height = 6 + Math.random() * 10;
-        const left = Math.random() * 100;
-        const duration = 2.5 + Math.random() * 2.5;
-        const delay = Math.random() * 2;
-        const rotation = (Math.random() - 0.5) * 720;
-        const isSquare = Math.random() > 0.5;
-        
-        piece.style.left = left + '%';
-        piece.style.width = width + 'px';
-        piece.style.height = height + 'px';
-        piece.style.background = color;
-        piece.style.borderRadius = isSquare ? '2px' : '50%';
-        piece.style.setProperty('--duration', duration + 's');
-        piece.style.setProperty('--rotation', rotation + 'deg');
-        piece.style.animationDelay = delay + 's';
-        piece.style.opacity = 0.7 + Math.random() * 0.3;
-        container.appendChild(piece);
-    }
-    setTimeout(() => { if (container.parentNode) container.remove(); }, 5500);
-}
-
-function showCelebration() {
-    console.log('🎉 Celebration triggered!');
-    createConfetti();
-    setTimeout(createFireworks, 100);
-    setTimeout(createEmojiBurst, 200);
-}
-
-// ==========================================
-// 7. KEYBOARD SHORTCUTS
+// 6. KEYBOARD SHORTCUTS
 // ==========================================
 
 function handleKeyboardShortcuts(e) {
@@ -671,7 +505,7 @@ function handleKeyboardShortcuts(e) {
 }
 
 // ==========================================
-// 8. ERROR HANDLING
+// 7. ERROR HANDLING
 // ==========================================
 
 function showError(message) {
@@ -697,7 +531,7 @@ function showError(message) {
 }
 
 // ==========================================
-// 9. EXPOSE TO GLOBAL SCOPE
+// 8. EXPOSE TO GLOBAL SCOPE
 // ==========================================
 
 window.loadBatches = loadBatches;
@@ -716,10 +550,6 @@ window.showChaptersView = showChaptersView;
 window.resetToBatches = resetToBatches;
 window.showError = showError;
 window.showResults = showResults;
-window.showCelebration = showCelebration;
-window.createEmojiBurst = createEmojiBurst;
-window.createFireworks = createFireworks;
-window.createConfetti = createConfetti;
 window.goBackToChapters = goBackToChapters;
 
-console.log('✅ Quiz System with Chapter Completion Tracking Ready!');
+console.log('✅ Quiz System Ready (Results & Celebrations Disabled)!');
