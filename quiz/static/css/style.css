@@ -625,7 +625,7 @@ body {
 }
 
 /* ==========================================
-   QUIZ FOOTER - LEFT & RIGHT BUTTONS
+   QUIZ FOOTER - LEFT & RIGHT BUTTONS (UPDATED)
    ========================================== */
 .quiz-footer {
     display: flex;
@@ -703,101 +703,6 @@ body {
     font-size: 18px;
 }
 
-/* ==========================================
-   মোবাইল রেসপন্সিভ (ছোট স্ক্রিন)
-   ========================================== */
-
-/* ট্যাবলেট */
-@media (max-width: 768px) {
-    .quiz-footer {
-        gap: 12px;
-        margin-top: 16px;
-    }
-
-    .nav-btn {
-        padding: 14px 18px;
-        font-size: 0.95rem;
-        min-height: 50px;
-        border-radius: 12px;
-        max-width: 48%;
-    }
-
-    .nav-btn.secondary {
-        padding-left: 18px;
-    }
-
-    .nav-btn.primary {
-        padding-right: 18px;
-    }
-
-    .nav-btn i {
-        font-size: 16px;
-    }
-}
-
-/* মোবাইল (বেশিরভাগ ফোন) */
-@media (max-width: 600px) {
-    .quiz-footer {
-        gap: 10px;
-        flex-wrap: nowrap;
-        margin-top: 14px;
-    }
-
-    .nav-btn {
-        flex: 1;
-        max-width: 50%;
-        padding: 12px 14px;
-        font-size: 0.85rem;
-        min-height: 46px;
-        border-radius: 10px;
-        justify-content: center;
-        white-space: nowrap;
-        gap: 6px;
-    }
-
-    .nav-btn.secondary {
-        padding-left: 14px;
-        justify-content: center;
-    }
-
-    .nav-btn.primary {
-        padding-right: 14px;
-        justify-content: center;
-    }
-
-    .nav-btn i {
-        font-size: 14px;
-    }
-}
-
-/* খুব ছোট ফোন (৩৮০px এর নিচে) */
-@media (max-width: 400px) {
-    .quiz-footer {
-        gap: 8px;
-        margin-top: 12px;
-    }
-
-    .nav-btn {
-        padding: 10px 10px;
-        font-size: 0.75rem;
-        min-height: 40px;
-        border-radius: 8px;
-        max-width: 50%;
-        gap: 4px;
-    }
-
-    .nav-btn i {
-        font-size: 12px;
-    }
-}
-
-/* যখন শুধু একটি বাটন থাকে (শেষ প্রশ্নে ফলাফল দেখান) */
-.nav-btn:only-child {
-    max-width: 100%;
-    justify-content: center;
-    padding-left: 20px;
-    padding-right: 20px;
-}
 /* ==========================================
    RESPONSIVE - TABLET & MOBILE
    ========================================== */
@@ -941,16 +846,28 @@ body {
     }
     
     .quiz-footer {
-        flex-direction: row;
-        gap: 10px;
+        gap: 12px;
+        margin-top: 16px;
     }
-    
+
     .nav-btn {
-        padding: 12px 16px;
-        font-size: 0.9rem;
-        min-height: 46px;
+        padding: 14px 18px;
+        font-size: 0.95rem;
+        min-height: 50px;
         border-radius: 12px;
-        flex: 1;
+        max-width: 48%;
+    }
+
+    .nav-btn.secondary {
+        padding-left: 18px;
+    }
+
+    .nav-btn.primary {
+        padding-right: 18px;
+    }
+
+    .nav-btn i {
+        font-size: 16px;
     }
     
     .quiz-results .result-score {
@@ -963,7 +880,7 @@ body {
 }
 
 /* Mobile Large */
-@media (max-width: 480px) {
+@media (max-width: 600px) {
     .app-header {
         padding: 10px 14px;
         margin: 8px 10px 0 10px;
@@ -1096,18 +1013,33 @@ body {
     }
     
     .quiz-footer {
-        flex-direction: column;
-        gap: 8px;
+        gap: 10px;
+        flex-wrap: nowrap;
+        margin-top: 14px;
     }
-    
+
     .nav-btn {
+        flex: 1;
+        max-width: 50%;
         padding: 12px 14px;
         font-size: 0.85rem;
-        min-height: 44px;
+        min-height: 46px;
         border-radius: 10px;
-        flex: 1;
+        justify-content: center;
+        white-space: nowrap;
+        gap: 6px;
     }
-    
+
+    .nav-btn.secondary {
+        padding-left: 14px;
+        justify-content: center;
+    }
+
+    .nav-btn.primary {
+        padding-right: 14px;
+        justify-content: center;
+    }
+
     .nav-btn i {
         font-size: 14px;
     }
@@ -1141,7 +1073,7 @@ body {
 }
 
 /* Mobile Small */
-@media (max-width: 380px) {
+@media (max-width: 400px) {
     .app-header {
         padding: 8px 10px;
         margin: 6px 8px 0 8px;
@@ -1247,11 +1179,22 @@ body {
         font-size: 0.65rem;
     }
     
+    .quiz-footer {
+        gap: 8px;
+        margin-top: 12px;
+    }
+
     .nav-btn {
         padding: 10px 10px;
         font-size: 0.75rem;
-        min-height: 38px;
+        min-height: 40px;
         border-radius: 8px;
+        max-width: 50%;
+        gap: 4px;
+    }
+
+    .nav-btn i {
+        font-size: 12px;
     }
     
     .quiz-results .result-score {
@@ -1274,6 +1217,14 @@ body {
     .emoji-particle {
         font-size: 20px !important;
     }
+}
+
+/* যখন শুধু একটি বাটন থাকে (শেষ প্রশ্নে ফলাফল দেখান) */
+.nav-btn:only-child {
+    max-width: 100%;
+    justify-content: center;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 /* ==========================================
