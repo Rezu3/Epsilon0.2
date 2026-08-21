@@ -1,5 +1,6 @@
 // ==========================================
 // QUIZ SYSTEM - COMPLETE JAVASCRIPT
+// (GNM/ANM JSON Format Compatible)
 // ==========================================
 
 // State Variables
@@ -13,20 +14,6 @@ let currentChapterName = '';
 let questions = [];
 let currentQuestionIndex = 0;
 let userAnswers = {};
-
-// ✅ JSON ফাইল ম্যাপিং
-const BATCH_JSON_MAP = {
-    'class_7': 'class_7.json',
-    'class_8': 'class_8.json',
-    'class_9': 'class_9.json',
-    'class_10': 'class_10.json',
-    'class_11': 'class_11.json',
-    'class_12': 'class_12.json',
-    'gnm_anm': 'gnm_anm.json',
-    'b_sc_nursing': 'b_sc_nursing.json',
-    'neet': 'neet.json',
-    'joint': 'joint.json'
-};
 
 // ✅ LocalStorage ফাংশন
 function getCompletedChapters() {
@@ -65,12 +52,12 @@ function markChapterCompleted(batchId, subjectId, chapterId) {
 }
 
 let completedChapters = getCompletedChapters();
-let allData = {}; // সব JSON ডেটা সংরক্ষণের জন্য
+let allData = null; // পুরো JSON ডেটা
 
 // ==========================================
-// API BASE URL - JSON ফাইল লোকেশন
+// JSON FILE LOCATION
 // ==========================================
-const JSON_BASE = '/static/data/'; // আপনার JSON ফাইলের লোকেশন
+const JSON_FILE = '/static/data/gnm_anm.json'; // আপনার JSON ফাইলের পাথ
 
 // ==========================================
 // INITIALIZATION
@@ -91,80 +78,72 @@ function loadBatches() {
     
     grid.innerHTML = '';
     
-    // ✅ ব্যাচের তালিকা (আপনার JSON ফাইল অনুযায়ী)
-    const batches = [
-        { id: 'class_7', name: 'Class 7' },
-        { id: 'class_8', name: 'Class 8' },
-        { id: 'class_9', name: 'Class 9' },
-        { id: 'class_10', name: 'Class 10' },
-        { id: 'class_11', name: 'Class 11' },
-        { id: 'class_12', name: 'Class 12' },
-        { id: 'gnm_anm', name: 'GNM / ANM' },
-        { id: 'b_sc_nursing', name: 'B.Sc Nursing' },
-        { id: 'neet', name: 'NEET' },
-        { id: 'joint', name: 'JOINT (WBJEE / JEE)' }
-    ];
-    
-    batches.forEach(batch => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `<i class="fas fa-users"></i> ${batch.name}`;
-        card.onclick = () => selectBatch(batch.id, batch.name);
-        grid.appendChild(card);
-    });
-    
-    showView('batches-view');
-    updateBreadcrumb();
+    // ✅ আপনার JSON ফাইল থেকে ব্যাচ লোড করুন
+    fetch(JSON_FILE)
+        .then(response => response.json())
+        .then(data => {
+            allData = data;
+            console.log('✅ JSON Loaded:', allData);
+            
+            const batches = allData.batches || {};
+            const batchKeys = Object.keys(batches);
+            
+            if (batchKeys.length > 0) {
+                batchKeys.forEach(key => {
+                    const batch = batches[key];
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `<i class="fas fa-users"></i> ${batch.name}`;
+                    card.onclick = () => selectBatch(key, batch.name);
+                    grid.appendChild(card);
+                });
+            } else {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #718096;">
+                        <i class="fas fa-folder-open" style="font-size: 48px; display: block; margin-bottom: 10px;"></i>
+                        <h3>No Batches Found</h3>
+                        <p>Please add some quiz data to get started.</p>
+                    </div>
+                `;
+            }
+            
+            showView('batches-view');
+            updateBreadcrumb();
+        })
+        .catch(error => {
+            console.error('❌ Error loading JSON:', error);
+            showError('Failed to load data. Please check JSON file.');
+        });
 }
 
 // ==========================================
-// 2. SELECT BATCH - LOAD JSON FILE
+// 2. SELECT BATCH
 // ==========================================
 
-async function selectBatch(batchId, batchName) {
+function selectBatch(batchId, batchName) {
     currentBatchId = batchId;
     currentBatchName = batchName;
     console.log(`📚 Selected batch: ${batchName}`);
     
-    // ✅ JSON ফাইল লোড করুন
-    const jsonFile = BATCH_JSON_MAP[batchId];
-    if (!jsonFile) {
-        showError('JSON file not found for this batch!');
+    const batch = allData.batches[batchId];
+    if (!batch) {
+        showError('Batch not found!');
         return;
     }
     
-    try {
-        const response = await fetch(`${JSON_BASE}${jsonFile}`);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const data = await response.json();
-        allData[batchId] = data;
-        console.log(`✅ Loaded ${jsonFile}:`, data);
-        
-        // Subjects দেখান
-        showSubjects(data);
-    } catch (error) {
-        console.error('❌ Error loading JSON:', error);
-        showError('Failed to load data. Please try again.');
-    }
-}
-
-// ==========================================
-// 3. SHOW SUBJECTS
-// ==========================================
-
-function showSubjects(data) {
-    const subjects = data.subjects || [];
+    const subjects = batch.subjects || {};
     const grid = document.getElementById('subjects-grid');
     if (!grid) return;
     grid.innerHTML = '';
     
-    if (subjects.length > 0) {
-        subjects.forEach(subject => {
+    const subjectKeys = Object.keys(subjects);
+    if (subjectKeys.length > 0) {
+        subjectKeys.forEach(key => {
+            const subject = subjects[key];
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `<i class="fas fa-book"></i> ${subject.name}`;
-            card.onclick = () => selectSubject(subject.id, subject.name);
+            card.onclick = () => selectSubject(key, subject.name);
             grid.appendChild(card);
         });
     } else {
@@ -182,7 +161,7 @@ function showSubjects(data) {
 }
 
 // ==========================================
-// 4. SELECT SUBJECT - SHOW CHAPTERS
+// 3. SELECT SUBJECT
 // ==========================================
 
 function selectSubject(subjectId, subjectName) {
@@ -193,35 +172,37 @@ function selectSubject(subjectId, subjectName) {
     userAnswers = {};
     completedChapters = getCompletedChapters();
     
-    const data = allData[currentBatchId];
-    if (!data) {
-        showError('Data not loaded!');
+    const batch = allData.batches[currentBatchId];
+    if (!batch) {
+        showError('Batch not found!');
         return;
     }
     
-    const subject = data.subjects.find(s => s.id === subjectId);
+    const subject = batch.subjects[subjectId];
     if (!subject) {
         showError('Subject not found!');
         return;
     }
     
-    const chapters = subject.chapters || [];
+    const chapters = subject.chapters || {};
     const grid = document.getElementById('chapters-grid');
     if (!grid) return;
     grid.innerHTML = '';
     
-    if (chapters.length > 0) {
-        chapters.forEach(chapter => {
+    const chapterKeys = Object.keys(chapters);
+    if (chapterKeys.length > 0) {
+        chapterKeys.forEach(key => {
+            const chapter = chapters[key];
             const card = document.createElement('div');
             card.className = 'card';
             
-            const isCompleted = isChapterCompleted(currentBatchId, currentSubjectId, chapter.id);
+            const isCompleted = isChapterCompleted(currentBatchId, currentSubjectId, key);
             
             card.innerHTML = `
                 <i class="fas fa-list"></i> ${chapter.name}
                 ${isCompleted ? '<span style="color:#28a745;font-size:0.7rem;display:block;margin-top:4px;">✅ Completed</span>' : ''}
             `;
-            card.onclick = () => selectChapter(chapter.id, chapter.name);
+            card.onclick = () => selectChapter(key, chapter.name);
             grid.appendChild(card);
         });
     } else {
@@ -239,7 +220,7 @@ function selectSubject(subjectId, subjectName) {
 }
 
 // ==========================================
-// 5. SELECT CHAPTER - LOAD QUESTIONS
+// 4. SELECT CHAPTER
 // ==========================================
 
 function selectChapter(chapterId, chapterName) {
@@ -251,19 +232,19 @@ function selectChapter(chapterId, chapterName) {
     currentQuestionIndex = 0;
     userAnswers = {};
     
-    const data = allData[currentBatchId];
-    if (!data) {
-        showError('Data not loaded!');
+    const batch = allData.batches[currentBatchId];
+    if (!batch) {
+        showError('Batch not found!');
         return;
     }
     
-    const subject = data.subjects.find(s => s.id === currentSubjectId);
+    const subject = batch.subjects[currentSubjectId];
     if (!subject) {
         showError('Subject not found!');
         return;
     }
     
-    const chapter = subject.chapters.find(c => c.id === chapterId);
+    const chapter = subject.chapters[chapterId];
     if (!chapter) {
         showError('Chapter not found!');
         return;
@@ -288,7 +269,7 @@ function selectChapter(chapterId, chapterName) {
 }
 
 // ==========================================
-// 6. QUIZ DISPLAY
+// 5. QUIZ DISPLAY
 // ==========================================
 
 function showQuestion(index) {
@@ -382,7 +363,7 @@ function showQuestion(index) {
 }
 
 // ==========================================
-// 7. HANDLE ANSWER
+// 6. HANDLE ANSWER
 // ==========================================
 
 function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
@@ -415,7 +396,7 @@ function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
 }
 
 // ==========================================
-// 8. SHOW RESULTS
+// 7. SHOW RESULTS
 // ==========================================
 
 function showResults() {
@@ -476,7 +457,7 @@ function showResults() {
 }
 
 // ==========================================
-// 9. NAVIGATION
+// 8. NAVIGATION
 // ==========================================
 
 function goBackToChapters() {
@@ -577,7 +558,7 @@ function resetToBatches() {
 }
 
 // ==========================================
-// 10. CELEBRATION ANIMATIONS
+// 9. CELEBRATION ANIMATIONS
 // ==========================================
 
 function createEmojiBurst() {
@@ -701,7 +682,7 @@ function showCelebration() {
 }
 
 // ==========================================
-// 11. KEYBOARD SHORTCUTS
+// 10. KEYBOARD SHORTCUTS
 // ==========================================
 
 function handleKeyboardShortcuts(e) {
@@ -730,7 +711,7 @@ function handleKeyboardShortcuts(e) {
 }
 
 // ==========================================
-// 12. ERROR HANDLING
+// 11. ERROR HANDLING
 // ==========================================
 
 function showError(message) {
@@ -756,7 +737,7 @@ function showError(message) {
 }
 
 // ==========================================
-// 13. EXPOSE TO GLOBAL SCOPE
+// 12. EXPOSE TO GLOBAL SCOPE
 // ==========================================
 
 window.loadBatches = loadBatches;
@@ -781,4 +762,4 @@ window.createFireworks = createFireworks;
 window.createConfetti = createConfetti;
 window.goBackToChapters = goBackToChapters;
 
-console.log('✅ Quiz System with JSON Files Ready!');
+console.log('✅ Quiz System with GNM/ANM JSON Ready!');
