@@ -33,36 +33,31 @@
 </head>
 <body>
 
-    <!-- ===== ইউজার ইনফো বার ===== -->
-    <div class="quiz-user-bar">
-        <div class="user-info">
-            <i class="fas fa-user-circle"></i>
-            <span>{{ username if username else 'Guest' }}</span>
-            <span class="user-badge">
-                {% if user_type == 'student' %}ছাত্র
-                {% elif user_type == 'teacher' %}শিক্ষক
-                {% elif user_type == 'admin' %}অ্যাডমিন
-                {% else %}অতিথি{% endif %}
-            </span>
-            {% if student_class %}
-            <span class="user-badge class-badge">
-                <i class="fas fa-graduation-cap"></i> {{ student_class|title }}
-            </span>
-            {% endif %}
-        </div>
-        <a href="{{ return_url if return_url else url_for('student_dashboard') }}" class="back-dashboard">
-            <i class="fas fa-arrow-left"></i> ড্যাশবোর্ড
-        </a>
-    </div>
-
-    <!-- Header Section -->
+    <!-- ===== TOP HEADER ===== -->
     <header class="app-header">
         <div class="logo-container" onclick="showBatchesView()">
             <h1>🎓 𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h1>
         </div>
-        <button id="backBtn" class="back-btn" onclick="goBackToDashboard()">
-            <i class="fas fa-arrow-left"></i> <span id="backButtonText">ড্যাশবোর্ড</span>
-        </button>
+        <div class="header-right">
+            <div class="user-info-header">
+                <i class="fas fa-user-circle"></i>
+                <span class="username">{{ username if username else 'Guest' }}</span>
+                <span class="user-badge-header">
+                    {% if user_type == 'student' %}
+                        <i class="fas fa-graduation-cap"></i> {{ student_class|title if student_class else 'Student' }}
+                    {% elif user_type == 'teacher' %}
+                        <i class="fas fa-chalkboard-teacher"></i> Teacher
+                    {% elif user_type == 'admin' %}
+                        <i class="fas fa-crown"></i> Admin
+                    {% else %}
+                        Guest
+                    {% endif %}
+                </span>
+            </div>
+            <button id="backBtn" class="back-btn" onclick="goBackToDashboard()">
+                <i class="fas fa-arrow-left"></i> <span id="backButtonText">Dashboard</span>
+            </button>
+        </div>
     </header>
 
     <!-- Main Container -->
@@ -70,11 +65,11 @@
 
         <!-- Navigation Breadcrumb -->
         <nav class="breadcrumb" id="breadcrumb" style="display: none;">
-            <span id="bc-batch" onclick="showBatchesView()">ব্যাচ</span>
+            <span id="bc-batch" onclick="showBatchesView()">Batch</span>
             <span class="separator" id="sep1">›</span>
-            <span id="bc-subject" onclick="showSubjectsView()">বিষয়</span>
+            <span id="bc-subject" onclick="showSubjectsView()">Subject</span>
             <span class="separator" id="sep2">›</span>
-            <span id="bc-chapter" onclick="showChaptersView()">অধ্যায়</span>
+            <span id="bc-chapter" onclick="showChaptersView()">Chapter</span>
         </nav>
 
         <!-- 1. Batches Selection View -->
@@ -82,9 +77,9 @@
             <h2>
                 <i class="fas fa-users"></i> 
                 {% if user_type == 'student' and matched_batch %}
-                    আপনার ক্লাস: <span style="color: #4facfe;">{{ matched_batch.name }}</span>
+                    Your Class: <span style="color: #4facfe;">{{ matched_batch.name }}</span>
                 {% else %}
-                    আপনার ব্যাচ নির্বাচন করুন
+                    Select Your Batch
                 {% endif %}
             </h2>
             <div id="batches-grid" class="cards-grid"></div>
@@ -92,21 +87,21 @@
 
         <!-- 2. Subjects Selection View -->
         <section id="subjects-view" class="view-section">
-            <h2><i class="fas fa-book"></i> বিষয় নির্বাচন করুন</h2>
+            <h2><i class="fas fa-book"></i> Select Subject</h2>
             <div id="subjects-grid" class="cards-grid"></div>
         </section>
 
         <!-- 3. Chapters Selection View -->
         <section id="chapters-view" class="view-section">
-            <h2><i class="fas fa-list"></i> অধ্যায় নির্বাচন করুন</h2>
+            <h2><i class="fas fa-list"></i> Select Chapter</h2>
             <div id="chapters-grid" class="cards-grid"></div>
         </section>
 
         <!-- 4. Quiz Questions View -->
         <section id="quiz-view" class="view-section">
             <div class="quiz-header">
-                <h3 id="quiz-chapter-title"><i class="fas fa-pencil-alt"></i> কুইজ</h3>
-                <div class="quiz-progress" id="quiz-progress">প্রশ্ন ১ / ১০</div>
+                <h3 id="quiz-chapter-title"><i class="fas fa-pencil-alt"></i> Quiz</h3>
+                <div class="quiz-progress" id="quiz-progress">Question 1 / 10</div>
             </div>
 
             <div id="quiz-card" class="quiz-card">
@@ -119,17 +114,17 @@
 
             <div class="quiz-footer" id="quizFooter">
                 <button id="prev-btn" class="nav-btn secondary" onclick="prevQuestion()">
-                    <i class="fas fa-arrow-left"></i> পূর্ববর্তী
+                    <i class="fas fa-arrow-left"></i> Previous
                 </button>
                 <button id="next-btn" class="nav-btn primary" onclick="nextQuestion()">
-                    পরবর্তী <i class="fas fa-arrow-right"></i>
+                    Next <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
         </section>
 
     </main>
 
-    <footer style="text-align: center; padding: 15px; color: #a0aec0; font-size: 0.75rem; border-top: 1px solid #e2e8f0; margin-top: 30px;">
+    <footer class="app-footer">
         &copy; 2026 𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - All Rights Reserved
     </footer>
 
