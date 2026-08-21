@@ -28,15 +28,20 @@ const BATCH_JSON_MAP = {
     'joint': 'joint.json'
 };
 
-// ✅ JSON ফাইলের লোকেশন - আপনার প্রোজেক্ট অনুযায়ী পরিবর্তন করুন
+// ==========================================
+// ✅ JSON ফাইলের সঠিক পাথ - আপনার প্রোজেক্ট অনুযায়ী সেট করুন
+// ==========================================
+
+// যদি JSON ফাইল quiz/static/data/ ফোল্ডারে থাকে (সবচেয়ে সম্ভাব্য)
+const JSON_BASE = '/quiz/static/data/';
+
 // যদি JSON ফাইল static/data/ ফোল্ডারে থাকে
-const JSON_BASE = '/static/data/';
+// const JSON_BASE = '/static/data/';
 
-// যদি JSON ফাইল quiz/static/data/ ফোল্ডারে থাকে তাহলে এইটা ব্যবহার করুন:
-// const JSON_BASE = '/quiz/static/data/';
-
-// যদি JSON ফাইল একই ফোল্ডারে থাকে তাহলে এইটা ব্যবহার করুন:
+// যদি JSON ফাইল একই ডিরেক্টরিতে থাকে
 // const JSON_BASE = '';
+
+// ==========================================
 
 // ✅ LocalStorage ফাংশন
 function getCompletedChapters() {
@@ -82,6 +87,7 @@ let allData = {};
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     console.log('✅ Quiz System Initialized');
+    console.log('📡 JSON Base Path:', JSON_BASE);
     loadBatches();
     document.addEventListener('keydown', handleKeyboardShortcuts);
 });
@@ -143,6 +149,8 @@ async function selectBatch(batchId, batchName) {
     
     try {
         const response = await fetch(jsonUrl);
+        
+        console.log(`📡 Response status: ${response.status}`);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status} - File: ${jsonFile}`);
@@ -792,3 +800,4 @@ window.createConfetti = createConfetti;
 window.goBackToChapters = goBackToChapters;
 
 console.log('✅ Quiz System with JSON Files Ready!');
+console.log('📡 JSON files will be loaded from:', JSON_BASE);
