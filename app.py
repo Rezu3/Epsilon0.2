@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, session, flash, url
 import sqlite3
 import os
 from datetime import datetime
+from quiz import quiz_bp
 
 app = Flask(__name__)
 app.secret_key = "tution_management_secret_key_2026"
@@ -1572,6 +1573,11 @@ def logout():
     session.clear()
     flash('Logged out successfully!', 'success')
     return redirect(url_for('login'))
+
+# =============================================
+# REGISTER QUIZ BLUEPRINT
+# =============================================
+app.register_blueprint(quiz_bp, url_prefix='/quiz')
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
