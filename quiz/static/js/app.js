@@ -14,8 +14,26 @@ let questions = [];
 let currentQuestionIndex = 0;
 let userAnswers = {};
 
-// ✅ completedChapters - Batch + Subject অনুযায়ী আলাদা
-let completedChapters = {}; // Key: "batchId_subjectId_chapterId"
+// ✅ LocalStorage থেকে Completed Chapters Load করা
+function getCompletedChapters() {
+    try {
+        const data = localStorage.getItem('quizCompletedChapters');
+        return data ? JSON.parse(data) : {};
+    } catch (e) {
+        return {};
+    }
+}
+
+// ✅ LocalStorage এ Completed Chapters Save করা
+function saveCompletedChapters(chapters) {
+    try {
+        localStorage.setItem('quizCompletedChapters', JSON.stringify(chapters));
+    } catch (e) {
+        console.error('Error saving:', e);
+    }
+}
+
+let completedChapters = getCompletedChapters();
 
 // ==========================================
 // API BASE URL
@@ -27,6 +45,7 @@ const API_BASE = '/quiz/api';
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     console.log('✅ Quiz System Initialized');
+    console.log('📊 Completed Chapters from Storage:', completedChapters);
     loadBatches();
     document.addEventListener('keydown', handleKeyboardShortcuts);
 });
@@ -90,8 +109,8 @@ async function selectBatch(batchId, batchName) {
     currentBatchName = batchName;
     console.log(`📚 Selected batch: ${batchName}`);
     
-    // ✅ Batch পরিবর্তন হলে completedChapters রিসেট
-    // completedChapters = {};
+    // ✅ Reload completed chapters from storage
+    completedChapters = getCompletedChapters();
 
     try {
         const response = await fetch(`${API_BASE}/batches/${batchId}/subjects`);
@@ -134,8 +153,10 @@ async function selectSubject(subjectId, subjectName) {
     currentSubjectName = subjectName;
     console.log(`📖 Selected subject: ${subjectName}`);
     
-    // ✅ Subject পরিবর্তন হলে userAnswers রিসেট
     userAnswers = {};
+    
+    // ✅ Reload completed chapters from storage
+    completedChapters = getCompletedChapters();
 
     try {
         const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${subjectId}/chapters`);
@@ -153,13 +174,15 @@ async function selectSubject(subjectId, subjectName) {
                 const card = document.createElement('div');
                 card.className = 'card';
                 
-                // ✅ Check if this specific chapter is completed
+                // ✅ Check if this chapter is completed
                 const chapterKey = `${currentBatchId}_${currentSubjectId}_${chapter.id}`;
-                const isCompleted = completedChapters[chapterKey] || false;
+                const isCompleted = completedChapters[chapterKey] === true;
+                
+                console.log(`📌 Chapter: ${chapter.name}, Key: ${chapterKey}, Completed: ${isCompleted}`);
                 
                 card.innerHTML = `
                     <i class="fas fa-list"></i> ${chapter.name}
-                    ${isCompleted ? '<span style="color:#28a745;font-size:0.7rem;display:block;">✅ Completed</span>' : ''}
+                    ${isCompleted ? '<span style="color:#28a745;font-size:0.7rem;display:block;margin-top:4px;">✅ Completed</span>' : ''}
                 `;
                 card.onclick = () => selectChapter(chapter.id, chapter.name);
                 grid.appendChild(card);
@@ -186,7 +209,6 @@ async function selectChapter(chapterId, chapterName) {
     currentChapterName = chapterName;
     console.log(`📝 Selected chapter: ${chapterName}`);
     
-    // ✅ Reset for this chapter
     questions = [];
     currentQuestionIndex = 0;
     userAnswers = {};
@@ -371,10 +393,13 @@ function showResults() {
     else if (percentage >= 40) { grade = 'D'; emoji = '💪'; gradeClass = 'grade-d'; }
     else { grade = 'F'; emoji = '📚'; gradeClass = 'grade-f'; }
     
-    // ✅ Mark THIS SPECIFIC chapter as completed
+    // ✅ Mark THIS SPECIFIC chapter as completed and SAVE to localStorage
     const chapterKey = `${currentBatchId}_${currentSubjectId}_${currentChapterId}`;
     completedChapters[chapterKey] = true;
-    console.log('✅ Chapter completed:', currentChapterName, 'Key:', chapterKey);
+    saveCompletedChapters(completedChapters);
+    
+    console.log('✅ Chapter completed:', currentChapterName);
+    console.log('📊 Chapter Key:', chapterKey);
     console.log('📊 All completed chapters:', completedChapters);
     
     const quizCard = document.getElementById('quiz-card');
@@ -506,7 +531,6 @@ function resetToBatches() {
     currentBatchId = null;
     currentSubjectId = null;
     currentChapterId = null;
-    // ✅ Don't reset completedChapters - keep them saved
     loadBatches();
 }
 
@@ -715,4 +739,4 @@ window.createFireworks = createFireworks;
 window.createConfetti = createConfetti;
 window.goBackToChapters = goBackToChapters;
 
-console.log('✅ Quiz System with Chapter Completion Tracking Ready!');
+console.log('✅ Quiz System with LocalStorage Chapter Completion Ready!');
