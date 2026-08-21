@@ -1,6 +1,6 @@
 /* ==========================================
    COMPLETE STYLE.CSS - QUIZ SYSTEM
-   FULL SCREEN MOBILE FRIENDLY VERSION
+   FULL SCREEN MOBILE FRIENDLY & TELEGRAM STYLE
    ========================================== */
 
 /* ==========================================
@@ -326,7 +326,7 @@ body {
 }
 
 /* ==========================================
-   OPTIONS
+   OPTIONS & TELEGRAM POLL STYLE
    ========================================== */
 .options-grid {
     display: grid;
@@ -344,12 +344,13 @@ body {
     font-weight: 500;
     color: #2d3748;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease-in-out;
     display: flex;
     align-items: center;
     gap: 12px;
     min-height: 56px;
     touch-action: manipulation;
+    position: relative;
 }
 
 .option-btn:hover:not(.disabled) {
@@ -382,169 +383,85 @@ body {
     color: white;
 }
 
-.option-btn.selected {
-    background: #e0e7ff;
-    border-color: #4facfe;
-    color: #4facfe;
-    font-weight: 600;
-}
-
-.option-btn.selected .option-label {
-    background: #4facfe;
-    color: white;
-}
-
+/* Telegram Correct Option */
 .option-btn.correct {
-    background: #d4edda;
-    border-color: #28a745;
-    color: #155724;
-    animation: correctPulse 0.6s ease;
+    background-color: #e6f4ea !important;
+    border-color: #34a853 !important;
+    color: #137333 !important;
+    font-weight: 600;
+    animation: tgPulse 0.35s ease-in-out;
 }
 
 .option-btn.correct .option-label {
-    background: #28a745;
+    background: #34a853;
     color: white;
 }
 
+.option-btn.correct::after {
+    content: '✔';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #34a853;
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+/* Telegram Wrong Option */
 .option-btn.wrong {
-    background: #f8d7da;
-    border-color: #dc3545;
-    color: #721c24;
-    animation: wrongShake 0.5s ease;
+    background-color: #fce8e6 !important;
+    border-color: #ea4335 !important;
+    color: #c5221f !important;
+    animation: tgShake 0.35s ease-in-out;
 }
 
 .option-btn.wrong .option-label {
-    background: #dc3545;
+    background: #ea4335;
     color: white;
+}
+
+.option-btn.wrong::after {
+    content: '✖';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ea4335;
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
 }
 
 .option-btn.disabled {
     cursor: not-allowed;
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 /* ==========================================
-   ANIMATIONS
+   TELEGRAM ANIMATIONS
    ========================================== */
-@keyframes correctPulse {
+@keyframes tgPulse {
     0% { transform: scale(1); }
-    30% { transform: scale(1.03); background: #b8e6c4; }
-    60% { transform: scale(0.98); }
+    50% { transform: scale(1.02); }
     100% { transform: scale(1); }
 }
 
-@keyframes wrongShake {
-    0% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-5px); }
-    80% { transform: translateX(5px); }
-    100% { transform: translateX(0); }
-}
-
-/* ==========================================
-   CELEBRATION ANIMATIONS
-   ========================================== */
-.emoji-burst-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 99999;
-    overflow: hidden;
-}
-
-.emoji-particle {
-    position: absolute;
-    font-size: 36px;
-    pointer-events: none;
-    animation: emojiRise 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-    will-change: transform, opacity;
-}
-
-@keyframes emojiRise {
-    0% {
-        transform: translate(0, 0) scale(0.2) rotate(0deg);
-        opacity: 0;
-    }
-    15% {
-        opacity: 1;
-        transform: translate(var(--ex), var(--ey)) scale(1.3) rotate(30deg);
-    }
-    40% {
-        transform: translate(calc(var(--ex) * 0.5), calc(var(--ey) * 0.7)) scale(1.1) rotate(-15deg);
-    }
-    70% {
-        transform: translate(calc(var(--ex) * 0.2), calc(var(--ey) * 0.3)) scale(0.8) rotate(10deg);
-    }
-    100% {
-        transform: translate(var(--ex), calc(var(--ey) * -1.8)) scale(0.2) rotate(var(--erotate));
-        opacity: 0;
-    }
-}
-
-.firework-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 99998;
-    overflow: hidden;
-}
-
-.firework-particle {
-    position: absolute;
-    border-radius: 50%;
-    animation: fireworkBurst 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-    pointer-events: none;
-    will-change: transform, opacity;
-}
-
-@keyframes fireworkBurst {
-    0% {
-        transform: translate(0, 0) scale(1);
-        opacity: 1;
-    }
-    100% {
-        transform: translate(var(--tx), var(--ty)) scale(0);
-        opacity: 0;
-    }
-}
-
-.confetti-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 99997;
-    overflow: hidden;
-}
-
-.confetti-piece {
-    position: absolute;
-    top: -30px;
-    animation: confettiFall var(--duration) linear forwards;
-    opacity: 0.9;
-    pointer-events: none;
-    will-change: transform, opacity;
-}
-
-@keyframes confettiFall {
-    0% {
-        transform: translateY(0) rotate(0deg) scale(1);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(110vh) rotate(var(--rotation)) scale(0.3);
-        opacity: 0;
-    }
+@keyframes tgShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
 }
 
 /* ==========================================
@@ -573,59 +490,8 @@ body {
     margin: 5px 0;
 }
 
-.quiz-results .result-grade {
-    display: inline-block;
-    padding: 10px 40px;
-    border-radius: 30px;
-    font-weight: 700;
-    font-size: 1.2rem;
-    margin: 15px 0 20px 0;
-}
-
-.quiz-results .grade-a-plus {
-    background: #d4edda;
-    color: #155724;
-    border: 3px solid #28a745;
-    animation: gradePulse 1s ease infinite;
-}
-
-.quiz-results .grade-a {
-    background: #d4edda;
-    color: #155724;
-    border: 3px solid #28a745;
-}
-
-.quiz-results .grade-b {
-    background: #d4edda;
-    color: #155724;
-    border: 2px solid #28a745;
-}
-
-.quiz-results .grade-c {
-    background: #fff3cd;
-    color: #856404;
-    border: 2px solid #ffc107;
-}
-
-.quiz-results .grade-d {
-    background: #fff3cd;
-    color: #856404;
-    border: 2px solid #ffc107;
-}
-
-.quiz-results .grade-f {
-    background: #f8d7da;
-    color: #721c24;
-    border: 2px solid #dc3545;
-}
-
-@keyframes gradePulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
 /* ==========================================
-   QUIZ FOOTER - LEFT & RIGHT BUTTONS (UPDATED)
+   QUIZ FOOTER - BUTTONS
    ========================================== */
 .quiz-footer {
     display: flex;
@@ -654,7 +520,6 @@ body {
     white-space: nowrap;
 }
 
-/* ===== বাম দিকে (পূর্ববর্তী) ===== */
 .nav-btn.secondary {
     background: #f7fafc;
     color: #2d3748;
@@ -670,11 +535,6 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-.nav-btn.secondary:active:not(:disabled) {
-    transform: scale(0.97);
-}
-
-/* ===== ডান দিকে (পরবর্তী) ===== */
 .nav-btn.primary {
     background: linear-gradient(135deg, #4facfe, #00f2fe);
     color: #ffffff;
@@ -688,10 +548,6 @@ body {
     box-shadow: 0 8px 30px rgba(79, 172, 254, 0.45);
 }
 
-.nav-btn.primary:active:not(:disabled) {
-    transform: scale(0.97);
-}
-
 .nav-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
@@ -699,37 +555,16 @@ body {
     box-shadow: none !important;
 }
 
-.nav-btn i {
-    font-size: 18px;
+.nav-btn:only-child {
+    max-width: 100%;
+    justify-content: center;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 /* ==========================================
-   RESPONSIVE - TABLET & MOBILE
+   RESPONSIVE DESIGN
    ========================================== */
-
-/* Tablet Landscape */
-@media (max-width: 1024px) {
-    .app-header {
-        padding: 14px 20px;
-        margin: 14px 16px 0 16px;
-        min-height: 66px;
-    }
-    
-    .logo-container h1 {
-        font-size: 1.3rem;
-    }
-    
-    .cards-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 14px;
-    }
-    
-    .main-container {
-        padding: 0 16px 16px 16px;
-    }
-}
-
-/* Tablet Portrait */
 @media (max-width: 768px) {
     .app-header {
         padding: 12px 16px;
@@ -746,34 +581,10 @@ body {
         padding: 10px 16px;
         font-size: 0.85rem;
         min-height: 42px;
-        min-width: 42px;
-        border-radius: 10px;
-    }
-    
-    .back-btn i {
-        font-size: 15px;
     }
     
     .main-container {
         padding: 0 12px 14px 12px;
-        margin: 10px auto;
-    }
-    
-    .breadcrumb {
-        padding: 10px 16px;
-        font-size: 0.8rem;
-        min-height: 46px;
-        border-radius: 12px;
-        margin-bottom: 16px;
-    }
-    
-    .breadcrumb span[id^="bc-"] {
-        font-size: 0.85rem;
-    }
-    
-    .view-section h2 {
-        font-size: 1.2rem;
-        margin-bottom: 14px;
     }
     
     .cards-grid {
@@ -781,455 +592,33 @@ body {
         gap: 12px;
     }
     
-    .card {
-        padding: 18px 12px;
-        font-size: 0.95rem;
-        min-height: 80px;
-        border-radius: 14px;
-    }
-    
-    .card i {
-        font-size: 28px;
-    }
-    
-    .quiz-header {
-        padding: 12px 16px;
-        border-radius: 14px;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-        margin-bottom: 14px;
-    }
-    
-    .quiz-header h3 {
-        font-size: 1rem;
-        text-align: center;
-    }
-    
-    .quiz-progress {
-        font-size: 0.8rem;
-        text-align: center;
-        align-self: center;
-        padding: 5px 14px;
-    }
-    
-    .quiz-card {
-        padding: 18px;
-        border-radius: 14px;
-        margin-bottom: 14px;
-    }
-    
-    .question-text {
-        font-size: 1.05rem;
-        padding: 14px 16px;
-        border-left-width: 4px;
-        margin-bottom: 16px;
-        border-radius: 12px;
-    }
-    
-    .image-container img {
-        max-height: 230px;
-        padding: 8px;
-    }
-    
     .option-btn {
         padding: 14px 16px;
         font-size: 0.95rem;
         min-height: 50px;
-        border-radius: 12px;
-    }
-    
-    .option-btn .option-label {
-        width: 28px;
-        height: 28px;
-        font-size: 0.8rem;
-    }
-    
-    .quiz-footer {
-        gap: 12px;
-        margin-top: 16px;
-    }
-
-    .nav-btn {
-        padding: 14px 18px;
-        font-size: 0.95rem;
-        min-height: 50px;
-        border-radius: 12px;
-        max-width: 48%;
-    }
-
-    .nav-btn.secondary {
-        padding-left: 18px;
-    }
-
-    .nav-btn.primary {
-        padding-right: 18px;
-    }
-
-    .nav-btn i {
-        font-size: 16px;
-    }
-    
-    .quiz-results .result-score {
-        font-size: 2.5rem;
-    }
-    
-    .quiz-results .result-icon {
-        font-size: 56px;
     }
 }
 
-/* Mobile Large */
 @media (max-width: 600px) {
-    .app-header {
-        padding: 10px 14px;
-        margin: 8px 10px 0 10px;
-        border-radius: 12px;
-        min-height: 54px;
-    }
-    
-    .logo-container h1 {
-        font-size: 1rem;
-    }
-    
-    .back-btn {
-        padding: 8px 14px;
-        font-size: 0.75rem;
-        min-height: 38px;
-        min-width: 38px;
-        gap: 5px;
-        border-radius: 8px;
-    }
-    
-    .back-btn i {
-        font-size: 13px;
-    }
-    
-    .main-container {
-        padding: 0 10px 12px 10px;
-        margin: 8px auto;
-    }
-    
-    .breadcrumb {
-        padding: 8px 12px;
-        font-size: 0.7rem;
-        gap: 4px;
-        min-height: 40px;
-        border-radius: 10px;
-        margin-bottom: 12px;
-    }
-    
-    .breadcrumb span[id^="bc-"] {
-        font-size: 0.75rem;
-    }
-    
-    .breadcrumb .separator {
-        font-size: 1rem;
-    }
-    
-    .view-section h2 {
-        font-size: 1.05rem;
-        margin-bottom: 12px;
-        gap: 8px;
-    }
-    
-    .view-section h2 i {
-        font-size: 1.2rem;
-    }
-    
     .cards-grid {
         grid-template-columns: 1fr 1fr;
         gap: 10px;
-    }
-    
-    .card {
-        padding: 16px 10px;
-        font-size: 0.85rem;
-        min-height: 70px;
-        border-radius: 12px;
-    }
-    
-    .card i {
-        font-size: 24px;
-        margin-bottom: 5px;
-    }
-    
-    .quiz-header {
-        padding: 10px 14px;
-        border-radius: 12px;
-        gap: 6px;
-        margin-bottom: 12px;
-    }
-    
-    .quiz-header h3 {
-        font-size: 0.9rem;
-    }
-    
-    .quiz-progress {
-        font-size: 0.7rem;
-        padding: 4px 12px;
-    }
-    
-    .quiz-card {
-        padding: 14px;
-        border-radius: 12px;
-        margin-bottom: 12px;
-    }
-    
-    .question-text {
-        font-size: 0.95rem;
-        padding: 12px 14px;
-        border-left-width: 3px;
-        margin-bottom: 14px;
-        border-radius: 10px;
-    }
-    
-    .image-container {
-        margin-bottom: 14px;
-    }
-    
-    .image-container img {
-        max-height: 200px;
-        padding: 6px;
-        border-radius: 10px;
-    }
-    
-    .options-grid {
-        gap: 8px;
     }
     
     .option-btn {
         padding: 12px 14px;
         font-size: 0.9rem;
         min-height: 44px;
-        border-radius: 10px;
-        gap: 8px;
-    }
-    
-    .option-btn .option-label {
-        width: 26px;
-        height: 26px;
-        font-size: 0.75rem;
-    }
-    
-    .quiz-footer {
-        gap: 10px;
-        flex-wrap: nowrap;
-        margin-top: 14px;
-    }
-
-    .nav-btn {
-        flex: 1;
-        max-width: 50%;
-        padding: 12px 14px;
-        font-size: 0.85rem;
-        min-height: 46px;
-        border-radius: 10px;
-        justify-content: center;
-        white-space: nowrap;
-        gap: 6px;
-    }
-
-    .nav-btn.secondary {
-        padding-left: 14px;
-        justify-content: center;
-    }
-
-    .nav-btn.primary {
-        padding-right: 14px;
-        justify-content: center;
-    }
-
-    .nav-btn i {
-        font-size: 14px;
-    }
-    
-    .quiz-results {
-        padding: 12px;
-    }
-    
-    .quiz-results .result-icon {
-        font-size: 48px;
-    }
-    
-    .quiz-results .result-score {
-        font-size: 2rem;
-    }
-    
-    .quiz-results .result-detail {
-        font-size: 0.95rem;
-    }
-    
-    .quiz-results .result-grade {
-        font-size: 1rem;
-        padding: 8px 24px;
-        border-radius: 25px;
-        margin: 10px 0 14px 0;
-    }
-    
-    .emoji-particle {
-        font-size: 26px !important;
     }
 }
 
-/* Mobile Small */
 @media (max-width: 400px) {
-    .app-header {
-        padding: 8px 10px;
-        margin: 6px 8px 0 8px;
-        border-radius: 10px;
-        min-height: 46px;
-    }
-    
-    .logo-container h1 {
-        font-size: 0.8rem;
-    }
-    
-    .back-btn {
-        padding: 6px 10px;
-        font-size: 0.65rem;
-        min-height: 32px;
-        min-width: 32px;
-        gap: 3px;
-        border-radius: 6px;
-    }
-    
-    .back-btn i {
-        font-size: 10px;
-    }
-    
-    .main-container {
-        padding: 0 8px 10px 8px;
-    }
-    
-    .breadcrumb {
-        padding: 6px 10px;
-        font-size: 0.6rem;
-        gap: 3px;
-        min-height: 34px;
-        border-radius: 8px;
-        margin-bottom: 10px;
-    }
-    
-    .breadcrumb span[id^="bc-"] {
-        font-size: 0.65rem;
-    }
-    
-    .breadcrumb .separator {
-        font-size: 0.8rem;
-    }
-    
-    .view-section h2 {
-        font-size: 0.9rem;
-        margin-bottom: 10px;
-    }
-    
     .cards-grid {
         grid-template-columns: 1fr;
-        gap: 8px;
-    }
-    
-    .card {
-        padding: 14px 8px;
-        font-size: 0.8rem;
-        min-height: 60px;
-        border-radius: 10px;
-    }
-    
-    .card i {
-        font-size: 20px;
-        margin-bottom: 4px;
-    }
-    
-    .quiz-header h3 {
-        font-size: 0.8rem;
-    }
-    
-    .quiz-progress {
-        font-size: 0.6rem;
-        padding: 3px 10px;
-    }
-    
-    .quiz-card {
-        padding: 10px;
-        border-radius: 10px;
-    }
-    
-    .question-text {
-        font-size: 0.85rem;
-        padding: 8px 10px;
-        border-left-width: 3px;
-        margin-bottom: 10px;
-    }
-    
-    .image-container img {
-        max-height: 160px;
-    }
-    
-    .option-btn {
-        padding: 10px 10px;
-        font-size: 0.8rem;
-        min-height: 38px;
-        border-radius: 8px;
-    }
-    
-    .option-btn .option-label {
-        width: 22px;
-        height: 22px;
-        font-size: 0.65rem;
-    }
-    
-    .quiz-footer {
-        gap: 8px;
-        margin-top: 12px;
-    }
-
-    .nav-btn {
-        padding: 10px 10px;
-        font-size: 0.75rem;
-        min-height: 40px;
-        border-radius: 8px;
-        max-width: 50%;
-        gap: 4px;
-    }
-
-    .nav-btn i {
-        font-size: 12px;
-    }
-    
-    .quiz-results .result-score {
-        font-size: 1.5rem;
-    }
-    
-    .quiz-results .result-icon {
-        font-size: 36px;
-    }
-    
-    .quiz-results .result-detail {
-        font-size: 0.8rem;
-    }
-    
-    .quiz-results .result-grade {
-        font-size: 0.8rem;
-        padding: 4px 16px;
-    }
-    
-    .emoji-particle {
-        font-size: 20px !important;
     }
 }
 
-/* যখন শুধু একটি বাটন থাকে (শেষ প্রশ্নে ফলাফল দেখান) */
-.nav-btn:only-child {
-    max-width: 100%;
-    justify-content: center;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-/* ==========================================
-   SCROLLBAR
-   ========================================== */
+/* Scrollbar */
 ::-webkit-scrollbar {
     width: 4px;
 }
@@ -1243,25 +632,6 @@ body {
     border-radius: 10px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #00f2fe;
-}
-
-/* ==========================================
-   UTILITY - Touch Friendly
-   ========================================== */
-button, 
-.option-btn, 
-.card, 
-.nav-btn,
-.back-btn {
-    touch-action: manipulation;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-/* Smooth scrolling */
 html {
     scroll-behavior: smooth;
 }
