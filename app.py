@@ -2,10 +2,13 @@ from flask import Flask, render_template, request, redirect, session, flash, url
 import sqlite3
 import os
 from datetime import datetime
+
+# ===== QUIZ BLUEPRINT IMPORT =====
 from quiz import quiz_bp
 
 app = Flask(__name__)
 app.secret_key = "tution_management_secret_key_2026"
+
 # ===== যোগ করুন =====
 ADMIN_USERNAME = "Epsilon"
 ADMIN_PASSWORD = "885410"
@@ -70,9 +73,9 @@ def init_database():
         )
     ''')
     
-    # Results table
+    # Results table (পুরনো - offline exam এর জন্য)
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS results (
+        CREATE TABLE IF NOT EXISTS results_offline (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             exam_id INTEGER NOT NULL,
             student_id INTEGER NOT NULL,
@@ -81,6 +84,47 @@ def init_database():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (exam_id) REFERENCES exams(id),
             FOREIGN KEY (student_id) REFERENCES students(id)
+        )
+    ''')
+    
+    # ===== NEW: Results table for Quiz =====
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            exam_id INTEGER,
+            student_id INTEGER NOT NULL,
+            marks REAL DEFAULT 0,
+            grade TEXT,
+            quiz_subject TEXT,
+            quiz_chapter TEXT,
+            quiz_batch TEXT,
+            total_questions INTEGER DEFAULT 0,
+            correct_answers INTEGER DEFAULT 0,
+            percentage REAL DEFAULT 0,
+            is_completed BOOLEAN DEFAULT 0,
+            completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (exam_id) REFERENCES exams(id),
+            FOREIGN KEY (student_id) REFERENCES students(id)
+        )
+    ''')
+    
+    # ===== NEW: quiz_progress table =====
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS quiz_progress (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER NOT NULL,
+            batch_id TEXT NOT NULL,
+            subject_id TEXT NOT NULL,
+            chapter_id TEXT NOT NULL,
+            is_completed BOOLEAN DEFAULT 0,
+            score INTEGER DEFAULT 0,
+            total INTEGER DEFAULT 0,
+            percentage REAL DEFAULT 0,
+            completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_id) REFERENCES students(id),
+            UNIQUE(student_id, batch_id, subject_id, chapter_id)
         )
     ''')
     
@@ -110,9 +154,35 @@ def init_database():
         )
     ''')
     
+    # ===== Check and add missing columns to results table =====
+    try:
+        cursor.execute("PRAGMA table_info(results)")
+        columns = [col['name'] for col in cursor.fetchall()]
+        
+        if 'quiz_subject' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN quiz_subject TEXT")
+        if 'quiz_chapter' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN quiz_chapter TEXT")
+        if 'quiz_batch' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN quiz_batch TEXT")
+        if 'total_questions' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN total_questions INTEGER DEFAULT 0")
+        if 'correct_answers' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN correct_answers INTEGER DEFAULT 0")
+        if 'percentage' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN percentage REAL DEFAULT 0")
+        if 'is_completed' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN is_completed BOOLEAN DEFAULT 0")
+        if 'completed_at' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    except Exception as e:
+        print(f"⚠️ Note: {e}")
+    
     conn.commit()
     conn.close()
+    print("✅ Database initialized successfully!")
 
+# ===== DATABASE INITIALIZE =====
 init_database()
 
 # ------------------------
@@ -134,9 +204,6 @@ def download_database():
 # ------------------------
 # Login Page
 # ------------------------
-# ------------------------
-# Login Page
-# ------------------------
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -147,9 +214,7 @@ def login():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # ===== এই অংশটি পরিবর্তন করুন =====
         if login_type == "admin":
-            # Check against hardcoded admin credentials
             if phone == ADMIN_USERNAME and password == ADMIN_PASSWORD:
                 session['user_type'] = 'admin'
                 session['user_id'] = 0
@@ -161,7 +226,6 @@ def login():
                 conn.close()
                 flash('Invalid admin credentials! Please try again.', 'error')
                 return redirect(url_for('login'))
-        # ===== পরিবর্তন শেষ =====
         
         elif login_type == "teacher":
             cursor.execute('SELECT * FROM teachers WHERE phone = ? AND password = ?', 
@@ -183,6 +247,8 @@ def login():
                 session['user_type'] = 'student'
                 session['user_id'] = user['id']
                 session['username'] = user['name']
+                # ===== STUDENT CLASS SAVE IN SESSION =====
+                session['student_class'] = user['class']
                 conn.close()
                 flash('Login successful! Welcome Student.', 'success')
                 return redirect(url_for('student_dashboard'))
@@ -192,6 +258,11 @@ def login():
         return redirect(url_for('login'))
     
     return render_template('login.html')
+
+# ===== YOUR OTHER ROUTES (teacher_register, student_register, admin_dashboard, etc.) =====
+# ... আপনার অন্যান্য রাউট গুলো এখানে থাকবে ...
+
+ 
 # ------------------------
 # Registration Pages
 # ------------------------
@@ -1573,6 +1644,8 @@ def logout():
     session.clear()
     flash('Logged out successfully!', 'success')
     return redirect(url_for('login'))
+
+
 
 # =============================================
 # REGISTER QUIZ BLUEPRINT
