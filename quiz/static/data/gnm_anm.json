@@ -4,7 +4,7 @@
       "name": "GNM / ANM",
       "subjects": {
         "life_science": {
-          "name": "জীবনবিজ্ঞান",
+          "name": "জীবন বিজ্ঞান",
           "chapters": {
             "life_and_diversity": {
               "name": "জীবন ও তার বৈচিত্র্য",
@@ -119,7 +119,7 @@
           }
         },
         "physical_science": {
-          "name": "ভৌতবিজ্ঞান",
+          "name": "ভৌত বিজ্ঞান",
           "chapters": {
             "measurement": {
               "name": "পরিমাপ",
