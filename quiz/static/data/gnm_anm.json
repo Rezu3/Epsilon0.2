@@ -6,13 +6,457 @@
         "life_science": {
           "name": "Life Science",
           "chapters": {
-            "human_body": {
-              "name": "Human Physiology",
+            "cell_biology": {
+              "name": "কোষ ও কোষ বিভাজন",
               "questions": [
                 {
                   "id": 1,
-                  "question": "Normal body temperature of a healthy human is:",
-                  "options": ["98.6 °F", "37 °C", "Both A & B", "96.8 °F"],
+                  "question": "কোষের শক্তিঘর (Powerhouse) কাকে বলা হয়?",
+                  "options": ["রাইবোজোম", "লাইসোজোম", "মাইটোকন্ড্রিয়া", "গলগি বডি"],
+                  "answer": 2
+                },
+                {
+                  "id": 2,
+                  "question": "কোন অঙ্গাণুকে আত্মঘাতী থলি (Suicidal Bag) বলা হয়?",
+                  "options": ["লাইসোজোম", "রাইবোজোম", "সেন্ট্রোজোম", "প্লাস্টিড"],
+                  "answer": 0
+                },
+                {
+                  "id": 3,
+                  "question": "উদ্ভিদ কোষের কোষপ্রাচীর কী দিয়ে গঠিত?",
+                  "options": ["কাইটিন", "সেলুলোজ", "প্রোটিন", "লিপিড"],
+                  "answer": 1
+                },
+                {
+                  "id": 4,
+                  "question": "মানুষের দেহকোষে ক্রোমোজোম সংখ্যা কত?",
+                  "options": ["২৩ টি", "৪৬ টি", "৪৪ টি", "৪৮ টি"],
+                  "answer": 1
+                },
+                {
+                  "id": 5,
+                  "question": "মায়োটিক (Meiosis) কোষ বিভাজন প্রধানত কোথায় ঘটে?",
+                  "options": ["দেহকোষে", "জনন মাতৃকোষে", "ত্বকে", "স্নায়ুকোষে"],
+                  "answer": 1
+                }
+              ]
+            },
+            "human_physiology": {
+              "name": "মানব শারীরবিদ্যা ও সংবহনতন্ত্র",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "সর্বজনীন দাতা (Universal Donor) রক্তশ্রেণী কোনটি?",
+                  "options": ["AB+", "O-", "A+", "B-"],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "মানবদেহের বৃহত্তম গ্রন্থি (Gland) কোনটি?",
+                  "options": ["অগ্ন্যাশয়", "যকৃৎ (Liver)", "থাইরয়েড", "পিটুইটারি"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "রক্ত তঞ্চনে (Blood Clotting) সাহায্য করে কোন ভিটামিন?",
+                  "options": ["ভিটামিন A", "ভিটামিন C", "ভিটামিন K", "ভিটামিন D"],
+                  "answer": 2
+                },
+                {
+                  "id": 4,
+                  "question": "বৃক্কের গঠনগত ও কার্যগত একককে কী বলে?",
+                  "options": ["নিউরণ", "নেফ্রন", "অ্যালভিওলাই", "অ্যাক্সন"],
+                  "answer": 1
+                },
+                {
+                  "id": 5,
+                  "question": "ইনসুলিন হরমোন কোথা থেকে নিঃসৃত হয়?",
+                  "options": ["অগ্ন্যাশয়ের আইলেটস অব ল্যাঙ্গারহ্যান্স", "পিটুইটারি গ্রন্থি", "থাইরয়েড গ্রন্থি", "অ্যাড্রিনাল গ্রন্থি"],
+                  "answer": 0
+                }
+              ]
+            }
+          }
+        },
+        "physical_science": {
+          "name": "Physical Science",
+          "chapters": {
+            "matter_and_state": {
+              "name": "পদার্থের গঠন ও বৈশিষ্ট্য",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "চাপের SI একক কী?",
+                  "options": ["নিউটন", "পাসকাল (Pascal)", "জুল", "ডাইন"],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "বায়ুমণ্ডলীয় চাপ মাপার যন্ত্রের নাম কী?",
+                  "options": ["থার্মোমিটার", "ব্যারোমিটার", "ম্যানোমিটার", "হাইগ্রোমিটার"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "ইলেকট্রন কে আবিষ্কার করেন?",
+                  "options": ["জে জে থমসন", "রদারফোর্ড", "চ্যাডউইক", "জন ডাল্টন"],
+                  "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "সবচেয়ে হালকা মৌল কোনটি?",
+                  "options": ["হিলিয়াম", "হাইড্রোজেন", "লিথিয়াম", "অক্সিজেন"],
+                  "answer": 1
+                },
+                {
+                  "id": 5,
+                  "question": "পরমাণুর নিউক্লিয়াস কী কী নিয়ে গঠিত?",
+                  "options": ["প্রোটন ও ইলেকট্রন", "প্রোটন ও নিউট্রন", "ইলেকট্রন ও নিউট্রন", "শুধু প্রোটন"],
+                  "answer": 1
+                }
+              ]
+            },
+            "work_power_energy": {
+              "name": "কার্য, ক্ষমতা ও শক্তি",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "কার্যের CGS একক কী?",
+                  "options": ["জুল", "আর্গ (Erg)", "নিউটন", "ডাইন"],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "১ ওয়াট (Watt) সমান কত?",
+                  "options": ["১ জুল/সেকেন্ড", "১ আর্গ/সেকেন্ড", "১ নিউটন-মিটার", "১০ জুল/সেকেন্ড"],
+                  "answer": 0
+                },
+                {
+                  "id": 3,
+                  "question": "স্থিথিশক্তি ও গতিশক্তির সমষ্টিকে কী বলে?",
+                  "options": ["তাপশক্তি", "যান্ত্রিক শক্তি", "রাসায়নিক শক্তি", "আলোকশক্তি"],
+                  "answer": 1
+                },
+                {
+                  "id": 4,
+                  "question": "শব্দ তরঙ্গ হলো এক প্রকার -",
+                  "options": ["অনুদৈর্ঘ্য তরঙ্গ", "অনুপ্রস্থ তরঙ্গ", "তড়িৎ-চুম্বকীয় তরঙ্গ", "কোনোটিই নয়"],
+                  "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "শূন্যস্থানে আলোর বেগ কত?",
+                  "options": ["$3 \\times 10^8 \\, \\text{m/s}$", "$3 \\times 10^5 \\, \\text{m/s}$", "$1.5 \\times 10^8 \\, \\text{m/s}$", "$3 \\times 10^{10} \\, \\text{m/s}$"],
+                  "answer": 0
+                }
+              ]
+            }
+          }
+        },
+        "mathematics": {
+          "name": "Mathematics",
+          "chapters": {
+            "percentage_and_profit": {
+              "name": "শতকরা ও লাভ-ক্ষতি",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "একটি দ্রব্যের ক্রয়মূল্য ৫০০ টাকা এবং বিক্রয়মূল্য ৬০০ টাকা হলে শতকরা লাভের হার কত?",
+                  "options": ["১০%", "১৫%", "২০%", "২৫%"],
+                  "answer": 2
+                },
+                {
+                  "id": 2,
+                  "question": "কোনো সংখ্যার ৪০% যদি ৮০ হয়, তবে সংখ্যাটি কত?",
+                  "options": ["১৫০", "২০০", "২৫০", "৩০০"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "ক্রয়মূল্যের ওপর ১০% ক্ষতি হলে বিক্রয়মূল্যের ওপর ক্ষতির হার কত?",
+                  "options": ["$11\\frac{1}{9}\\%$", "$9\\frac{1}{11}\\%$", "১০%", "১২%"],
+                  "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "একটি বই ২৫০ টাকায় কিনে ৩০০ টাকায় বিক্রি করলে কত শতাংশ লাভ হবে?",
+                  "options": ["২০%", "২৫%", "১৫%", "৩০%"],
+                  "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "বার্ষিক ৫% সরল সুদে ৪০০ টাকার ২ বছরের সুদ কত টাকা হবে?",
+                  "options": ["২০ টাকা", "৩০ টাকা", "৪০ টাকা", "৫০ টাকা"],
+                  "answer": 2
+                }
+              ]
+            },
+            "ratio_and_proportion": {
+              "name": "অনুপাত ও সমানুপাত",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "যদি $A : B = 2 : 3$ এবং $B : C = 4 : 5$ হয়, তবে $A : B : C$ কত?",
+                  "options": ["8 : 12 : 15", "2 : 4 : 5", "6 : 8 : 10", "8 : 10 : 12"],
+                  "answer": 0
+                },
+                {
+                  "id": 2,
+                  "question": "৪ ও ৯ এর মধ্যসমানুপাতী (Mean Proportional) কত?",
+                  "options": ["৫", "৬", "৭", "৮"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "দুটি সংখ্যার অনুপাত ৩ : ৪ এবং তাদের যোগফল ৭০ হলে বড় সংখ্যাটি কত?",
+                  "options": ["৩০", "৪০", "৫০", "৪৫"],
+                  "answer": 1
+                },
+                {
+                  "id": 4,
+                  "question": "পিতা ও পুত্রের বর্তমান বয়সের অনুপাত ৭ : ২। ৫ বছর পর তাদের বয়সের অনুপাত ৮ : ৩ হলে পিতার বর্তমান বয়স কত?",
+                  "options": ["৩৫ বছর", "২৮ বছর", "৪২ বছর", "৪৯ বছর"],
+                  "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "১৬ এবং ২৪ এর তৃতীয় সমানুপাতী কত?",
+                  "options": ["৩২", "৩৬", "৪০", "৪৮"],
+                  "answer": 1
+                }
+              ]
+            }
+          }
+        },
+        "english": {
+          "name": "English",
+          "chapters": {
+            "grammar_and_articles": {
+              "name": "Articles & Prepositions",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "Choose the correct article: He is ______ M.B.B.S. doctor.",
+                  "options": ["a", "an", "the", "no article"],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "Fill in the blank: She has been living in Kolkata ______ 2018.",
+                  "options": ["for", "from", "since", "by"],
+                  "answer": 2
+                },
+                {
+                  "id": 3,
+                  "question": "Fill in the preposition: The boy is fond ______ sweets.",
+                  "options": ["of", "off", "with", "for"],
+                  "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "Choose the correct sentence:",
+                  "options": ["He is senior than me.", "He is senior to me.", "He is senior from me.", "He is senior with me."],
+                  "answer": 1
+                },
+                {
+                  "id": 5,
+                  "question": "Fill in the blank: Honesty is ______ best policy.",
+                  "options": ["a", "an", "the", "no article"],
+                  "answer": 2
+                }
+              ]
+            },
+            "synonyms_and_antonyms": {
+              "name": "Synonyms & Antonyms",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "What is the Synonym of 'ABANDON'?",
+                  "options": ["Keep", "Forsake", "Adopt", "Cherish"],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "What is the Antonym of 'ANCIENT'?",
+                  "options": ["Old", "Modern", "Historic", "Past"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "Select the correct Synonym for 'GIGANTIC':",
+                  "options": ["Small", "Huge", "Tiny", "Weak"],
+                  "answer": 1
+                },
+                {
+                  "id": 4,
+                  "question": "Find the Antonym of 'OPTIMIST':",
+                  "options": ["Pessimist", "Hopeful", "Realistic", "Idealist"],
+                  "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "What is the One Word Substitution for 'A person who does not believe in God'?",
+                  "options": ["Theist", "Atheist", "Agnostic", "Martyr"],
+                  "answer": 1
+                }
+              ]
+            }
+          }
+        },
+        "general_knowledge": {
+          "name": "General Knowledge",
+          "chapters": {
+            "indian_history_geography": {
+              "name": "ভারতের ইতিহাস ও ভূগোল",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "পশ্চিমবঙ্গের রাজধানী কোথায় অবস্থিত?",
+                  "options": ["শিলিগুড়ি", "কলকাতা", "আসানসোল", "দুর্গাপুর"],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "ভারতের জাতীয় নদী কোনটি?",
+                  "options": ["যমুনা", "গঙ্গা", "ব্রহ্মপুত্র", "গো দাবরী"],
+                  "answer": 1
+                },
+                {
+                  "id": 3,
+                  "question": "স্বাধীন ভারতের প্রথম প্রধানমন্ত্রী কে ছিলেন?",
+                  "options": ["ড. বি আর আম্বেদকর", "পণ্ডিত জওহরলাল নেহেরু", "মহাত্মা গান্ধী", "সরদার বল্লভভাই প্যাটেল"],
+                  "answer": 1
+                },
+                {
+                  "id": 4,
+                  "question": "কয়লার উৎপাদনে পশ্চিমবঙ্গের কোন অঞ্চল বিখ্যাত?",
+                  "options": ["হুগলী", "রাণীগঞ্জ", "দার্জিলিং", "মেদিনীপুর"],
+                  "answer": 1
+                },
+                {
+                  "id": 5,
+                  "question": "সুন্দরবন কিসের জন্য বিখ্যাত?",
+                  "options": ["একশৃঙ্গ গণ্ডার", "রয়েল বেঙ্গল টাইগার", "হাতি", "হরিণ"],
+                  "answer": 1
+                }
+              ]
+            },
+            "health_science_gk": {
+              "name": "স্বাস্থ্যবিজ্ঞান ও দিবস",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "বিশ্ব স্বাস্থ্য দিবস (World Health Day) পালিত হয় কোন তারিখে?",
+                  "options": ["৭ই এপ্রিল", "১ই মে", "৫ই জুন", "১ই ডিসেম্বর"],
+                  "answer": 0
+                },
+                {
+                  "id": 2,
+                  "question": "AIDS রোগের জন্য দায়ী ভাইরাস কোনটি?",
+                  "options": ["HIV", "H1N1", "Corona Virus", "Rhino Virus"],
+                  "answer": 0
+                },
+                {
+                  "id": 3,
+                  "question": "ম্যালেরিয়া রোগের বাহক কে?",
+                  "options": ["স্ত্রী অ্যানোফিলিস মশা", "এডিস মশা", "কিউলেক্স মশা", "মাছি"],
+                  "answer": 0
+                },
+                {
+                  "id": 4,
+                  "question": "কোন ভিটামিনের অভাবে রাতকানা (Night Blindness) রোগ হয়?",
+                  "options": ["ভিটামিন B", "ভিটামিন C", "ভিটামিন A", "ভিটামিন D"],
+                  "answer": 2
+                },
+                {
+                  "id": 5,
+                  "question": "পোলিও প্রতিষেধক টিকার আবিষ্কারক কে?",
+                  "options": ["জোনাস সক (Jonas Salk)", "লুই পাস্তুর", "এডওয়ার্ড জেনার", "অ্যালেকজান্ডার ফ্লেমিং"],
+                  "answer": 0
+                }
+              ]
+            }
+          }
+        },
+        "logical_reasoning": {
+          "name": "Logical Reasoning",
+          "chapters": {
+            "figure_series": {
+              "name": "Visual Pattern & Series (ছবি নির্ভর)",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "প্রদত্ত ছবিতে খালি স্থানে (?) উপযুক্ত চিত্রটি নির্বাচন করুন।",
+                  "image": "lr_pattern_01.png",
+                  "options": ["চিত্র A", "চিত্র B", "চিত্র C", "চিত্র D"],
+                  "answer": 0
+                },
+                {
+                  "id": 2,
+                  "question": "নিচের চিত্রে কতগুলি ত্রিভুজ (Triangles) রয়েছে গণনা করুন।",
+                  "image": "lr_triangle_count.png",
+                  "options": ["৮ টি", "১০ টি", "১২ টি", "১৬ টি"],
+                  "answer": 3
+                },
+                {
+                  "id": 3,
+                  "question": "প্রদত্ত দর্পণ চিত্রটির (Mirror Image) সঠিক উত্তর কোনটি?",
+                  "image": "lr_mirror_01.png",
+                  "options": ["অপশন ১", "অপশন ২", "অপশন ৩", "অপশন ৪"],
+                  "answer": 1
+                },
+                {
+                  "id": 4,
+                  "question": "চিত্রের অনুক্রমটি পূর্ণ করতে পরবর্তীতে কোন চিত্রটি আসবে?",
+                  "image": "lr_series_next.png",
+                  "options": ["চিত্র A", "চিত্র B", "চিত্র C", "চিত্র D"],
+                  "answer": 2
+                },
+                {
+                  "id": 5,
+                  "question": "নিচের ৪টি চিত্রের মধ্যে কোনটি বাকিসব থেকে আলাদা (Odd One Out)?",
+                  "image": "lr_odd_one.png",
+                  "options": ["চিত্র A", "চিত্র B", "চিত্র C", "চিত্র D"],
+                  "answer": 3
+                }
+              ]
+            },
+            "analogy_and_coding": {
+              "name": "Diagram Analogy & Venn Diagram (ছবি নির্ভর)",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "প্রদত্ত চিত্রে 'ডাক্তার', 'মানুষ' এবং 'মহিলা'-র সম্পর্ক প্রকাশকারী ভেণচিত্র (Venn Diagram) কোনটি?",
+                  "image": "lr_venn_01.png",
+                  "options": ["চিত্র A", "চিত্র B", "চিত্র C", "চিত্র D"],
+                  "answer": 1
+                },
+                {
+                  "id": 2,
+                  "question": "প্রথম দুটি চিত্রের সাদৃশ্য দেখে তৃতীয় চিত্রের সাথে চতুর্থ প্রশ্নচিহ্নিত চিত্রটি নির্বাচন করুন।",
+                  "image": "lr_analogy_fig.png",
+                  "options": ["অপশন A", "অপশন B", "অপশন C", "অপশন D"],
+                  "answer": 0
+                },
+                {
+                  "id": 3,
+                  "question": "চিত্রটিতে লুপ্ত সংখ্যাটি (?) কত হবে?",
+                  "image": "lr_missing_num.png",
+                  "options": ["২৫", "৩৬", "৪৯", "৬৪"],
+                  "answer": 2
+                },
+                {
+                  "id": 4,
+                  "question": "কাগজের টুকরোটি ভাঁজ করে কাটলে খোলার পর কেমন দেখাবে?",
+                  "image": "lr_paper_cut.png",
+                  "options": ["চিত্র A", "চিত্র B", "চিত্র C", "চিত্র D"],
+                  "answer": 0
+                },
+                {
+                  "id": 5,
+                  "question": "প্রদত্ত ডাইস (Dice)-এর ৩ নম্বর মুখের বিপরীতে কত নম্বর মুখ থাকবে?",
+                  "image": "lr_dice_01.png",
+                  "options": ["১", "৪", "৫", "৬"],
                   "answer": 2
                 }
               ]
