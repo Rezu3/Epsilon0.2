@@ -367,9 +367,12 @@ function showWhatsApp() {
     if (rankSection) rankSection.style.display = 'none';
 }
 
-// Show Quiz
+// =============================================
+// QUIZ FUNCTION - NEW TAB OPEN
+// =============================================
 function showQuiz() {
-    alert('🧠 Quiz\n\nTake interactive quizzes to test your knowledge.');
+    // নতুন ট্যাবে Quiz খুলবে
+    window.open('/quiz', '_blank');
 }
 
 // Start Online Test
@@ -399,11 +402,6 @@ window.showWhatsApp = showWhatsApp;
 window.selectGender = selectGender;
 window.startOnlineExam = startOnlineExam;
 window.initializeTimers = initializeTimers;
-
-
-
-
-
 
 // =============================================
 // CHANGE PASSWORD FUNCTIONS
