@@ -1,7 +1,15 @@
 // ==========================================
-// QUIZ SYSTEM - NO SOUND, TELEGRAM ANIMATION & MOBILE BACK NAVIGATION
+// QUIZ SYSTEM WITH CHAPTER LOCK SYSTEM
 // ==========================================
 
+// ===== CONFIGURATION =====
+const USER_TYPE = document.getElementById('userType').value;
+const STUDENT_ID = document.getElementById('studentId').value;
+const MATCHED_BATCH = JSON.parse(document.getElementById('matchedBatchData').value || 'null');
+const RETURN_URL = document.getElementById('returnUrl').value;
+const API_BASE = '/quiz/api';
+
+// ===== STATE VARIABLES =====
 let currentBatchId = null;
 let currentBatchName = '';
 let currentSubjectId = null;
@@ -11,69 +19,21 @@ let currentChapterName = '';
 
 let questions = [];
 let currentQuestionIndex = 0;
-let userAnswers = {}; 
-let completedChapters = {}; 
+let userAnswers = {};
+let currentSubjectChapters = [];
 
-const API_BASE = '/quiz/api';
-
-// Trigger Telegram Quiz style confetti celebration (NO SOUND)
+// ==========================================
+// CELEBRATION
+// ==========================================
 function triggerCelebration() {
     if (typeof confetti === 'function') {
-        confetti({
-            particleCount: 60,
-            spread: 70,
-            origin: { y: 0.7 }
-        });
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('✅ Quiz System Initialized');
-    
-    // Initial State Push for Browser History
-    history.replaceState({ view: 'batches' }, '');
-    loadBatches(false);
-
-    document.addEventListener('keydown', handleKeyboardShortcuts);
-
-    // Mobile Hardware Back Button Handling
-    window.onpopstate = function (event) {
-        if (event.state) {
-            handleMobileBack(event.state);
-        }
-    };
-});
-
-// Helper for sorting batches
-function sortBatches(batches) {
-    return batches.sort((a, b) => {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        const numA = parseInt(nameA.match(/\d+/)?.[0] || 0);
-        const numB = parseInt(nameB.match(/\d+/)?.[0] || 0);
-        if (numA > 0 && numB > 0) return numA - numB;
-        return nameA.localeCompare(nameB);
-    });
-}
-
-// Mobile Back Button Logic Router
-function handleMobileBack(state) {
-    if (state.view === 'batches') {
-        loadBatches(false);
-    } else if (state.view === 'subjects') {
-        selectBatch(state.batchId, state.batchName, false);
-    } else if (state.view === 'chapters') {
-        selectSubject(state.subjectId, state.subjectName, false);
-    } else if (state.view === 'quiz') {
-        selectChapter(state.chapterId, state.chapterName, false);
+        confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
     }
 }
 
 // ==========================================
-// NAVIGATION & DATA LOADING
+// 1. LOAD BATCHES
 // ==========================================
-
-// 1. Batches View
 async function loadBatches(pushHistory = true) {
     currentBatchId = null;
     currentBatchName = '';
@@ -86,15 +46,35 @@ async function loadBatches(pushHistory = true) {
         history.pushState({ view: 'batches' }, '');
     }
 
+    const grid = document.getElementById('batches-grid');
+    if (!grid) return;
+
     try {
+        if (USER_TYPE === 'student' && MATCHED_BATCH) {
+            grid.innerHTML = `
+                <div class="card matched-batch" onclick="selectBatch('${MATCHED_BATCH.id}', '${MATCHED_BATCH.name}')">
+                    <i class="fas fa-graduation-cap"></i>
+                    ${MATCHED_BATCH.name}
+                    <span style="font-size:0.7rem;color:#4facfe;display:block;margin-top:4px;">✅ আপনার ক্লাস</span>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                if (MATCHED_BATCH && MATCHED_BATCH.id) {
+                    selectBatch(MATCHED_BATCH.id, MATCHED_BATCH.name, true);
+                }
+            }, 500);
+            
+            showView('batches-view');
+            updateBreadcrumb();
+            return;
+        }
+
         const response = await fetch(`${API_BASE}/batches`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         let batches = await response.json();
         batches = sortBatches(batches);
-        
-        const grid = document.getElementById('batches-grid');
-        if (!grid) return;
         
         grid.innerHTML = '';
         if (batches && batches.length > 0) {
@@ -106,17 +86,30 @@ async function loadBatches(pushHistory = true) {
                 grid.appendChild(card);
             });
         } else {
-            grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #718096;"><h3>No Batches Found</h3></div>`;
+            grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #718096;"><h3>কোন ব্যাচ পাওয়া যায়নি</h3></div>`;
         }
         showView('batches-view');
         updateBreadcrumb();
     } catch (error) {
         console.error('❌ Error loading batches:', error);
-        showError('Failed to load batches.');
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #e53e3e;"><h3>লোড করতে সমস্যা হয়েছে</h3></div>`;
     }
 }
 
-// 2. Select Batch -> Load Subjects
+function sortBatches(batches) {
+    return batches.sort((a, b) => {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+        const numA = parseInt(nameA.match(/\d+/)?.[0] || 0);
+        const numB = parseInt(nameB.match(/\d+/)?.[0] || 0);
+        if (numA > 0 && numB > 0) return numA - numB;
+        return nameA.localeCompare(nameB);
+    });
+}
+
+// ==========================================
+// 2. SELECT BATCH -> LOAD SUBJECTS
+// ==========================================
 async function selectBatch(batchId, batchName, pushHistory = true) {
     currentBatchId = batchId;
     currentBatchName = batchName;
@@ -142,22 +135,36 @@ async function selectBatch(batchId, batchName, pushHistory = true) {
             subjects.forEach(subject => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `<i class="fas fa-book"></i> ${subject.name}`;
+                const progress = subject.progress_percentage || 0;
+                const progressColor = progress === 100 ? '#28a745' : progress > 0 ? '#4facfe' : '#e2e8f0';
+                
+                card.innerHTML = `
+                    <i class="fas fa-book"></i>
+                    ${subject.name}
+                    <div style="font-size:0.75rem;color:#718096;margin-top:4px;">
+                        ${subject.completed_chapters}/${subject.total_chapters} অধ্যায় সম্পন্ন
+                    </div>
+                    <div style="width:100%;height:4px;background:#e2e8f0;border-radius:2px;margin-top:6px;">
+                        <div style="width:${progress}%;height:100%;background:${progressColor};border-radius:2px;transition:width 0.5s;"></div>
+                    </div>
+                `;
                 card.onclick = () => selectSubject(subject.id, subject.name);
                 grid.appendChild(card);
             });
         } else {
-            grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #718096;"><h3>No Subjects Found</h3></div>`;
+            grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #718096;"><h3>কোন বিষয় পাওয়া যায়নি</h3></div>`;
         }
         showView('subjects-view');
         updateBreadcrumb();
     } catch (error) {
         console.error('❌ Error loading subjects:', error);
-        showError('Failed to load subjects.');
+        showError('বিষয় লোড করতে সমস্যা হয়েছে।');
     }
 }
 
-// 3. Select Subject -> Load Chapters
+// ==========================================
+// 3. SELECT SUBJECT -> LOAD CHAPTERS
+// ==========================================
 async function selectSubject(subjectId, subjectName, pushHistory = true) {
     currentSubjectId = subjectId;
     currentSubjectName = subjectName;
@@ -165,7 +172,13 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
     currentChapterName = '';
 
     if (pushHistory) {
-        history.pushState({ view: 'chapters', batchId: currentBatchId, batchName: currentBatchName, subjectId, subjectName }, '');
+        history.pushState({ 
+            view: 'chapters', 
+            batchId: currentBatchId, 
+            batchName: currentBatchName, 
+            subjectId, 
+            subjectName 
+        }, '');
     }
 
     try {
@@ -173,6 +186,8 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const chapters = await response.json();
+        currentSubjectChapters = chapters;
+        
         const grid = document.getElementById('chapters-grid');
         if (!grid) return;
         grid.innerHTML = '';
@@ -181,26 +196,58 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
             chapters.forEach(chapter => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                const isCompleted = completedChapters[chapter.id] || false;
+                
+                let statusIcon = '';
+                let statusText = '';
+                let statusColor = '';
+                
+                if (chapter.is_completed) {
+                    statusIcon = '✅';
+                    statusText = 'সম্পন্ন';
+                    statusColor = '#28a745';
+                    card.style.borderColor = '#28a745';
+                    card.style.background = '#f0fff4';
+                } else if (chapter.is_locked) {
+                    statusIcon = '🔒';
+                    statusText = 'লকড';
+                    statusColor = '#e53e3e';
+                    card.style.opacity = '0.6';
+                    card.style.cursor = 'not-allowed';
+                } else {
+                    statusIcon = '📝';
+                    statusText = 'খোলা';
+                    statusColor = '#4facfe';
+                }
+                
                 card.innerHTML = `
-                    <i class="fas fa-list"></i> ${chapter.name}
-                    ${isCompleted ? '<span style="color:#28a745;font-size:0.75rem;display:block;">✅ Completed</span>' : ''}
+                    <i class="fas fa-${chapter.is_locked ? 'lock' : chapter.is_completed ? 'check-circle' : 'play-circle'}" 
+                       style="color:${statusColor};"></i>
+                    অধ্যায় ${chapter.order}: ${chapter.name}
+                    <span style="font-size:0.7rem;color:${statusColor};display:block;margin-top:4px;">
+                        ${statusIcon} ${statusText}
+                    </span>
                 `;
-                card.onclick = () => selectChapter(chapter.id, chapter.name);
+                
+                if (!chapter.is_locked) {
+                    card.onclick = () => selectChapter(chapter.id, chapter.name);
+                }
+                
                 grid.appendChild(card);
             });
         } else {
-            grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #718096;"><h3>No Chapters Found</h3></div>`;
+            grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #718096;"><h3>কোন অধ্যায় পাওয়া যায়নি</h3></div>`;
         }
         showView('chapters-view');
         updateBreadcrumb();
     } catch (error) {
         console.error('❌ Error loading chapters:', error);
-        showError('Failed to load chapters.');
+        showError('অধ্যায় লোড করতে সমস্যা হয়েছে।');
     }
 }
 
-// 4. Select Chapter -> Load Quiz
+// ==========================================
+// 4. SELECT CHAPTER -> LOAD QUIZ
+// ==========================================
 async function selectChapter(chapterId, chapterName, pushHistory = true) {
     currentChapterId = chapterId;
     currentChapterName = chapterName;
@@ -223,6 +270,13 @@ async function selectChapter(chapterId, chapterName, pushHistory = true) {
 
     try {
         const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${chapterId}/questions`);
+        
+        if (response.status === 403) {
+            const error = await response.json();
+            showError(error.error || 'এই অধ্যায় লকড! আগের অধ্যায় সম্পন্ন করুন।');
+            return;
+        }
+        
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         questions = await response.json();
@@ -237,11 +291,13 @@ async function selectChapter(chapterId, chapterName, pushHistory = true) {
         }
     } catch (error) {
         console.error('❌ Error loading questions:', error);
-        showError('Failed to load questions.');
+        showError('প্রশ্ন লোড করতে সমস্যা হয়েছে।');
     }
 }
 
-// Manual Navigation Switchers
+// ==========================================
+// NAVIGATION HELPERS
+// ==========================================
 function showBatchesView() { loadBatches(true); }
 function showSubjectsView() { if (currentBatchId) selectBatch(currentBatchId, currentBatchName, true); }
 function showChaptersView() { if (currentSubjectId) selectSubject(currentSubjectId, currentSubjectName, true); }
@@ -250,39 +306,40 @@ function updateBreadcrumb() {
     const bc = document.getElementById('breadcrumb');
     if (!bc) return;
 
-    let html = `<span onclick="showBatchesView()" style="cursor:pointer;"><i class="fas fa-home"></i> Batches</span>`;
+    let html = `<span onclick="showBatchesView()" style="cursor:pointer;"><i class="fas fa-home"></i> ব্যাচ</span>`;
 
     if (currentBatchId) {
-        html += ` <span class="sep">/</span> <span onclick="showSubjectsView()" style="cursor:pointer;">${currentBatchName}</span>`;
+        html += ` <span class="separator">›</span> <span onclick="showSubjectsView()" style="cursor:pointer;">${currentBatchName}</span>`;
     }
     if (currentSubjectId) {
-        html += ` <span class="sep">/</span> <span onclick="showChaptersView()" style="cursor:pointer;">${currentSubjectName}</span>`;
+        html += ` <span class="separator">›</span> <span onclick="showChaptersView()" style="cursor:pointer;">${currentSubjectName}</span>`;
     }
     if (currentChapterId) {
-        html += ` <span class="sep">/</span> <span style="font-weight:bold;">${currentChapterName}</span>`;
+        html += ` <span class="separator">›</span> <span style="font-weight:bold;">${currentChapterName}</span>`;
     }
 
     bc.innerHTML = html;
     bc.style.display = 'flex';
 }
 
-// ==========================================
-// QUIZ UI & TELEGRAM POLL STYLE ANSWER
-// ==========================================
+function showView(viewId) {
+    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+    const targetView = document.getElementById(viewId);
+    if (targetView) targetView.classList.add('active');
+}
 
+// ==========================================
+// QUIZ UI
+// ==========================================
 function restoreQuizLayout() {
     const quizCard = document.getElementById('quiz-card');
-    const footer = document.querySelector('.quiz-footer');
+    const footer = document.getElementById('quizFooter');
     if (footer) footer.style.display = 'flex';
 
     quizCard.innerHTML = `
-        <div class="quiz-header" style="display:flex; justify-content:space-between; align-items:center;">
-            <h3 id="quiz-chapter-title"><i class="fas fa-pencil-alt"></i> ${currentChapterName}</h3>
-            <span id="quiz-progress"></span>
-        </div>
-        <div id="question-text" style="margin: 15px 0; font-weight: 600;"></div>
-        <div id="question-image-container" style="display:none; margin-bottom:15px;">
-            <img id="question-image" src="" alt="Question Image" style="max-width:100%; border-radius:8px;"/>
+        <div id="question-text" class="question-text"></div>
+        <div id="question-image-container" class="image-container" style="display: none;">
+            <img id="question-image" src="" alt="Question Image">
         </div>
         <div id="options-container" class="options-grid"></div>
     `;
@@ -338,8 +395,8 @@ function showQuestion(index) {
     if (nextBtn) {
         if (index === questions.length - 1) {
             const allAnswered = Object.keys(userAnswers).length === questions.length;
-            nextBtn.innerHTML = allAnswered ? 'অধ্যায়ে ফিরুন' : 'শেষ প্রশ্ন';
-            nextBtn.onclick = allAnswered ? showResults : nextQuestion;
+            nextBtn.innerHTML = allAnswered ? '📤 জমা দিন' : 'শেষ প্রশ্ন';
+            nextBtn.onclick = allAnswered ? submitQuiz : nextQuestion;
         } else {
             nextBtn.innerHTML = 'পরবর্তী →';
             nextBtn.onclick = nextQuestion;
@@ -351,10 +408,12 @@ function showQuestion(index) {
     }
 }
 
+// ==========================================
+// ANSWER HANDLING
+// ==========================================
 function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
     userAnswers[questionIndex] = selectedIndex;
 
-    // Telegram style confetti (without sound)
     if (selectedIndex === correctAnswer) {
         triggerCelebration();
     }
@@ -364,30 +423,145 @@ function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
     if (Object.keys(userAnswers).length === questions.length) {
         const nextBtn = document.getElementById('next-btn');
         if (nextBtn) {
-            nextBtn.innerHTML = 'অধ্যায়ে ফিরুন';
-            nextBtn.onclick = showResults;
+            nextBtn.innerHTML = '📤 জমা দিন';
+            nextBtn.onclick = submitQuiz;
         }
     }
 }
 
-function showResults() {
-    completedChapters[currentChapterId] = true;
-    const quizCard = document.getElementById('quiz-card');
-    const footer = document.querySelector('.quiz-footer');
+// ==========================================
+// SUBMIT QUIZ
+// ==========================================
+async function submitQuiz() {
+    let correct = 0;
+    questions.forEach((q, idx) => {
+        const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
+        if (userAnswers[idx] === correctAnswer) correct++;
+    });
     
-    triggerCelebration();
-
-    quizCard.innerHTML = `
-        <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
-            <h2 style="color: #28a745; margin-bottom: 20px; font-size: 1.5rem;">🎉 অভিনন্দন! অধ্যায়ের সকল প্রশ্ন সম্পন্ন হয়েছে!</h2>
-            <button onclick="showChaptersView()" class="nav-btn primary" style="padding: 10px 25px; border-radius: 8px; cursor: pointer;">
-                <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
-            </button>
-        </div>
-    `;
-    if (footer) footer.style.display = 'none';
+    const total = questions.length;
+    const percentage = Math.round((correct / total) * 100);
+    
+    // Show loading
+    const nextBtn = document.getElementById('next-btn');
+    if (nextBtn) {
+        nextBtn.disabled = true;
+        nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> জমা হচ্ছে...';
+    }
+    
+    try {
+        const response = await fetch('/quiz/api/submit_result', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                subject_id: currentSubjectId,
+                chapter_id: currentChapterId,
+                score: correct,
+                total: total,
+                percentage: percentage
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Chapter completed successfully
+            triggerCelebration();
+            
+            const quizCard = document.getElementById('quiz-card');
+            const footer = document.getElementById('quizFooter');
+            
+            let nextChapterHTML = '';
+            if (result.next_chapter_unlocked) {
+                nextChapterHTML = `
+                    <div style="margin-top:15px;padding:15px;background:#e6fffa;border-radius:10px;border:2px solid #38b2ac;">
+                        <p style="color:#2c7a7b;font-weight:600;">
+                            🎉 অধ্যায় সম্পন্ন! পরবর্তী অধ্যায় আনলক হয়েছে!
+                        </p>
+                        <button onclick="showChaptersView()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
+                            <i class="fas fa-arrow-right"></i> পরবর্তী অধ্যায় দেখুন
+                        </button>
+                    </div>
+                `;
+            }
+            
+            quizCard.innerHTML = `
+                <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
+                    <div style="font-size: 60px; margin-bottom: 10px;">🎉</div>
+                    <h2 style="color: #28a745; margin-bottom: 10px;">অভিনন্দন!</h2>
+                    <p style="font-size: 1.2rem; margin-bottom: 5px;">আপনি পেয়েছেন: <strong>${correct}/${total}</strong></p>
+                    <p style="font-size: 1.1rem; color: #2c7a7b; margin-bottom: 15px;">
+                        স্কোর: <strong>${percentage}%</strong>
+                        ${percentage >= 95 ? '✅ উত্তীর্ণ!' : '❌ চেষ্টা করুন!'}
+                    </p>
+                    ${nextChapterHTML}
+                    <button onclick="showChaptersView()" class="nav-btn secondary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
+                        <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
+                    </button>
+                </div>
+            `;
+            if (footer) footer.style.display = 'none';
+            
+        } else {
+            // Not passed
+            const quizCard = document.getElementById('quiz-card');
+            
+            if (result.already_completed) {
+                quizCard.innerHTML = `
+                    <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
+                        <div style="font-size: 60px; margin-bottom: 10px;">⚠️</div>
+                        <h2 style="color: #e53e3e; margin-bottom: 10px;">এই অধ্যায় ইতিমধ্যে সম্পন্ন!</h2>
+                        <button onclick="showChaptersView()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
+                            <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
+                        </button>
+                    </div>
+                `;
+                const footer = document.getElementById('quizFooter');
+                if (footer) footer.style.display = 'none';
+            } else {
+                quizCard.innerHTML = `
+                    <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
+                        <div style="font-size: 60px; margin-bottom: 10px;">😅</div>
+                        <h2 style="color: #e53e3e; margin-bottom: 10px;">আবার চেষ্টা করুন!</h2>
+                        <p style="font-size: 1.2rem; margin-bottom: 5px;">আপনি পেয়েছেন: <strong>${correct}/${total}</strong></p>
+                        <p style="font-size: 1.1rem; color: #e53e3e; margin-bottom: 15px;">
+                            স্কোর: <strong>${percentage}%</strong> (প্রয়োজন 95%)
+                        </p>
+                        <p style="color: #718096; margin-bottom: 15px;">${result.message || 'আবার চেষ্টা করুন!'}</p>
+                        <button onclick="resetQuiz()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
+                            <i class="fas fa-redo"></i> আবার চেষ্টা করুন
+                        </button>
+                    </div>
+                `;
+                const footer = document.getElementById('quizFooter');
+                if (footer) footer.style.display = 'none';
+            }
+        }
+        
+    } catch (error) {
+        console.error('❌ Error submitting quiz:', error);
+        showError('জমা দিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+        if (nextBtn) {
+            nextBtn.disabled = false;
+            nextBtn.innerHTML = '📤 জমা দিন';
+        }
+    }
 }
 
+// ==========================================
+// RESET QUIZ
+// ==========================================
+function resetQuiz() {
+    userAnswers = {};
+    restoreQuizLayout();
+    showQuestion(0);
+    const footer = document.getElementById('quizFooter');
+    if (footer) footer.style.display = 'flex';
+}
+
+// ==========================================
+// NAVIGATION
+// ==========================================
 function nextQuestion() {
     if (currentQuestionIndex < questions.length - 1) {
         currentQuestionIndex++;
@@ -402,13 +576,51 @@ function prevQuestion() {
     }
 }
 
-function showView(viewId) {
-    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-    const targetView = document.getElementById(viewId);
-    if (targetView) targetView.classList.add('active');
+// ==========================================
+// GO BACK TO DASHBOARD
+// ==========================================
+function goBackToDashboard() {
+    if (RETURN_URL) {
+        window.location.href = RETURN_URL;
+        return;
+    }
+    const storedUrl = sessionStorage.getItem('dashboardUrl');
+    if (storedUrl) {
+        window.location.href = storedUrl;
+        return;
+    }
+    const referrer = document.referrer;
+    if (referrer && (referrer.includes('/student_dashboard') || 
+                   referrer.includes('/teacher_home') || 
+                   referrer.includes('/admin_dashboard'))) {
+        window.location.href = referrer;
+        return;
+    }
+    const userType = USER_TYPE;
+    if (userType === 'student') {
+        window.location.href = '/student_dashboard';
+    } else if (userType === 'teacher') {
+        window.location.href = '/teacher_home';
+    } else if (userType === 'admin') {
+        window.location.href = '/admin_dashboard';
+    } else {
+        window.location.href = '/';
+    }
 }
 
-function handleKeyboardShortcuts(e) {
+function showError(message) {
+    const container = document.querySelector('.main-container') || document.body;
+    const errorDiv = document.createElement('div');
+    errorDiv.style.cssText = `background: #fed7d7; color: #c53030; padding: 15px; border-radius: 10px; margin: 15px 0; text-align: center;`;
+    errorDiv.innerHTML = `<p>${message}</p>`;
+    container.prepend(errorDiv);
+    setTimeout(() => errorDiv.remove(), 5000);
+}
+
+// ==========================================
+// KEYBOARD SHORTCUTS
+// ==========================================
+document.addEventListener('keydown', function(e) {
     if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
     const quizView = document.getElementById('quiz-view');
     if (!quizView || !quizView.classList.contains('active')) return;
@@ -428,13 +640,168 @@ function handleKeyboardShortcuts(e) {
         e.preventDefault();
         const prevBtn = document.getElementById('prev-btn');
         if (prevBtn && !prevBtn.disabled) prevBtn.click();
+    } else if (e.key === 'Escape') {
+        goBackToDashboard();
+        e.preventDefault();
     }
-}
+});
 
-function showError(message) {
-    const container = document.querySelector('.main-container') || document.body;
-    const errorDiv = document.createElement('div');
-    errorDiv.style.cssText = `background: #fed7d7; color: #c53030; padding: 15px; border-radius: 10px; margin: 15px 0; text-align: center;`;
-    errorDiv.innerHTML = `<p>${message}</p>`;
-    container.prepend(errorDiv);
+// ==========================================
+// MOBILE BACK BUTTON
+// ==========================================
+window.onpopstate = function(event) {
+    if (event.state) {
+        if (event.state.view === 'batches') {
+            loadBatches(false);
+        } else if (event.state.view === 'subjects') {
+            selectBatch(event.state.batchId, event.state.batchName, false);
+        } else if (event.state.view === 'chapters') {
+            selectSubject(event.state.subjectId, event.state.subjectName, false);
+        } else if (event.state.view === 'quiz') {
+            selectChapter(event.state.chapterId, event.state.chapterName, false);
+        }
+    }
+};
+
+// ==========================================
+// INITIALIZATION
+// ==========================================
+document.addEventListener('DOMContentLoaded', function() {
+    if (RETURN_URL) {
+        sessionStorage.setItem('dashboardUrl', RETURN_URL);
+    }
+    
+    const backBtnText = document.getElementById('backButtonText');
+    if (backBtnText) {
+        if (USER_TYPE === 'student') {
+            backBtnText.textContent = 'ছাত্র ড্যাশবোর্ড';
+        } else if (USER_TYPE === 'teacher') {
+            backBtnText.textContent = 'শিক্ষক ড্যাশবোর্ড';
+        } else if (USER_TYPE === 'admin') {
+            backBtnText.textContent = 'অ্যাডমিন ড্যাশবোর্ড';
+        } else {
+            backBtnText.textContent = 'ড্যাশবোর্ড';
+        }
+    }
+    
+    loadBatches(true);
+});
+// ==========================================
+// SUBMIT QUIZ - ডেটাবেসে সংরক্ষণ
+// ==========================================
+async function submitQuiz() {
+    let correct = 0;
+    questions.forEach((q, idx) => {
+        const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
+        if (userAnswers[idx] === correctAnswer) correct++;
+    });
+    
+    const total = questions.length;
+    const percentage = Math.round((correct / total) * 100);
+    
+    const nextBtn = document.getElementById('next-btn');
+    if (nextBtn) {
+        nextBtn.disabled = true;
+        nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> জমা হচ্ছে...';
+    }
+    
+    try {
+        const response = await fetch('/quiz/api/submit_result', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                batch_id: currentBatchId,      // ← batch_id যোগ করুন
+                subject_id: currentSubjectId,
+                chapter_id: currentChapterId,
+                score: correct,
+                total: total,
+                percentage: percentage
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            triggerCelebration();
+            
+            const quizCard = document.getElementById('quiz-card');
+            const footer = document.getElementById('quizFooter');
+            
+            let nextChapterHTML = '';
+            if (result.next_chapter_unlocked) {
+                nextChapterHTML = `
+                    <div style="margin-top:15px;padding:15px;background:#e6fffa;border-radius:10px;border:2px solid #38b2ac;">
+                        <p style="color:#2c7a7b;font-weight:600;">
+                            🎉 অধ্যায় সম্পন্ন! পরবর্তী অধ্যায় আনলক হয়েছে!
+                        </p>
+                        <button onclick="showChaptersView()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
+                            <i class="fas fa-arrow-right"></i> পরবর্তী অধ্যায় দেখুন
+                        </button>
+                    </div>
+                `;
+            }
+            
+            quizCard.innerHTML = `
+                <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
+                    <div style="font-size: 60px; margin-bottom: 10px;">🎉</div>
+                    <h2 style="color: #28a745; margin-bottom: 10px;">অভিনন্দন!</h2>
+                    <p style="font-size: 1.2rem; margin-bottom: 5px;">আপনি পেয়েছেন: <strong>${correct}/${total}</strong></p>
+                    <p style="font-size: 1.1rem; color: #2c7a7b; margin-bottom: 15px;">
+                        স্কোর: <strong>${percentage}%</strong>
+                        ✅ উত্তীর্ণ!
+                    </p>
+                    <p style="font-size: 0.9rem; color: #718096; margin-bottom: 15px;">
+                        📊 ফলাফল ডেটাবেসে সংরক্ষিত হয়েছে
+                    </p>
+                    ${nextChapterHTML}
+                    <button onclick="showChaptersView()" class="nav-btn secondary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
+                        <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
+                    </button>
+                </div>
+            `;
+            if (footer) footer.style.display = 'none';
+            
+        } else {
+            const quizCard = document.getElementById('quiz-card');
+            
+            if (result.already_completed) {
+                quizCard.innerHTML = `
+                    <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
+                        <div style="font-size: 60px; margin-bottom: 10px;">⚠️</div>
+                        <h2 style="color: #e53e3e; margin-bottom: 10px;">এই অধ্যায় ইতিমধ্যে সম্পন্ন!</h2>
+                        <button onclick="showChaptersView()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
+                            <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
+                        </button>
+                    </div>
+                `;
+                const footer = document.getElementById('quizFooter');
+                if (footer) footer.style.display = 'none';
+            } else {
+                quizCard.innerHTML = `
+                    <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
+                        <div style="font-size: 60px; margin-bottom: 10px;">😅</div>
+                        <h2 style="color: #e53e3e; margin-bottom: 10px;">আবার চেষ্টা করুন!</h2>
+                        <p style="font-size: 1.2rem; margin-bottom: 5px;">আপনি পেয়েছেন: <strong>${correct}/${total}</strong></p>
+                        <p style="font-size: 1.1rem; color: #e53e3e; margin-bottom: 15px;">
+                            স্কোর: <strong>${percentage}%</strong> (প্রয়োজন 95%)
+                        </p>
+                        <p style="color: #718096; margin-bottom: 15px;">${result.message || 'আবার চেষ্টা করুন!'}</p>
+                        <button onclick="resetQuiz()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
+                            <i class="fas fa-redo"></i> আবার চেষ্টা করুন
+                        </button>
+                    </div>
+                `;
+                const footer = document.getElementById('quizFooter');
+                if (footer) footer.style.display = 'none';
+            }
+        }
+        
+    } catch (error) {
+        console.error('❌ Error submitting quiz:', error);
+        showError('জমা দিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+        if (nextBtn) {
+            nextBtn.disabled = false;
+            nextBtn.innerHTML = '📤 জমা দিন';
+        }
+    }
 }
