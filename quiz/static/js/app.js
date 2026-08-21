@@ -21,6 +21,7 @@ let questions = [];
 let currentQuestionIndex = 0;
 let userAnswers = {};
 let currentSubjectChapters = [];
+let isSubmitting = false; // Prevent double submit
 
 // ==========================================
 // CELEBRATION
@@ -55,7 +56,7 @@ async function loadBatches(pushHistory = true) {
                 <div class="card matched-batch" onclick="selectBatch('${MATCHED_BATCH.id}', '${MATCHED_BATCH.name}')">
                     <i class="fas fa-graduation-cap"></i>
                     ${MATCHED_BATCH.name}
-                    <span style="font-size:0.7rem;color:#4facfe;display:block;margin-top:4px;">✅ আপনার ক্লাস</span>
+                    <span style="font-size:0.7rem;color:#4facfe;display:block;margin-top:4px;">✅ Your Class</span>
                 </div>
             `;
             
@@ -86,13 +87,13 @@ async function loadBatches(pushHistory = true) {
                 grid.appendChild(card);
             });
         } else {
-            grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #718096;"><h3>কোন ব্যাচ পাওয়া যায়নি</h3></div>`;
+            grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #718096;"><h3>No Batches Found</h3></div>`;
         }
         showView('batches-view');
         updateBreadcrumb();
     } catch (error) {
         console.error('❌ Error loading batches:', error);
-        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #e53e3e;"><h3>লোড করতে সমস্যা হয়েছে</h3></div>`;
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #e53e3e;"><h3>Failed to load</h3></div>`;
     }
 }
 
@@ -142,7 +143,7 @@ async function selectBatch(batchId, batchName, pushHistory = true) {
                     <i class="fas fa-book"></i>
                     ${subject.name}
                     <div style="font-size:0.75rem;color:#718096;margin-top:4px;">
-                        ${subject.completed_chapters}/${subject.total_chapters} অধ্যায় সম্পন্ন
+                        ${subject.completed_chapters}/${subject.total_chapters} Chapters Completed
                     </div>
                     <div style="width:100%;height:4px;background:#e2e8f0;border-radius:2px;margin-top:6px;">
                         <div style="width:${progress}%;height:100%;background:${progressColor};border-radius:2px;transition:width 0.5s;"></div>
@@ -152,13 +153,13 @@ async function selectBatch(batchId, batchName, pushHistory = true) {
                 grid.appendChild(card);
             });
         } else {
-            grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #718096;"><h3>কোন বিষয় পাওয়া যায়নি</h3></div>`;
+            grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #718096;"><h3>No Subjects Found</h3></div>`;
         }
         showView('subjects-view');
         updateBreadcrumb();
     } catch (error) {
         console.error('❌ Error loading subjects:', error);
-        showError('বিষয় লোড করতে সমস্যা হয়েছে।');
+        showError('Failed to load subjects.');
     }
 }
 
@@ -203,26 +204,26 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
                 
                 if (chapter.is_completed) {
                     statusIcon = '✅';
-                    statusText = 'সম্পন্ন';
+                    statusText = 'Completed';
                     statusColor = '#28a745';
                     card.style.borderColor = '#28a745';
                     card.style.background = '#f0fff4';
                 } else if (chapter.is_locked) {
                     statusIcon = '🔒';
-                    statusText = 'লকড';
+                    statusText = 'Locked';
                     statusColor = '#e53e3e';
                     card.style.opacity = '0.6';
                     card.style.cursor = 'not-allowed';
                 } else {
                     statusIcon = '📝';
-                    statusText = 'খোলা';
+                    statusText = 'Open';
                     statusColor = '#4facfe';
                 }
                 
                 card.innerHTML = `
                     <i class="fas fa-${chapter.is_locked ? 'lock' : chapter.is_completed ? 'check-circle' : 'play-circle'}" 
                        style="color:${statusColor};"></i>
-                    অধ্যায় ${chapter.order}: ${chapter.name}
+                    Chapter ${chapter.order}: ${chapter.name}
                     <span style="font-size:0.7rem;color:${statusColor};display:block;margin-top:4px;">
                         ${statusIcon} ${statusText}
                     </span>
@@ -235,13 +236,13 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
                 grid.appendChild(card);
             });
         } else {
-            grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #718096;"><h3>কোন অধ্যায় পাওয়া যায়নি</h3></div>`;
+            grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #718096;"><h3>No Chapters Found</h3></div>`;
         }
         showView('chapters-view');
         updateBreadcrumb();
     } catch (error) {
         console.error('❌ Error loading chapters:', error);
-        showError('অধ্যায় লোড করতে সমস্যা হয়েছে।');
+        showError('Failed to load chapters.');
     }
 }
 
@@ -255,6 +256,7 @@ async function selectChapter(chapterId, chapterName, pushHistory = true) {
     questions = [];
     currentQuestionIndex = 0;
     userAnswers = {};
+    isSubmitting = false;
 
     if (pushHistory) {
         history.pushState({ 
@@ -273,7 +275,7 @@ async function selectChapter(chapterId, chapterName, pushHistory = true) {
         
         if (response.status === 403) {
             const error = await response.json();
-            showError(error.error || 'এই অধ্যায় লকড! আগের অধ্যায় সম্পন্ন করুন।');
+            showError(error.error || 'This chapter is locked! Complete previous chapter first.');
             return;
         }
         
@@ -287,11 +289,11 @@ async function selectChapter(chapterId, chapterName, pushHistory = true) {
             showView('quiz-view');
             updateBreadcrumb();
         } else {
-            alert('❌ এই অধ্যায়ে কোনো প্রশ্ন পাওয়া যায়নি!');
+            alert('❌ No questions found in this chapter!');
         }
     } catch (error) {
         console.error('❌ Error loading questions:', error);
-        showError('প্রশ্ন লোড করতে সমস্যা হয়েছে।');
+        showError('Failed to load questions.');
     }
 }
 
@@ -306,7 +308,7 @@ function updateBreadcrumb() {
     const bc = document.getElementById('breadcrumb');
     if (!bc) return;
 
-    let html = `<span onclick="showBatchesView()" style="cursor:pointer;"><i class="fas fa-home"></i> ব্যাচ</span>`;
+    let html = `<span onclick="showBatchesView()" style="cursor:pointer;"><i class="fas fa-home"></i> Batch</span>`;
 
     if (currentBatchId) {
         html += ` <span class="separator">›</span> <span onclick="showSubjectsView()" style="cursor:pointer;">${currentBatchName}</span>`;
@@ -351,7 +353,7 @@ function showQuestion(index) {
     if (!q) return;
 
     const progressElem = document.getElementById('quiz-progress');
-    if (progressElem) progressElem.innerText = `প্রশ্ন ${index + 1} / ${questions.length}`;
+    if (progressElem) progressElem.innerText = `Question ${index + 1} / ${questions.length}`;
 
     const qTextElem = document.getElementById('question-text');
     if (qTextElem) qTextElem.innerHTML = `${index + 1}. ${q.question || q.text || ''}`;
@@ -391,14 +393,23 @@ function showQuestion(index) {
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     
-    if (prevBtn) prevBtn.disabled = (index === 0);
+    // Reset button states
+    if (prevBtn) {
+        prevBtn.disabled = (index === 0);
+        prevBtn.style.display = (index === 0) ? 'none' : 'flex';
+    }
+    
     if (nextBtn) {
+        nextBtn.disabled = false;
+        nextBtn.style.display = 'flex';
+        nextBtn.style.opacity = '1';
+        
         if (index === questions.length - 1) {
             const allAnswered = Object.keys(userAnswers).length === questions.length;
-            nextBtn.innerHTML = allAnswered ? '📤 জমা দিন' : 'শেষ প্রশ্ন';
+            nextBtn.innerHTML = allAnswered ? '📤 Submit' : 'Last Question';
             nextBtn.onclick = allAnswered ? submitQuiz : nextQuestion;
         } else {
-            nextBtn.innerHTML = 'পরবর্তী →';
+            nextBtn.innerHTML = 'Next →';
             nextBtn.onclick = nextQuestion;
         }
     }
@@ -423,16 +434,22 @@ function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
     if (Object.keys(userAnswers).length === questions.length) {
         const nextBtn = document.getElementById('next-btn');
         if (nextBtn) {
-            nextBtn.innerHTML = '📤 জমা দিন';
+            nextBtn.innerHTML = '📤 Submit';
             nextBtn.onclick = submitQuiz;
+            nextBtn.disabled = false;
+            nextBtn.style.opacity = '1';
         }
     }
 }
 
 // ==========================================
-// SUBMIT QUIZ
+// SUBMIT QUIZ - FIXED
 // ==========================================
 async function submitQuiz() {
+    // Prevent double submit
+    if (isSubmitting) return;
+    isSubmitting = true;
+    
     let correct = 0;
     questions.forEach((q, idx) => {
         const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
@@ -442,11 +459,15 @@ async function submitQuiz() {
     const total = questions.length;
     const percentage = Math.round((correct / total) * 100);
     
-    // Show loading
     const nextBtn = document.getElementById('next-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    
     if (nextBtn) {
         nextBtn.disabled = true;
-        nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> জমা হচ্ছে...';
+        nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    }
+    if (prevBtn) {
+        prevBtn.disabled = true;
     }
     
     try {
@@ -454,6 +475,7 @@ async function submitQuiz() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                batch_id: currentBatchId,
                 subject_id: currentSubjectId,
                 chapter_id: currentChapterId,
                 score: correct,
@@ -463,6 +485,16 @@ async function submitQuiz() {
         });
         
         const result = await response.json();
+        
+        // Reset button states
+        if (nextBtn) {
+            nextBtn.disabled = false;
+            nextBtn.innerHTML = 'Next →';
+            nextBtn.style.display = 'flex';
+        }
+        if (prevBtn) {
+            prevBtn.disabled = false;
+        }
         
         if (result.success) {
             // Chapter completed successfully
@@ -476,10 +508,10 @@ async function submitQuiz() {
                 nextChapterHTML = `
                     <div style="margin-top:15px;padding:15px;background:#e6fffa;border-radius:10px;border:2px solid #38b2ac;">
                         <p style="color:#2c7a7b;font-weight:600;">
-                            🎉 অধ্যায় সম্পন্ন! পরবর্তী অধ্যায় আনলক হয়েছে!
+                            🎉 Chapter Completed! Next Chapter Unlocked!
                         </p>
-                        <button onclick="showChaptersView()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
-                            <i class="fas fa-arrow-right"></i> পরবর্তী অধ্যায় দেখুন
+                        <button onclick="showChaptersView()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+                            <i class="fas fa-arrow-right"></i> View Next Chapter
                         </button>
                     </div>
                 `;
@@ -488,15 +520,18 @@ async function submitQuiz() {
             quizCard.innerHTML = `
                 <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
                     <div style="font-size: 60px; margin-bottom: 10px;">🎉</div>
-                    <h2 style="color: #28a745; margin-bottom: 10px;">অভিনন্দন!</h2>
-                    <p style="font-size: 1.2rem; margin-bottom: 5px;">আপনি পেয়েছেন: <strong>${correct}/${total}</strong></p>
+                    <h2 style="color: #28a745; margin-bottom: 10px;">Congratulations!</h2>
+                    <p style="font-size: 1.2rem; margin-bottom: 5px;">You scored: <strong>${correct}/${total}</strong></p>
                     <p style="font-size: 1.1rem; color: #2c7a7b; margin-bottom: 15px;">
-                        স্কোর: <strong>${percentage}%</strong>
-                        ${percentage >= 95 ? '✅ উত্তীর্ণ!' : '❌ চেষ্টা করুন!'}
+                        Score: <strong>${percentage}%</strong>
+                        ✅ Passed!
+                    </p>
+                    <p style="font-size: 0.9rem; color: #718096; margin-bottom: 15px;">
+                        📊 Result saved to database
                     </p>
                     ${nextChapterHTML}
-                    <button onclick="showChaptersView()" class="nav-btn secondary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
-                        <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
+                    <button onclick="showChaptersView()" class="nav-btn secondary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+                        <i class="fas fa-arrow-left"></i> Back to Chapters
                     </button>
                 </div>
             `;
@@ -510,9 +545,9 @@ async function submitQuiz() {
                 quizCard.innerHTML = `
                     <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
                         <div style="font-size: 60px; margin-bottom: 10px;">⚠️</div>
-                        <h2 style="color: #e53e3e; margin-bottom: 10px;">এই অধ্যায় ইতিমধ্যে সম্পন্ন!</h2>
-                        <button onclick="showChaptersView()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
-                            <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
+                        <h2 style="color: #e53e3e; margin-bottom: 10px;">This chapter is already completed!</h2>
+                        <button onclick="showChaptersView()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+                            <i class="fas fa-arrow-left"></i> Back to Chapters
                         </button>
                     </div>
                 `;
@@ -522,14 +557,14 @@ async function submitQuiz() {
                 quizCard.innerHTML = `
                     <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
                         <div style="font-size: 60px; margin-bottom: 10px;">😅</div>
-                        <h2 style="color: #e53e3e; margin-bottom: 10px;">আবার চেষ্টা করুন!</h2>
-                        <p style="font-size: 1.2rem; margin-bottom: 5px;">আপনি পেয়েছেন: <strong>${correct}/${total}</strong></p>
+                        <h2 style="color: #e53e3e; margin-bottom: 10px;">Try Again!</h2>
+                        <p style="font-size: 1.2rem; margin-bottom: 5px;">You scored: <strong>${correct}/${total}</strong></p>
                         <p style="font-size: 1.1rem; color: #e53e3e; margin-bottom: 15px;">
-                            স্কোর: <strong>${percentage}%</strong> (প্রয়োজন 95%)
+                            Score: <strong>${percentage}%</strong> (Need 95%)
                         </p>
-                        <p style="color: #718096; margin-bottom: 15px;">${result.message || 'আবার চেষ্টা করুন!'}</p>
-                        <button onclick="resetQuiz()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
-                            <i class="fas fa-redo"></i> আবার চেষ্টা করুন
+                        <p style="color: #718096; margin-bottom: 15px;">${result.message || 'Try again!'}</p>
+                        <button onclick="resetQuiz()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+                            <i class="fas fa-redo"></i> Retry Quiz
                         </button>
                     </div>
                 `;
@@ -540,11 +575,17 @@ async function submitQuiz() {
         
     } catch (error) {
         console.error('❌ Error submitting quiz:', error);
-        showError('জমা দিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+        showError('Failed to submit. Please try again.');
         if (nextBtn) {
             nextBtn.disabled = false;
-            nextBtn.innerHTML = '📤 জমা দিন';
+            nextBtn.innerHTML = '📤 Submit';
+            nextBtn.onclick = submitQuiz;
         }
+        if (prevBtn) {
+            prevBtn.disabled = false;
+        }
+    } finally {
+        isSubmitting = false;
     }
 }
 
@@ -553,10 +594,26 @@ async function submitQuiz() {
 // ==========================================
 function resetQuiz() {
     userAnswers = {};
+    isSubmitting = false;
     restoreQuizLayout();
     showQuestion(0);
     const footer = document.getElementById('quizFooter');
     if (footer) footer.style.display = 'flex';
+    
+    // Reset buttons
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    if (prevBtn) {
+        prevBtn.disabled = true;
+        prevBtn.style.display = 'none';
+    }
+    if (nextBtn) {
+        nextBtn.disabled = false;
+        nextBtn.innerHTML = 'Next →';
+        nextBtn.onclick = nextQuestion;
+        nextBtn.style.display = 'flex';
+        nextBtn.style.opacity = '1';
+    }
 }
 
 // ==========================================
@@ -635,11 +692,15 @@ document.addEventListener('keydown', function(e) {
     } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
         e.preventDefault();
         const nextBtn = document.getElementById('next-btn');
-        if (nextBtn && !nextBtn.disabled) nextBtn.click();
+        if (nextBtn && !nextBtn.disabled && nextBtn.style.display !== 'none') {
+            nextBtn.click();
+        }
     } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
         const prevBtn = document.getElementById('prev-btn');
-        if (prevBtn && !prevBtn.disabled) prevBtn.click();
+        if (prevBtn && !prevBtn.disabled && prevBtn.style.display !== 'none') {
+            prevBtn.click();
+        }
     } else if (e.key === 'Escape') {
         goBackToDashboard();
         e.preventDefault();
@@ -674,134 +735,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const backBtnText = document.getElementById('backButtonText');
     if (backBtnText) {
         if (USER_TYPE === 'student') {
-            backBtnText.textContent = 'ছাত্র ড্যাশবোর্ড';
+            backBtnText.textContent = 'Dashboard';
         } else if (USER_TYPE === 'teacher') {
-            backBtnText.textContent = 'শিক্ষক ড্যাশবোর্ড';
+            backBtnText.textContent = 'Dashboard';
         } else if (USER_TYPE === 'admin') {
-            backBtnText.textContent = 'অ্যাডমিন ড্যাশবোর্ড';
+            backBtnText.textContent = 'Dashboard';
         } else {
-            backBtnText.textContent = 'ড্যাশবোর্ড';
+            backBtnText.textContent = 'Dashboard';
         }
     }
     
     loadBatches(true);
 });
-// ==========================================
-// SUBMIT QUIZ - ডেটাবেসে সংরক্ষণ
-// ==========================================
-async function submitQuiz() {
-    let correct = 0;
-    questions.forEach((q, idx) => {
-        const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
-        if (userAnswers[idx] === correctAnswer) correct++;
-    });
-    
-    const total = questions.length;
-    const percentage = Math.round((correct / total) * 100);
-    
-    const nextBtn = document.getElementById('next-btn');
-    if (nextBtn) {
-        nextBtn.disabled = true;
-        nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> জমা হচ্ছে...';
-    }
-    
-    try {
-        const response = await fetch('/quiz/api/submit_result', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                batch_id: currentBatchId,      // ← batch_id যোগ করুন
-                subject_id: currentSubjectId,
-                chapter_id: currentChapterId,
-                score: correct,
-                total: total,
-                percentage: percentage
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            triggerCelebration();
-            
-            const quizCard = document.getElementById('quiz-card');
-            const footer = document.getElementById('quizFooter');
-            
-            let nextChapterHTML = '';
-            if (result.next_chapter_unlocked) {
-                nextChapterHTML = `
-                    <div style="margin-top:15px;padding:15px;background:#e6fffa;border-radius:10px;border:2px solid #38b2ac;">
-                        <p style="color:#2c7a7b;font-weight:600;">
-                            🎉 অধ্যায় সম্পন্ন! পরবর্তী অধ্যায় আনলক হয়েছে!
-                        </p>
-                        <button onclick="showChaptersView()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
-                            <i class="fas fa-arrow-right"></i> পরবর্তী অধ্যায় দেখুন
-                        </button>
-                    </div>
-                `;
-            }
-            
-            quizCard.innerHTML = `
-                <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
-                    <div style="font-size: 60px; margin-bottom: 10px;">🎉</div>
-                    <h2 style="color: #28a745; margin-bottom: 10px;">অভিনন্দন!</h2>
-                    <p style="font-size: 1.2rem; margin-bottom: 5px;">আপনি পেয়েছেন: <strong>${correct}/${total}</strong></p>
-                    <p style="font-size: 1.1rem; color: #2c7a7b; margin-bottom: 15px;">
-                        স্কোর: <strong>${percentage}%</strong>
-                        ✅ উত্তীর্ণ!
-                    </p>
-                    <p style="font-size: 0.9rem; color: #718096; margin-bottom: 15px;">
-                        📊 ফলাফল ডেটাবেসে সংরক্ষিত হয়েছে
-                    </p>
-                    ${nextChapterHTML}
-                    <button onclick="showChaptersView()" class="nav-btn secondary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
-                        <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
-                    </button>
-                </div>
-            `;
-            if (footer) footer.style.display = 'none';
-            
-        } else {
-            const quizCard = document.getElementById('quiz-card');
-            
-            if (result.already_completed) {
-                quizCard.innerHTML = `
-                    <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
-                        <div style="font-size: 60px; margin-bottom: 10px;">⚠️</div>
-                        <h2 style="color: #e53e3e; margin-bottom: 10px;">এই অধ্যায় ইতিমধ্যে সম্পন্ন!</h2>
-                        <button onclick="showChaptersView()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
-                            <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
-                        </button>
-                    </div>
-                `;
-                const footer = document.getElementById('quizFooter');
-                if (footer) footer.style.display = 'none';
-            } else {
-                quizCard.innerHTML = `
-                    <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
-                        <div style="font-size: 60px; margin-bottom: 10px;">😅</div>
-                        <h2 style="color: #e53e3e; margin-bottom: 10px;">আবার চেষ্টা করুন!</h2>
-                        <p style="font-size: 1.2rem; margin-bottom: 5px;">আপনি পেয়েছেন: <strong>${correct}/${total}</strong></p>
-                        <p style="font-size: 1.1rem; color: #e53e3e; margin-bottom: 15px;">
-                            স্কোর: <strong>${percentage}%</strong> (প্রয়োজন 95%)
-                        </p>
-                        <p style="color: #718096; margin-bottom: 15px;">${result.message || 'আবার চেষ্টা করুন!'}</p>
-                        <button onclick="resetQuiz()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;">
-                            <i class="fas fa-redo"></i> আবার চেষ্টা করুন
-                        </button>
-                    </div>
-                `;
-                const footer = document.getElementById('quizFooter');
-                if (footer) footer.style.display = 'none';
-            }
-        }
-        
-    } catch (error) {
-        console.error('❌ Error submitting quiz:', error);
-        showError('জমা দিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
-        if (nextBtn) {
-            nextBtn.disabled = false;
-            nextBtn.innerHTML = '📤 জমা দিন';
-        }
-    }
-}
