@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Portal</title>
+    <title>Quiz Portal - The Epsilon</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome for Icons -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{ url_for('quiz.static', filename='css/style.css') }}">
 
-    <!-- MathJax for rendering Mathematical Equations & Integrals -->
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+
+    <!-- MathJax -->
     <script>
         window.MathJax = {
             tex: {
@@ -30,10 +33,32 @@
 </head>
 <body>
 
-    <!-- Header Section - শুধুমাত্র এখানে লোগো থাকবে -->
+    <!-- ===== ইউজার ইনফো বার ===== -->
+    <div class="quiz-user-bar">
+        <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span>{{ username if username else 'Guest' }}</span>
+            <span class="user-badge">
+                {% if user_type == 'student' %}ছাত্র
+                {% elif user_type == 'teacher' %}শিক্ষক
+                {% elif user_type == 'admin' %}অ্যাডমিন
+                {% else %}অতিথি{% endif %}
+            </span>
+            {% if student_class %}
+            <span class="user-badge class-badge">
+                <i class="fas fa-graduation-cap"></i> {{ student_class|title }}
+            </span>
+            {% endif %}
+        </div>
+        <a href="{{ return_url if return_url else url_for('student_dashboard') }}" class="back-dashboard">
+            <i class="fas fa-arrow-left"></i> ড্যাশবোর্ড
+        </a>
+    </div>
+
+    <!-- Header Section -->
     <header class="app-header">
-        <div class="logo-container" onclick="resetToBatches()">
-            <h1>🎓𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟</h1>
+        <div class="logo-container" onclick="showBatchesView()">
+            <h1>🎓 𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h1>
         </div>
         <button id="backBtn" class="back-btn" onclick="goBackToDashboard()">
             <i class="fas fa-arrow-left"></i> <span id="backButtonText">ড্যাশবোর্ড</span>
@@ -54,26 +79,27 @@
 
         <!-- 1. Batches Selection View -->
         <section id="batches-view" class="view-section active">
-            <h2><i class="fas fa-users"></i> আপনার ব্যাচ নির্বাচন করুন</h2>
-            <div id="batches-grid" class="cards-grid">
-                <!-- Dynamic Batch Cards Will Be Inserted Here -->
-            </div>
+            <h2>
+                <i class="fas fa-users"></i> 
+                {% if user_type == 'student' and matched_batch %}
+                    আপনার ক্লাস: <span style="color: #4facfe;">{{ matched_batch.name }}</span>
+                {% else %}
+                    আপনার ব্যাচ নির্বাচন করুন
+                {% endif %}
+            </h2>
+            <div id="batches-grid" class="cards-grid"></div>
         </section>
 
         <!-- 2. Subjects Selection View -->
         <section id="subjects-view" class="view-section">
             <h2><i class="fas fa-book"></i> বিষয় নির্বাচন করুন</h2>
-            <div id="subjects-grid" class="cards-grid">
-                <!-- Dynamic Subject Cards Will Be Inserted Here -->
-            </div>
+            <div id="subjects-grid" class="cards-grid"></div>
         </section>
 
         <!-- 3. Chapters Selection View -->
         <section id="chapters-view" class="view-section">
             <h2><i class="fas fa-list"></i> অধ্যায় নির্বাচন করুন</h2>
-            <div id="chapters-grid" class="cards-grid">
-                <!-- Dynamic Chapter Cards Will Be Inserted Here -->
-            </div>
+            <div id="chapters-grid" class="cards-grid"></div>
         </section>
 
         <!-- 4. Quiz Questions View -->
@@ -84,24 +110,14 @@
             </div>
 
             <div id="quiz-card" class="quiz-card">
-                <!-- Question Text -->
-                <div id="question-text" class="question-text">
-                    <!-- Question string with LaTeX Math will be loaded here -->
-                </div>
-
-                <!-- Optional Question Image -->
+                <div id="question-text" class="question-text"></div>
                 <div id="question-image-container" class="image-container" style="display: none;">
                     <img id="question-image" src="" alt="Question Image">
                 </div>
-
-                <!-- Options List -->
-                <div id="options-container" class="options-grid">
-                    <!-- Dynamic Option Buttons Will Be Inserted Here -->
-                </div>
+                <div id="options-container" class="options-grid"></div>
             </div>
 
-            <!-- Quiz Footer Controls -->
-            <div class="quiz-footer">
+            <div class="quiz-footer" id="quizFooter">
                 <button id="prev-btn" class="nav-btn secondary" onclick="prevQuestion()">
                     <i class="fas fa-arrow-left"></i> পূর্ববর্তী
                 </button>
@@ -113,71 +129,19 @@
 
     </main>
 
-    <!-- ✅ Footer - কোনো লোগো নেই, শুধু কপিরাইট (ঐচ্ছিক) -->
-    <!-- <footer style="text-align: center; padding: 10px; color: #a0aec0; font-size: 0.7rem;">
-        &copy; 2026 All Rights Reserved
-    </footer> -->
+    <footer style="text-align: center; padding: 15px; color: #a0aec0; font-size: 0.75rem; border-top: 1px solid #e2e8f0; margin-top: 30px;">
+        &copy; 2026 𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - All Rights Reserved
+    </footer>
+
+    <!-- Hidden Data -->
+    <input type="hidden" id="userType" value="{{ user_type }}">
+    <input type="hidden" id="studentClass" value="{{ student_class if student_class else '' }}">
+    <input type="hidden" id="studentId" value="{{ student_id if student_id else '' }}">
+    <input type="hidden" id="matchedBatchData" value='{{ matched_batch|tojson|safe if matched_batch else "null" }}'>
+    <input type="hidden" id="returnUrl" value="{{ return_url if return_url else '' }}">
+    <input type="hidden" id="studentProgress" value='{{ student_progress|tojson|safe }}'>
 
     <!-- Main JavaScript -->
     <script src="{{ url_for('quiz.static', filename='js/app.js') }}"></script>
-    
-    <!-- Back Button JavaScript -->
-    <script>
-        function goBackToDashboard() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const returnUrl = urlParams.get('return');
-            
-            if (returnUrl) {
-                window.location.href = returnUrl;
-                return;
-            }
-            
-            const storedUrl = sessionStorage.getItem('dashboardUrl');
-            if (storedUrl) {
-                window.location.href = storedUrl;
-                return;
-            }
-            
-            const referrer = document.referrer;
-            if (referrer && referrer.includes('/student_dashboard')) {
-                window.location.href = referrer;
-                return;
-            }
-            
-            window.location.href = '/student_dashboard';
-        }
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const returnUrl = urlParams.get('return');
-            
-            if (returnUrl) {
-                sessionStorage.setItem('dashboardUrl', returnUrl);
-            }
-            
-            const backBtnText = document.getElementById('backButtonText');
-            if (backBtnText) {
-                const referrer = document.referrer;
-                if (referrer && referrer.includes('/student_dashboard')) {
-                    backBtnText.textContent = 'ড্যাশবোর্ড';
-                } else if (referrer && referrer.includes('/admin')) {
-                    backBtnText.textContent = 'অ্যাডমিন';
-                } else if (referrer && referrer.includes('/teacher')) {
-                    backBtnText.textContent = 'টিচার';
-                } else {
-                    backBtnText.textContent = 'পেছনে';
-                }
-            }
-            
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && !e.target.matches('input, textarea, select')) {
-                    goBackToDashboard();
-                    e.preventDefault();
-                }
-            });
-        });
-        
-        window.goBackToDashboard = goBackToDashboard;
-    </script>
 </body>
 </html>
