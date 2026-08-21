@@ -42,15 +42,17 @@
                 <i class="fas fa-trophy"></i>
                 <span>Rank</span>
             </a>
-            <a href="#" class="nav-item" onclick="showQuiz()">
+            <!-- ===== QUIZ - Blueprint URL ===== -->
+            <a href="{{ url_for('quiz.quiz_home') }}" class="nav-item quiz-nav" target="_blank" rel="noopener noreferrer">
                 <i class="fas fa-question-circle"></i>
                 <span>Quiz</span>
+                <span class="quiz-badge"><i class="fas fa-external-link-alt"></i></span>
             </a>
+            <!-- ===== QUIZ END ===== -->
             <a href="#" class="nav-item" onclick="showWhatsApp()">
                 <i class="fab fa-whatsapp"></i>
                 <span>WhatsApp Group</span>
             </a>
-            <!-- Change Password Added Here -->
             <a href="#" class="nav-item" onclick="showChangePassword()">
                 <i class="fas fa-key"></i>
                 <span>Change Password</span>
@@ -239,15 +241,6 @@
                 <h2><i class="fas fa-pencil-alt"></i> Online Test</h2>
                 <span class="total-count">{{ my_exams|length }} Tests</span>
             </div>
-            
-            <!-- Debug Info (শুধু টেস্টের জন্য) -->
-            {% if my_exams|length == 0 %}
-                <div style="background: #fef3e8; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 13px; border-left: 4px solid #ed8936;">
-                    <p><strong>🔍 Debug Info:</strong></p>
-                    <p>Your Class: <strong>{{ student.class if student else 'N/A' }}</strong></p>
-                    <p>Total Online Tests: <strong>{{ my_exams|length }}</strong></p>
-                </div>
-            {% endif %}
             
             <div class="exams-list">
                 {% if my_exams %}
