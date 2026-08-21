@@ -317,15 +317,212 @@ function showQuestion(index) {
     }
 }
 
- 
- 
- 
+// ==========================================
+// 3. HANDLE ANSWER
+// ==========================================
+
+function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
+    // Save user answer
+    userAnswers[questionIndex] = selectedIndex;
+    
+    const optionsGrid = document.getElementById('options-container');
+    const allBtns = optionsGrid.querySelectorAll('.option-btn');
+    
+    allBtns.forEach(btn => {
+        btn.classList.add('disabled');
+        btn.onclick = null;
+    });
+    
+    allBtns.forEach((btn, idx) => {
+        if (idx === correctAnswer) btn.classList.add('correct');
+        if (idx === selectedIndex && idx !== correctAnswer) btn.classList.add('wrong');
+        if (idx === selectedIndex) btn.classList.add('selected');
+    });
+    
+    if (selectedIndex === correctAnswer) {
+        console.log('🎉 Correct Answer!');
+        showCelebration();
+    }
+    
+    // Check if all questions are answered
+    if (Object.keys(userAnswers).length === questions.length) {
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.innerHTML = '📊 দেখুন ফলাফল';
+        nextBtn.onclick = showResults;
+    }
+}
+
+// ==========================================
+// 4. SHOW RESULTS
+// ==========================================
+
+function showResults() {
+    let correct = 0;
+    let total = questions.length;
+    
+    questions.forEach((q, idx) => {
+        const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
+        if (userAnswers[idx] === correctAnswer) {
+            correct++;
+        }
+    });
+    
+    const percentage = Math.round((correct / total) * 100);
+    let grade = '';
+    let emoji = '';
+    let gradeClass = '';
+    
+    if (percentage >= 80) { grade = 'A+'; emoji = '🌟'; gradeClass = 'grade-a-plus'; showCelebration(); }
+    else if (percentage >= 70) { grade = 'A'; emoji = '⭐'; gradeClass = 'grade-a'; }
+    else if (percentage >= 60) { grade = 'B'; emoji = '👍'; gradeClass = 'grade-b'; setTimeout(showCelebration, 300); }
+    else if (percentage >= 50) { grade = 'C'; emoji = '📖'; gradeClass = 'grade-c'; }
+    else if (percentage >= 40) { grade = 'D'; emoji = '💪'; gradeClass = 'grade-d'; }
+    else { grade = 'F'; emoji = '📚'; gradeClass = 'grade-f'; }
+    
+    // ✅ Mark chapter as completed
+    completedChapters[currentChapterId] = true;
+    console.log('✅ Chapter completed:', currentChapterName);
+    
+    const quizCard = document.getElementById('quiz-card');
+    const footer = document.querySelector('.quiz-footer');
+    
+    quizCard.innerHTML = `
+        <div class="quiz-results">
+            <span class="result-icon">${emoji}</span>
+            <h2 style="color: #2d3748; margin-bottom: 10px; font-size: 1.3rem;">কুইজ সম্পন্ন! 🎯</h2>
+            <div class="result-score">${correct} / ${total}</div>
+            <div class="result-detail">✅ সঠিক উত্তর: ${correct}</div>
+            <div class="result-detail">❌ ভুল উত্তর: ${total - correct}</div>
+            <div class="result-detail">📊 নম্বর: ${percentage}%</div>
+            <div class="result-grade ${gradeClass}">গ্রেড: ${grade}</div>
+            <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+                <button onclick="goBackToChapters()" class="nav-btn secondary" style="flex:1;">
+                    <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
+                </button>
+                <button onclick="resetToBatches()" class="nav-btn primary" style="flex:1;">
+                    🔄 নতুন কুইজ
+                </button>
+            </div>
+        </div>
+    `;
+    
+    if (footer) footer.style.display = 'none';
+    
+    // Extra celebration for good results
+    if (percentage >= 80) {
+        setTimeout(showCelebration, 500);
+        setTimeout(showCelebration, 1200);
+    }
+}
+
+// ==========================================
+// 5. NAVIGATION
+// ==========================================
+
+function goBackToChapters() {
+    // Go back to chapters view with updated completion status
+    if (currentSubjectId && currentSubjectName) {
+        selectSubject(currentSubjectId, currentSubjectName);
+    } else {
+        showSubjectsView();
+    }
+}
+
+function nextQuestion() {
+    if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        showQuestion(currentQuestionIndex);
+    }
+}
+
+function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        showQuestion(currentQuestionIndex);
+    }
+}
+
+function showView(viewId) {
+    document.querySelectorAll('.view-section').forEach(view => {
+        view.classList.remove('active');
+    });
+    const targetView = document.getElementById(viewId);
+    if (targetView) targetView.classList.add('active');
+}
+
+function updateBreadcrumb() {
+    const bc = document.getElementById('breadcrumb');
+    const bcBatch = document.getElementById('bc-batch');
+    const bcSub = document.getElementById('bc-subject');
+    const bcChap = document.getElementById('bc-chapter');
+    const sep1 = document.getElementById('sep1');
+    const sep2 = document.getElementById('sep2');
+
+    if (!bc) return;
+    bc.style.display = 'flex';
+
+    if (currentBatchId && !currentSubjectId) {
+        bcBatch.innerText = currentBatchName;
+        bcSub.style.display = 'none';
+        bcChap.style.display = 'none';
+        sep1.style.display = 'none';
+        sep2.style.display = 'none';
+    } else if (currentSubjectId && !currentChapterId) {
+        bcBatch.innerText = currentBatchName;
+        bcSub.innerText = currentSubjectName;
+        bcSub.style.display = 'inline';
+        bcChap.style.display = 'none';
+        sep1.style.display = 'inline';
+        sep2.style.display = 'none';
+    } else if (currentChapterId) {
+        bcBatch.innerText = currentBatchName;
+        bcSub.innerText = currentSubjectName;
+        bcSub.style.display = 'inline';
+        bcChap.innerText = currentChapterName;
+        bcChap.style.display = 'inline';
+        sep1.style.display = 'inline';
+        sep2.style.display = 'inline';
+    } else {
+        bc.style.display = 'none';
+    }
+}
+
+function showBatchesView() {
+    currentSubjectId = null;
+    currentChapterId = null;
+    loadBatches();
+}
+
+function showSubjectsView() {
+    currentChapterId = null;
+    if (currentBatchId && currentBatchName) {
+        selectBatch(currentBatchId, currentBatchName);
+    } else {
+        loadBatches();
+    }
+}
+
+function showChaptersView() {
+    if (currentSubjectId && currentSubjectName) {
+        selectSubject(currentSubjectId, currentSubjectName);
+    } else {
+        loadBatches();
+    }
+}
+
+function resetToBatches() {
+    currentBatchId = null;
+    currentSubjectId = null;
+    currentChapterId = null;
+    loadBatches();
+}
+
 // ==========================================
 // 6. CELEBRATION ANIMATIONS
 // ==========================================
 
 function createEmojiBurst() {
-    const emojis = [];
+    const emojis = ['🎉', '🎊', '⭐', '✨', '🌟', '💫', '🎆', '🎇', '❤️', '🔥', '🥳', '🎈', '🏆', '💯'];
     const container = document.createElement('div');
     container.className = 'emoji-burst-container';
     document.body.appendChild(container);
