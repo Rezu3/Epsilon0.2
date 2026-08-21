@@ -1,6 +1,6 @@
 /* ==========================================
    COMPLETE STYLE.CSS - QUIZ SYSTEM
-   MOBILE FRIENDLY VERSION
+   FULL SCREEN MOBILE FRIENDLY VERSION
    ========================================== */
 
 /* ==========================================
@@ -20,6 +20,8 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 /* ==========================================
@@ -27,7 +29,7 @@ body {
    ========================================== */
 .app-header {
     background: #ffffff;
-    padding: 12px 20px;
+    padding: 16px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -35,20 +37,20 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
-    border-radius: 14px;
-    margin: 12px 16px 0 16px;
-    min-height: 60px;
+    border-radius: 16px;
+    margin: 16px 20px 0 20px;
+    min-height: 72px;
 }
 
 .logo-container {
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .logo-container h1 {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: 700;
     background: linear-gradient(135deg, #4facfe, #00f2fe);
     -webkit-background-clip: text;
@@ -64,19 +66,19 @@ body {
     background: linear-gradient(135deg, #667eea, #764ba2);
     color: #ffffff;
     border: none;
-    padding: 8px 16px;
-    border-radius: 10px;
+    padding: 12px 22px;
+    border-radius: 14px;
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     white-space: nowrap;
-    min-height: 38px;
-    min-width: 38px;
+    min-height: 48px;
+    min-width: 48px;
     justify-content: center;
     touch-action: manipulation;
 }
@@ -91,17 +93,17 @@ body {
 }
 
 .back-btn i {
-    font-size: 14px;
+    font-size: 18px;
 }
 
 /* ==========================================
    MAIN CONTAINER
    ========================================== */
 .main-container {
-    max-width: 900px;
+    max-width: 1000px;
     width: 100%;
-    margin: 12px auto;
-    padding: 0 16px 16px 16px;
+    margin: 16px auto;
+    padding: 0 20px 20px 20px;
     flex: 1;
 }
 
@@ -111,16 +113,16 @@ body {
 .breadcrumb {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.8rem;
+    gap: 8px;
+    font-size: 0.9rem;
     color: #718096;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     background: #ffffff;
-    padding: 10px 14px;
-    border-radius: 12px;
+    padding: 14px 20px;
+    border-radius: 14px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     flex-wrap: wrap;
-    min-height: 44px;
+    min-height: 54px;
 }
 
 .breadcrumb span[id^="bc-"] {
@@ -128,7 +130,8 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: color 0.3s;
-    padding: 2px 0;
+    padding: 4px 0;
+    font-size: 0.95rem;
 }
 
 .breadcrumb span[id^="bc-"]:hover {
@@ -139,6 +142,7 @@ body {
     color: #4facfe;
     font-weight: 400;
     opacity: 0.5;
+    font-size: 1.2rem;
 }
 
 /* ==========================================
@@ -165,17 +169,18 @@ body {
 }
 
 .view-section h2 {
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     font-weight: 700;
-    margin-bottom: 14px;
+    margin-bottom: 18px;
     color: #2d3748;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
 .view-section h2 i {
     color: #4facfe;
+    font-size: 1.6rem;
 }
 
 /* ==========================================
@@ -183,25 +188,25 @@ body {
    ========================================== */
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
 }
 
 .card {
     background: #ffffff;
-    padding: 18px 12px;
-    border-radius: 12px;
+    padding: 24px 16px;
+    border-radius: 16px;
     border: 1px solid #e9edf7;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     cursor: pointer;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: #2d3748;
     transition: all 0.3s ease-in-out;
     position: relative;
     overflow: hidden;
-    min-height: 72px;
+    min-height: 90px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -215,14 +220,14 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
+    height: 4px;
     background: linear-gradient(135deg, #4facfe, #00f2fe);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
 .card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     border-color: #4facfe;
     box-shadow: 0 8px 25px rgba(79, 172, 254, 0.12);
     color: #4facfe;
@@ -238,8 +243,8 @@ body {
 
 .card i {
     display: block;
-    font-size: 24px;
-    margin-bottom: 6px;
+    font-size: 32px;
+    margin-bottom: 8px;
     color: #4facfe;
 }
 
@@ -250,32 +255,32 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 14px;
+    margin-bottom: 18px;
     background: #ffffff;
-    padding: 10px 16px;
-    border-radius: 12px;
+    padding: 14px 22px;
+    border-radius: 16px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
 }
 
 .quiz-header h3 {
-    font-size: 0.95rem;
+    font-size: 1.15rem;
     font-weight: 600;
     color: #2d3748;
 }
 
 .quiz-header h3 i {
     color: #4facfe;
-    margin-right: 6px;
+    margin-right: 10px;
 }
 
 .quiz-progress {
     background: #f7fafc;
     color: #4facfe;
-    padding: 4px 12px;
+    padding: 6px 18px;
     border-radius: 20px;
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     font-weight: 600;
     border: 2px solid #e2e8f0;
 }
@@ -285,39 +290,39 @@ body {
    ========================================== */
 .quiz-card {
     background: #ffffff;
-    padding: 16px;
-    border-radius: 14px;
+    padding: 24px;
+    border-radius: 18px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    margin-bottom: 14px;
+    margin-bottom: 18px;
 }
 
 .question-text {
-    font-size: 1rem;
+    font-size: 1.15rem;
     font-weight: 600;
     color: #2d3748;
-    line-height: 1.6;
-    margin-bottom: 16px;
-    padding: 10px 14px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    padding: 16px 20px;
     background: #f7fafc;
-    border-radius: 10px;
-    border-left: 4px solid #4facfe;
+    border-radius: 14px;
+    border-left: 5px solid #4facfe;
     overflow-wrap: break-word;
     word-wrap: break-word;
 }
 
 .image-container {
     text-align: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .image-container img {
     max-width: 100%;
-    max-height: 220px;
-    border-radius: 10px;
+    max-height: 280px;
+    border-radius: 14px;
     border: 2px solid #e2e8f0;
     object-fit: contain;
     background: #f7fafc;
-    padding: 6px;
+    padding: 10px;
 }
 
 /* ==========================================
@@ -326,31 +331,31 @@ body {
 .options-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 12px;
 }
 
 .option-btn {
     background: #f7fafc;
     border: 2px solid #e2e8f0;
-    padding: 12px 14px;
-    border-radius: 10px;
+    padding: 16px 20px;
+    border-radius: 14px;
     text-align: left;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 500;
     color: #2d3748;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 8px;
-    min-height: 44px;
+    gap: 12px;
+    min-height: 56px;
     touch-action: manipulation;
 }
 
 .option-btn:hover:not(.disabled) {
     background: #edf2f7;
     border-color: #4facfe;
-    transform: translateX(3px);
+    transform: translateX(5px);
 }
 
 .option-btn:active:not(.disabled) {
@@ -361,12 +366,12 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 26px;
+    width: 32px;
+    height: 32px;
     background: #e2e8f0;
     border-radius: 50%;
     font-weight: 700;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     color: #4a5568;
     flex-shrink: 0;
     transition: all 0.3s ease;
@@ -423,17 +428,17 @@ body {
    ========================================== */
 @keyframes correctPulse {
     0% { transform: scale(1); }
-    30% { transform: scale(1.02); background: #b8e6c4; }
+    30% { transform: scale(1.03); background: #b8e6c4; }
     60% { transform: scale(0.98); }
     100% { transform: scale(1); }
 }
 
 @keyframes wrongShake {
     0% { transform: translateX(0); }
-    20% { transform: translateX(-6px); }
-    40% { transform: translateX(6px); }
-    60% { transform: translateX(-4px); }
-    80% { transform: translateX(4px); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
     100% { transform: translateX(0); }
 }
 
@@ -453,7 +458,7 @@ body {
 
 .emoji-particle {
     position: absolute;
-    font-size: 28px;
+    font-size: 36px;
     pointer-events: none;
     animation: emojiRise 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
@@ -547,34 +552,34 @@ body {
    ========================================== */
 .quiz-results {
     text-align: center;
-    padding: 12px;
+    padding: 20px;
 }
 
 .quiz-results .result-icon {
-    font-size: 48px;
+    font-size: 64px;
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 10px;
 }
 
 .quiz-results .result-score {
-    font-size: 2.2rem;
+    font-size: 3rem;
     font-weight: 800;
     color: #4facfe;
 }
 
 .quiz-results .result-detail {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     color: #718096;
-    margin: 3px 0;
+    margin: 5px 0;
 }
 
 .quiz-results .result-grade {
     display: inline-block;
-    padding: 6px 28px;
+    padding: 10px 40px;
     border-radius: 30px;
     font-weight: 700;
-    font-size: 1rem;
-    margin: 10px 0 14px 0;
+    font-size: 1.2rem;
+    margin: 15px 0 20px 0;
 }
 
 .quiz-results .grade-a-plus {
@@ -625,24 +630,24 @@ body {
 .quiz-footer {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
-    margin-top: 6px;
+    gap: 14px;
+    margin-top: 10px;
 }
 
 .nav-btn {
     flex: 1;
-    padding: 10px 14px;
+    padding: 14px 20px;
     border: none;
-    border-radius: 10px;
-    font-size: 0.85rem;
+    border-radius: 14px;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    min-height: 42px;
+    gap: 8px;
+    min-height: 52px;
     touch-action: manipulation;
 }
 
@@ -683,12 +688,174 @@ body {
 }
 
 /* ==========================================
-   RESPONSIVE - TABLET
+   RESPONSIVE - TABLET & MOBILE
    ========================================== */
+
+/* Tablet Landscape */
+@media (max-width: 1024px) {
+    .app-header {
+        padding: 14px 20px;
+        margin: 14px 16px 0 16px;
+        min-height: 66px;
+    }
+    
+    .logo-container h1 {
+        font-size: 1.3rem;
+    }
+    
+    .cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 14px;
+    }
+    
+    .main-container {
+        padding: 0 16px 16px 16px;
+    }
+}
+
+/* Tablet Portrait */
 @media (max-width: 768px) {
     .app-header {
-        margin: 8px 12px 0 12px;
+        padding: 12px 16px;
+        margin: 10px 12px 0 12px;
+        border-radius: 14px;
+        min-height: 60px;
+    }
+    
+    .logo-container h1 {
+        font-size: 1.15rem;
+    }
+    
+    .back-btn {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+        min-height: 42px;
+        min-width: 42px;
+        border-radius: 10px;
+    }
+    
+    .back-btn i {
+        font-size: 15px;
+    }
+    
+    .main-container {
+        padding: 0 12px 14px 12px;
+        margin: 10px auto;
+    }
+    
+    .breadcrumb {
+        padding: 10px 16px;
+        font-size: 0.8rem;
+        min-height: 46px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .breadcrumb span[id^="bc-"] {
+        font-size: 0.85rem;
+    }
+    
+    .view-section h2 {
+        font-size: 1.2rem;
+        margin-bottom: 14px;
+    }
+    
+    .cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 12px;
+    }
+    
+    .card {
+        padding: 18px 12px;
+        font-size: 0.95rem;
+        min-height: 80px;
+        border-radius: 14px;
+    }
+    
+    .card i {
+        font-size: 28px;
+    }
+    
+    .quiz-header {
+        padding: 12px 16px;
+        border-radius: 14px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+    
+    .quiz-header h3 {
+        font-size: 1rem;
+        text-align: center;
+    }
+    
+    .quiz-progress {
+        font-size: 0.8rem;
+        text-align: center;
+        align-self: center;
+        padding: 5px 14px;
+    }
+    
+    .quiz-card {
+        padding: 18px;
+        border-radius: 14px;
+        margin-bottom: 14px;
+    }
+    
+    .question-text {
+        font-size: 1.05rem;
+        padding: 14px 16px;
+        border-left-width: 4px;
+        margin-bottom: 16px;
+        border-radius: 12px;
+    }
+    
+    .image-container img {
+        max-height: 230px;
+        padding: 8px;
+    }
+    
+    .option-btn {
+        padding: 14px 16px;
+        font-size: 0.95rem;
+        min-height: 50px;
+        border-radius: 12px;
+    }
+    
+    .option-btn .option-label {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+    
+    .quiz-footer {
+        flex-direction: row;
+        gap: 10px;
+    }
+    
+    .nav-btn {
+        padding: 12px 16px;
+        font-size: 0.9rem;
+        min-height: 46px;
+        border-radius: 12px;
+        flex: 1;
+    }
+    
+    .quiz-results .result-score {
+        font-size: 2.5rem;
+    }
+    
+    .quiz-results .result-icon {
+        font-size: 56px;
+    }
+}
+
+/* Mobile Large */
+@media (max-width: 480px) {
+    .app-header {
         padding: 10px 14px;
+        margin: 8px 10px 0 10px;
         border-radius: 12px;
         min-height: 54px;
     }
@@ -698,60 +865,72 @@ body {
     }
     
     .back-btn {
-        padding: 6px 12px;
+        padding: 8px 14px;
         font-size: 0.75rem;
-        min-height: 34px;
-        min-width: 34px;
+        min-height: 38px;
+        min-width: 38px;
+        gap: 5px;
         border-radius: 8px;
     }
     
     .back-btn i {
-        font-size: 12px;
+        font-size: 13px;
     }
     
     .main-container {
-        padding: 0 12px 12px 12px;
+        padding: 0 10px 12px 10px;
         margin: 8px auto;
-    }
-    
-    .cards-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 10px;
-    }
-    
-    .card {
-        padding: 14px 10px;
-        font-size: 0.85rem;
-        min-height: 64px;
-        border-radius: 10px;
-    }
-    
-    .card i {
-        font-size: 20px;
-        margin-bottom: 4px;
     }
     
     .breadcrumb {
         padding: 8px 12px;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         gap: 4px;
-        min-height: 38px;
+        min-height: 40px;
         border-radius: 10px;
-        margin-bottom: 14px;
+        margin-bottom: 12px;
+    }
+    
+    .breadcrumb span[id^="bc-"] {
+        font-size: 0.75rem;
+    }
+    
+    .breadcrumb .separator {
+        font-size: 1rem;
     }
     
     .view-section h2 {
-        font-size: 1rem;
+        font-size: 1.05rem;
         margin-bottom: 12px;
+        gap: 8px;
+    }
+    
+    .view-section h2 i {
+        font-size: 1.2rem;
+    }
+    
+    .cards-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    
+    .card {
+        padding: 16px 10px;
+        font-size: 0.85rem;
+        min-height: 70px;
+        border-radius: 12px;
+    }
+    
+    .card i {
+        font-size: 24px;
+        margin-bottom: 5px;
     }
     
     .quiz-header {
-        padding: 8px 12px;
-        border-radius: 10px;
-        margin-bottom: 12px;
-        flex-direction: column;
-        align-items: flex-start;
+        padding: 10px 14px;
+        border-radius: 12px;
         gap: 6px;
+        margin-bottom: 12px;
     }
     
     .quiz-header h3 {
@@ -760,7 +939,7 @@ body {
     
     .quiz-progress {
         font-size: 0.7rem;
-        padding: 3px 10px;
+        padding: 4px 12px;
     }
     
     .quiz-card {
@@ -770,66 +949,105 @@ body {
     }
     
     .question-text {
-        font-size: 0.9rem;
-        padding: 8px 12px;
+        font-size: 0.95rem;
+        padding: 12px 14px;
         border-left-width: 3px;
+        margin-bottom: 14px;
+        border-radius: 10px;
+    }
+    
+    .image-container {
         margin-bottom: 14px;
     }
     
     .image-container img {
         max-height: 200px;
+        padding: 6px;
+        border-radius: 10px;
+    }
+    
+    .options-grid {
+        gap: 8px;
     }
     
     .option-btn {
-        padding: 10px 12px;
-        font-size: 0.85rem;
-        min-height: 40px;
-        border-radius: 8px;
+        padding: 12px 14px;
+        font-size: 0.9rem;
+        min-height: 44px;
+        border-radius: 10px;
+        gap: 8px;
     }
     
     .option-btn .option-label {
-        width: 24px;
-        height: 24px;
-        font-size: 0.7rem;
+        width: 26px;
+        height: 26px;
+        font-size: 0.75rem;
+    }
+    
+    .quiz-footer {
+        flex-direction: column;
+        gap: 8px;
     }
     
     .nav-btn {
-        padding: 8px 12px;
-        font-size: 0.8rem;
-        min-height: 38px;
-        border-radius: 8px;
+        padding: 12px 14px;
+        font-size: 0.85rem;
+        min-height: 44px;
+        border-radius: 10px;
+        flex: 1;
     }
     
-    .quiz-results .result-score {
-        font-size: 1.8rem;
+    .nav-btn i {
+        font-size: 14px;
+    }
+    
+    .quiz-results {
+        padding: 12px;
     }
     
     .quiz-results .result-icon {
-        font-size: 40px;
+        font-size: 48px;
+    }
+    
+    .quiz-results .result-score {
+        font-size: 2rem;
+    }
+    
+    .quiz-results .result-detail {
+        font-size: 0.95rem;
+    }
+    
+    .quiz-results .result-grade {
+        font-size: 1rem;
+        padding: 8px 24px;
+        border-radius: 25px;
+        margin: 10px 0 14px 0;
+    }
+    
+    .emoji-particle {
+        font-size: 26px !important;
     }
 }
 
-/* ==========================================
-   RESPONSIVE - MOBILE
-   ========================================== */
-@media (max-width: 480px) {
+/* Mobile Small */
+@media (max-width: 380px) {
     .app-header {
-        margin: 6px 8px 0 8px;
         padding: 8px 10px;
+        margin: 6px 8px 0 8px;
         border-radius: 10px;
-        min-height: 48px;
+        min-height: 46px;
     }
     
     .logo-container h1 {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
     }
     
     .back-btn {
-        padding: 4px 10px;
+        padding: 6px 10px;
         font-size: 0.65rem;
-        min-height: 30px;
-        min-width: 30px;
-        gap: 4px;
+        min-height: 32px;
+        min-width: 32px;
+        gap: 3px;
         border-radius: 6px;
     }
     
@@ -839,131 +1057,98 @@ body {
     
     .main-container {
         padding: 0 8px 10px 8px;
-        margin: 6px auto;
     }
     
     .breadcrumb {
         padding: 6px 10px;
-        font-size: 0.65rem;
+        font-size: 0.6rem;
         gap: 3px;
         min-height: 34px;
         border-radius: 8px;
         margin-bottom: 10px;
     }
     
+    .breadcrumb span[id^="bc-"] {
+        font-size: 0.65rem;
+    }
+    
+    .breadcrumb .separator {
+        font-size: 0.8rem;
+    }
+    
     .view-section h2 {
         font-size: 0.9rem;
         margin-bottom: 10px;
-        gap: 6px;
     }
     
     .cards-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         gap: 8px;
     }
     
     .card {
-        padding: 12px 8px;
-        font-size: 0.75rem;
-        min-height: 54px;
-        border-radius: 8px;
+        padding: 14px 8px;
+        font-size: 0.8rem;
+        min-height: 60px;
+        border-radius: 10px;
     }
     
     .card i {
-        font-size: 18px;
-        margin-bottom: 3px;
-    }
-    
-    .quiz-header {
-        padding: 6px 10px;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 4px;
+        font-size: 20px;
+        margin-bottom: 4px;
     }
     
     .quiz-header h3 {
         font-size: 0.8rem;
-        text-align: center;
     }
     
     .quiz-progress {
-        font-size: 0.65rem;
-        padding: 2px 8px;
-        text-align: center;
-        align-self: center;
+        font-size: 0.6rem;
+        padding: 3px 10px;
     }
     
     .quiz-card {
         padding: 10px;
         border-radius: 10px;
-        margin-bottom: 10px;
     }
     
     .question-text {
-        font-size: 0.82rem;
-        padding: 6px 10px;
+        font-size: 0.85rem;
+        padding: 8px 10px;
         border-left-width: 3px;
-        margin-bottom: 10px;
-        border-radius: 8px;
-    }
-    
-    .image-container {
         margin-bottom: 10px;
     }
     
     .image-container img {
         max-height: 160px;
-        padding: 4px;
-        border-radius: 8px;
-    }
-    
-    .options-grid {
-        gap: 6px;
     }
     
     .option-btn {
-        padding: 8px 10px;
+        padding: 10px 10px;
         font-size: 0.8rem;
-        min-height: 34px;
+        min-height: 38px;
         border-radius: 8px;
-        gap: 6px;
     }
     
     .option-btn .option-label {
-        width: 20px;
-        height: 20px;
+        width: 22px;
+        height: 22px;
         font-size: 0.65rem;
     }
     
-    .quiz-footer {
-        flex-direction: column;
-        gap: 6px;
-    }
-    
     .nav-btn {
-        padding: 8px 10px;
-        font-size: 0.8rem;
-        min-height: 34px;
+        padding: 10px 10px;
+        font-size: 0.75rem;
+        min-height: 38px;
         border-radius: 8px;
-        flex: 1;
-    }
-    
-    .nav-btn i {
-        font-size: 12px;
-    }
-    
-    .quiz-results {
-        padding: 8px;
-    }
-    
-    .quiz-results .result-icon {
-        font-size: 34px;
     }
     
     .quiz-results .result-score {
         font-size: 1.5rem;
+    }
+    
+    .quiz-results .result-icon {
+        font-size: 36px;
     }
     
     .quiz-results .result-detail {
@@ -973,8 +1158,6 @@ body {
     .quiz-results .result-grade {
         font-size: 0.8rem;
         padding: 4px 16px;
-        border-radius: 20px;
-        margin: 8px 0 10px 0;
     }
     
     .emoji-particle {
@@ -983,90 +1166,10 @@ body {
 }
 
 /* ==========================================
-   RESPONSIVE - VERY SMALL PHONES
-   ========================================== */
-@media (max-width: 380px) {
-    .app-header {
-        margin: 4px 6px 0 6px;
-        padding: 6px 8px;
-        min-height: 40px;
-        border-radius: 8px;
-    }
-    
-    .logo-container h1 {
-        font-size: 0.7rem;
-    }
-    
-    .back-btn {
-        padding: 3px 8px;
-        font-size: 0.55rem;
-        min-height: 26px;
-        min-width: 26px;
-        gap: 3px;
-        border-radius: 5px;
-    }
-    
-    .back-btn i {
-        font-size: 8px;
-    }
-    
-    .main-container {
-        padding: 0 6px 8px 6px;
-    }
-    
-    .cards-grid {
-        grid-template-columns: 1fr;
-        gap: 6px;
-    }
-    
-    .card {
-        min-height: 44px;
-        padding: 10px 6px;
-        font-size: 0.7rem;
-        border-radius: 6px;
-    }
-    
-    .card i {
-        font-size: 16px;
-    }
-    
-    .question-text {
-        font-size: 0.75rem;
-        padding: 5px 8px;
-    }
-    
-    .option-btn {
-        font-size: 0.75rem;
-        min-height: 30px;
-        padding: 6px 8px;
-    }
-    
-    .option-btn .option-label {
-        width: 18px;
-        height: 18px;
-        font-size: 0.6rem;
-    }
-    
-    .nav-btn {
-        font-size: 0.7rem;
-        min-height: 30px;
-        padding: 6px 8px;
-    }
-    
-    .quiz-results .result-score {
-        font-size: 1.2rem;
-    }
-    
-    .quiz-results .result-icon {
-        font-size: 28px;
-    }
-}
-
-/* ==========================================
    SCROLLBAR
    ========================================== */
 ::-webkit-scrollbar {
-    width: 3px;
+    width: 4px;
 }
 
 ::-webkit-scrollbar-track {
