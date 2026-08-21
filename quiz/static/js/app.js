@@ -1,5 +1,5 @@
 // ==========================================
-// QUIZ SYSTEM - FULL APP.JS WITH TELEGRAM CELEBRATION
+// QUIZ SYSTEM - NO SOUND, TELEGRAM ANIMATION & MOBILE BACK NAVIGATION
 // ==========================================
 
 let currentBatchId = null;
@@ -16,37 +16,12 @@ let completedChapters = {};
 
 const API_BASE = '/quiz/api';
 
-// Telegram style celebration Audio (Web Audio API synthesis for quick sound)
-function playCorrectSound() {
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15); // A5
-        
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-        
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.3);
-    } catch (e) {
-        console.log("Audio play blocked or unsupported");
-    }
-}
-
-// Trigger Telegram Quiz style confetti celebration
+// Trigger Telegram Quiz style confetti celebration (NO SOUND)
 function triggerCelebration() {
-    playCorrectSound();
     if (typeof confetti === 'function') {
         confetti({
-            particleCount: 50,
-            spread: 60,
+            particleCount: 60,
+            spread: 70,
             origin: { y: 0.7 }
         });
     }
@@ -54,8 +29,19 @@ function triggerCelebration() {
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('✅ Quiz System Initialized');
-    loadBatches();
+    
+    // Initial State Push for Browser History
+    history.replaceState({ view: 'batches' }, '');
+    loadBatches(false);
+
     document.addEventListener('keydown', handleKeyboardShortcuts);
+
+    // Mobile Hardware Back Button Handling
+    window.onpopstate = function (event) {
+        if (event.state) {
+            handleMobileBack(event.state);
+        }
+    };
 });
 
 // Helper for sorting batches
@@ -70,18 +56,35 @@ function sortBatches(batches) {
     });
 }
 
+// Mobile Back Button Logic Router
+function handleMobileBack(state) {
+    if (state.view === 'batches') {
+        loadBatches(false);
+    } else if (state.view === 'subjects') {
+        selectBatch(state.batchId, state.batchName, false);
+    } else if (state.view === 'chapters') {
+        selectSubject(state.subjectId, state.subjectName, false);
+    } else if (state.view === 'quiz') {
+        selectChapter(state.chapterId, state.chapterName, false);
+    }
+}
+
 // ==========================================
-// STEP-BY-STEP NAVIGATION & DATA LOADING
+// NAVIGATION & DATA LOADING
 // ==========================================
 
 // 1. Batches View
-async function loadBatches() {
+async function loadBatches(pushHistory = true) {
     currentBatchId = null;
     currentBatchName = '';
     currentSubjectId = null;
     currentSubjectName = '';
     currentChapterId = null;
     currentChapterName = '';
+
+    if (pushHistory && history.state?.view !== 'batches') {
+        history.pushState({ view: 'batches' }, '');
+    }
 
     try {
         const response = await fetch(`${API_BASE}/batches`);
@@ -114,13 +117,17 @@ async function loadBatches() {
 }
 
 // 2. Select Batch -> Load Subjects
-async function selectBatch(batchId, batchName) {
+async function selectBatch(batchId, batchName, pushHistory = true) {
     currentBatchId = batchId;
     currentBatchName = batchName;
     currentSubjectId = null;
     currentSubjectName = '';
     currentChapterId = null;
     currentChapterName = '';
+
+    if (pushHistory) {
+        history.pushState({ view: 'subjects', batchId, batchName }, '');
+    }
 
     try {
         const response = await fetch(`${API_BASE}/batches/${batchId}/subjects`);
@@ -151,11 +158,15 @@ async function selectBatch(batchId, batchName) {
 }
 
 // 3. Select Subject -> Load Chapters
-async function selectSubject(subjectId, subjectName) {
+async function selectSubject(subjectId, subjectName, pushHistory = true) {
     currentSubjectId = subjectId;
     currentSubjectName = subjectName;
     currentChapterId = null;
     currentChapterName = '';
+
+    if (pushHistory) {
+        history.pushState({ view: 'chapters', batchId: currentBatchId, batchName: currentBatchName, subjectId, subjectName }, '');
+    }
 
     try {
         const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${subjectId}/chapters`);
@@ -189,14 +200,26 @@ async function selectSubject(subjectId, subjectName) {
     }
 }
 
-// 4. Select Chapter -> Load Quiz Questions
-async function selectChapter(chapterId, chapterName) {
+// 4. Select Chapter -> Load Quiz
+async function selectChapter(chapterId, chapterName, pushHistory = true) {
     currentChapterId = chapterId;
     currentChapterName = chapterName;
     
     questions = [];
     currentQuestionIndex = 0;
     userAnswers = {};
+
+    if (pushHistory) {
+        history.pushState({ 
+            view: 'quiz', 
+            batchId: currentBatchId, 
+            batchName: currentBatchName, 
+            subjectId: currentSubjectId, 
+            subjectName: currentSubjectName,
+            chapterId,
+            chapterName 
+        }, '');
+    }
 
     try {
         const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${chapterId}/questions`);
@@ -218,31 +241,11 @@ async function selectChapter(chapterId, chapterName) {
     }
 }
 
-// ==========================================
-// STEP BACK FUNCTIONS (ধাপে ধাপে ব্যাক আসার নেভিগেশন)
-// ==========================================
+// Manual Navigation Switchers
+function showBatchesView() { loadBatches(true); }
+function showSubjectsView() { if (currentBatchId) selectBatch(currentBatchId, currentBatchName, true); }
+function showChaptersView() { if (currentSubjectId) selectSubject(currentSubjectId, currentSubjectName, true); }
 
-function showBatchesView() {
-    loadBatches();
-}
-
-function showSubjectsView() {
-    if (!currentBatchId) {
-        showBatchesView();
-        return;
-    }
-    selectBatch(currentBatchId, currentBatchName);
-}
-
-function showChaptersView() {
-    if (!currentSubjectId) {
-        showSubjectsView();
-        return;
-    }
-    selectSubject(currentSubjectId, currentSubjectName);
-}
-
-// Breadcrumb with Clickable Step Back Logic
 function updateBreadcrumb() {
     const bc = document.getElementById('breadcrumb');
     if (!bc) return;
@@ -264,7 +267,7 @@ function updateBreadcrumb() {
 }
 
 // ==========================================
-// QUIZ LOGIC & CELEBRATION
+// QUIZ UI & TELEGRAM POLL STYLE ANSWER
 // ==========================================
 
 function restoreQuizLayout() {
@@ -321,7 +324,6 @@ function showQuestion(index) {
                 btn.classList.add('disabled');
                 if (optIdx === correctAnswer) btn.classList.add('correct');
                 if (userAnswers[index] === optIdx && optIdx !== correctAnswer) btn.classList.add('wrong');
-                if (userAnswers[index] === optIdx) btn.classList.add('selected');
             } else {
                 btn.onclick = () => handleAnswer(optIdx, correctAnswer, index);
             }
@@ -352,7 +354,7 @@ function showQuestion(index) {
 function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
     userAnswers[questionIndex] = selectedIndex;
 
-    // Telegram style celebration if answer is correct
+    // Telegram style confetti (without sound)
     if (selectedIndex === correctAnswer) {
         triggerCelebration();
     }
@@ -373,7 +375,6 @@ function showResults() {
     const quizCard = document.getElementById('quiz-card');
     const footer = document.querySelector('.quiz-footer');
     
-    // Final chapter completion celebration
     triggerCelebration();
 
     quizCard.innerHTML = `
