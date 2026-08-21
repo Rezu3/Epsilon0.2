@@ -1,0 +1,25 @@
+{
+  "batches": {
+    "bsc_nursing": {
+      "name": "B.Sc Nursing",
+      "subjects": {
+        "anatomy": {
+          "name": "Anatomy & Physiology",
+          "chapters": {
+            "circulatory": {
+              "name": "Circulatory System",
+              "questions": [
+                {
+                  "id": 1,
+                  "question": "Which blood group is known as the universal donor?",
+                  "options": ["A positive", "B positive", "AB positive", "O negative"],
+                  "answer": 3
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
