@@ -12,7 +12,8 @@ let currentChapterName = '';
 
 let questions = [];
 let currentQuestionIndex = 0;
-let userAnswers = {};
+let userAnswers = {}; // শুধু current chapter এর জন্য
+let completedChapters = {}; // Track completed chapters per subject
 
 // ==========================================
 // API BASE URL
@@ -25,8 +26,6 @@ const API_BASE = '/quiz/api';
 document.addEventListener('DOMContentLoaded', () => {
     console.log('✅ Quiz System Initialized');
     loadBatches();
-    
-    // Add keyboard shortcuts
     document.addEventListener('keydown', handleKeyboardShortcuts);
 });
 
@@ -34,26 +33,32 @@ document.addEventListener('DOMContentLoaded', () => {
 // 1. API CALLS & DATA LOADING
 // ==========================================
 
+// ===== ব্যাচ সর্ট করার ফাংশন =====
+function sortBatches(batches) {
+    return batches.sort((a, b) => {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+        const numA = parseInt(nameA.match(/\d+/)?.[0] || 0);
+        const numB = parseInt(nameB.match(/\d+/)?.[0] || 0);
+        if (numA > 0 && numB > 0) return numA - numB;
+        return nameA.localeCompare(nameB);
+    });
+}
+
 async function loadBatches() {
     try {
         console.log('📡 Fetching batches...');
         const response = await fetch(`${API_BASE}/batches`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const batches = await response.json();
-        console.log('✅ Batches loaded:', batches);
+        let batches = await response.json();
+        batches = sortBatches(batches);
+        console.log('✅ Sorted batches:', batches);
         
         const grid = document.getElementById('batches-grid');
-        if (!grid) {
-            console.error('❌ batches-grid element not found!');
-            return;
-        }
+        if (!grid) return;
         
         grid.innerHTML = '';
-
         if (batches && batches.length > 0) {
             batches.forEach(batch => {
                 const card = document.createElement('div');
@@ -71,7 +76,6 @@ async function loadBatches() {
                 </div>
             `;
         }
-
         showView('batches-view');
         updateBreadcrumb();
     } catch (error) {
@@ -84,23 +88,19 @@ async function selectBatch(batchId, batchName) {
     currentBatchId = batchId;
     currentBatchName = batchName;
     console.log(`📚 Selected batch: ${batchName}`);
+    
+    // Reset completed chapters for new batch
+    completedChapters = {};
 
     try {
         const response = await fetch(`${API_BASE}/batches/${batchId}/subjects`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const subjects = await response.json();
         console.log('✅ Subjects loaded:', subjects);
 
         const grid = document.getElementById('subjects-grid');
-        if (!grid) {
-            console.error('❌ subjects-grid element not found!');
-            return;
-        }
-        
+        if (!grid) return;
         grid.innerHTML = '';
 
         if (subjects && subjects.length > 0) {
@@ -120,7 +120,6 @@ async function selectBatch(batchId, batchName) {
                 </div>
             `;
         }
-
         showView('subjects-view');
         updateBreadcrumb();
     } catch (error) {
@@ -133,30 +132,32 @@ async function selectSubject(subjectId, subjectName) {
     currentSubjectId = subjectId;
     currentSubjectName = subjectName;
     console.log(`📖 Selected subject: ${subjectName}`);
+    
+    // Reset completed chapters for new subject
+    completedChapters = {};
 
     try {
         const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${subjectId}/chapters`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const chapters = await response.json();
         console.log('✅ Chapters loaded:', chapters);
 
         const grid = document.getElementById('chapters-grid');
-        if (!grid) {
-            console.error('❌ chapters-grid element not found!');
-            return;
-        }
-        
+        if (!grid) return;
         grid.innerHTML = '';
 
         if (chapters && chapters.length > 0) {
             chapters.forEach(chapter => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `<i class="fas fa-list"></i> ${chapter.name}`;
+                
+                // Check if chapter is completed
+                const isCompleted = completedChapters[chapter.id] || false;
+                card.innerHTML = `
+                    <i class="fas fa-list"></i> ${chapter.name}
+                    ${isCompleted ? '<span style="color:#28a745;font-size:0.7rem;display:block;">✅ Completed</span>' : ''}
+                `;
                 card.onclick = () => selectChapter(chapter.id, chapter.name);
                 grid.appendChild(card);
             });
@@ -169,7 +170,6 @@ async function selectSubject(subjectId, subjectName) {
                 </div>
             `;
         }
-
         showView('chapters-view');
         updateBreadcrumb();
     } catch (error) {
@@ -182,23 +182,22 @@ async function selectChapter(chapterId, chapterName) {
     currentChapterId = chapterId;
     currentChapterName = chapterName;
     console.log(`📝 Selected chapter: ${chapterName}`);
+    
+    // ✅ RESET for this chapter
+    questions = [];
+    currentQuestionIndex = 0;
+    userAnswers = {}; // ✅ Reset userAnswers for this chapter
 
     try {
         const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${chapterId}/questions`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         questions = await response.json();
         console.log('✅ Questions loaded:', questions.length);
 
-        currentQuestionIndex = 0;
-        userAnswers = {};
-
         if (questions.length > 0) {
             document.getElementById('quiz-chapter-title').innerHTML = `<i class="fas fa-pencil-alt"></i> ${currentChapterName}`;
-            showQuestion(currentQuestionIndex);
+            showQuestion(0);
             showView('quiz-view');
             updateBreadcrumb();
             
@@ -244,25 +243,19 @@ function showQuestion(index) {
         qTextElem.innerHTML = `${index + 1}. ${q.question || q.text || 'Question not available'}`;
     }
 
-    // Update Image (If exists)
+    // Update Image
     const imgContainer = document.getElementById('question-image-container');
     const imgElem = document.getElementById('question-image');
     if (q.image && imgElem) {
         imgElem.src = `/static/images/${q.image}`;
-        if (imgContainer) {
-            imgContainer.style.display = 'block';
-        }
+        if (imgContainer) imgContainer.style.display = 'block';
     } else if (imgContainer) {
         imgContainer.style.display = 'none';
     }
 
     // Render Options
     const optionsGrid = document.getElementById('options-container');
-    if (!optionsGrid) {
-        console.error('❌ options-container element not found!');
-        return;
-    }
-    
+    if (!optionsGrid) return;
     optionsGrid.innerHTML = '';
 
     if (q.options && Array.isArray(q.options)) {
@@ -275,38 +268,33 @@ function showQuestion(index) {
             btn.dataset.correct = (optIdx === correctAnswer) ? 'true' : 'false';
             btn.dataset.index = optIdx;
             
-            // Check if user already answered
+            // Check if user already answered this question
             if (userAnswers[index] !== undefined) {
                 btn.classList.add('disabled');
-                if (optIdx === correctAnswer) {
-                    btn.classList.add('correct');
-                }
-                if (userAnswers[index] === optIdx && optIdx !== correctAnswer) {
-                    btn.classList.add('wrong');
-                }
-                if (userAnswers[index] === optIdx) {
-                    btn.classList.add('selected');
-                }
+                if (optIdx === correctAnswer) btn.classList.add('correct');
+                if (userAnswers[index] === optIdx && optIdx !== correctAnswer) btn.classList.add('wrong');
+                if (userAnswers[index] === optIdx) btn.classList.add('selected');
             } else {
-                btn.onclick = function(e) {
+                btn.onclick = function() {
                     handleAnswer(optIdx, correctAnswer, index);
                 };
             }
-
             optionsGrid.appendChild(btn);
         });
     } else {
         optionsGrid.innerHTML = '<p style="color: #a0aec0;">No options available for this question.</p>';
     }
 
-    // Navigation Buttons State
+    // Navigation Buttons
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     
     if (prevBtn) prevBtn.disabled = (index === 0);
     if (nextBtn) {
         if (index === questions.length - 1) {
-            if (Object.keys(userAnswers).length === questions.length) {
+            // Check if ALL questions are answered
+            const allAnswered = Object.keys(userAnswers).length === questions.length;
+            if (allAnswered) {
                 nextBtn.innerHTML = '📊 দেখুন ফলাফল';
                 nextBtn.onclick = showResults;
             } else {
@@ -319,10 +307,10 @@ function showQuestion(index) {
         }
     }
 
-    // Re-render MathJax Equations
+    // Re-render MathJax
     if (window.MathJax && window.MathJax.typesetPromise) {
         try {
-            window.MathJax.typesetPromise([qTextElem, optionsGrid]).catch((err) => console.log('MathJax error:', err));
+            window.MathJax.typesetPromise([qTextElem, optionsGrid]).catch(err => console.log('MathJax error:', err));
         } catch (e) {
             console.log('MathJax not available');
         }
@@ -337,35 +325,23 @@ function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
     // Save user answer
     userAnswers[questionIndex] = selectedIndex;
     
-    // Get all option buttons
     const optionsGrid = document.getElementById('options-container');
     const allBtns = optionsGrid.querySelectorAll('.option-btn');
     
-    // Disable all buttons
     allBtns.forEach(btn => {
         btn.classList.add('disabled');
         btn.onclick = null;
     });
     
-    // Show correct and wrong answers
     allBtns.forEach((btn, idx) => {
-        if (idx === correctAnswer) {
-            btn.classList.add('correct');
-        }
-        if (idx === selectedIndex && idx !== correctAnswer) {
-            btn.classList.add('wrong');
-        }
-        if (idx === selectedIndex) {
-            btn.classList.add('selected');
-        }
+        if (idx === correctAnswer) btn.classList.add('correct');
+        if (idx === selectedIndex && idx !== correctAnswer) btn.classList.add('wrong');
+        if (idx === selectedIndex) btn.classList.add('selected');
     });
     
-    // 🎉 CHECK IF ANSWER IS CORRECT
     if (selectedIndex === correctAnswer) {
-        console.log('🎉 Correct Answer! Showing celebration...');
+        console.log('🎉 Correct Answer!');
         showCelebration();
-    } else {
-        console.log('❌ Wrong Answer');
     }
     
     // Check if all questions are answered
@@ -377,8 +353,80 @@ function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
 }
 
 // ==========================================
-// 4. NAVIGATION
+// 4. SHOW RESULTS
 // ==========================================
+
+function showResults() {
+    let correct = 0;
+    let total = questions.length;
+    
+    questions.forEach((q, idx) => {
+        const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
+        if (userAnswers[idx] === correctAnswer) {
+            correct++;
+        }
+    });
+    
+    const percentage = Math.round((correct / total) * 100);
+    let grade = '';
+    let emoji = '';
+    let gradeClass = '';
+    
+    if (percentage >= 80) { grade = 'A+'; emoji = '🌟'; gradeClass = 'grade-a-plus'; showCelebration(); }
+    else if (percentage >= 70) { grade = 'A'; emoji = '⭐'; gradeClass = 'grade-a'; }
+    else if (percentage >= 60) { grade = 'B'; emoji = '👍'; gradeClass = 'grade-b'; setTimeout(showCelebration, 300); }
+    else if (percentage >= 50) { grade = 'C'; emoji = '📖'; gradeClass = 'grade-c'; }
+    else if (percentage >= 40) { grade = 'D'; emoji = '💪'; gradeClass = 'grade-d'; }
+    else { grade = 'F'; emoji = '📚'; gradeClass = 'grade-f'; }
+    
+    // ✅ Mark chapter as completed
+    completedChapters[currentChapterId] = true;
+    console.log('✅ Chapter completed:', currentChapterName);
+    
+    const quizCard = document.getElementById('quiz-card');
+    const footer = document.querySelector('.quiz-footer');
+    
+    quizCard.innerHTML = `
+        <div class="quiz-results">
+            <span class="result-icon">${emoji}</span>
+            <h2 style="color: #2d3748; margin-bottom: 10px; font-size: 1.3rem;">কুইজ সম্পন্ন! 🎯</h2>
+            <div class="result-score">${correct} / ${total}</div>
+            <div class="result-detail">✅ সঠিক উত্তর: ${correct}</div>
+            <div class="result-detail">❌ ভুল উত্তর: ${total - correct}</div>
+            <div class="result-detail">📊 নম্বর: ${percentage}%</div>
+            <div class="result-grade ${gradeClass}">গ্রেড: ${grade}</div>
+            <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+                <button onclick="goBackToChapters()" class="nav-btn secondary" style="flex:1;">
+                    <i class="fas fa-arrow-left"></i> অধ্যায়ে ফিরুন
+                </button>
+                <button onclick="resetToBatches()" class="nav-btn primary" style="flex:1;">
+                    🔄 নতুন কুইজ
+                </button>
+            </div>
+        </div>
+    `;
+    
+    if (footer) footer.style.display = 'none';
+    
+    // Extra celebration for good results
+    if (percentage >= 80) {
+        setTimeout(showCelebration, 500);
+        setTimeout(showCelebration, 1200);
+    }
+}
+
+// ==========================================
+// 5. NAVIGATION
+// ==========================================
+
+function goBackToChapters() {
+    // Go back to chapters view with updated completion status
+    if (currentSubjectId && currentSubjectName) {
+        selectSubject(currentSubjectId, currentSubjectName);
+    } else {
+        showSubjectsView();
+    }
+}
 
 function nextQuestion() {
     if (currentQuestionIndex < questions.length - 1) {
@@ -399,11 +447,7 @@ function showView(viewId) {
         view.classList.remove('active');
     });
     const targetView = document.getElementById(viewId);
-    if (targetView) {
-        targetView.classList.add('active');
-    } else {
-        console.error(`❌ View "${viewId}" not found!`);
-    }
+    if (targetView) targetView.classList.add('active');
 }
 
 function updateBreadcrumb() {
@@ -415,36 +459,29 @@ function updateBreadcrumb() {
     const sep2 = document.getElementById('sep2');
 
     if (!bc) return;
-
     bc.style.display = 'flex';
 
     if (currentBatchId && !currentSubjectId) {
-        if (bcBatch) bcBatch.innerText = currentBatchName;
-        if (bcSub) bcSub.style.display = 'none';
-        if (bcChap) bcChap.style.display = 'none';
-        if (sep1) sep1.style.display = 'none';
-        if (sep2) sep2.style.display = 'none';
+        bcBatch.innerText = currentBatchName;
+        bcSub.style.display = 'none';
+        bcChap.style.display = 'none';
+        sep1.style.display = 'none';
+        sep2.style.display = 'none';
     } else if (currentSubjectId && !currentChapterId) {
-        if (bcBatch) bcBatch.innerText = currentBatchName;
-        if (bcSub) {
-            bcSub.innerText = currentSubjectName;
-            bcSub.style.display = 'inline';
-        }
-        if (bcChap) bcChap.style.display = 'none';
-        if (sep1) sep1.style.display = 'inline';
-        if (sep2) sep2.style.display = 'none';
+        bcBatch.innerText = currentBatchName;
+        bcSub.innerText = currentSubjectName;
+        bcSub.style.display = 'inline';
+        bcChap.style.display = 'none';
+        sep1.style.display = 'inline';
+        sep2.style.display = 'none';
     } else if (currentChapterId) {
-        if (bcBatch) bcBatch.innerText = currentBatchName;
-        if (bcSub) {
-            bcSub.innerText = currentSubjectName;
-            bcSub.style.display = 'inline';
-        }
-        if (bcChap) {
-            bcChap.innerText = currentChapterName;
-            bcChap.style.display = 'inline';
-        }
-        if (sep1) sep1.style.display = 'inline';
-        if (sep2) sep2.style.display = 'inline';
+        bcBatch.innerText = currentBatchName;
+        bcSub.innerText = currentSubjectName;
+        bcSub.style.display = 'inline';
+        bcChap.innerText = currentChapterName;
+        bcChap.style.display = 'inline';
+        sep1.style.display = 'inline';
+        sep2.style.display = 'inline';
     } else {
         bc.style.display = 'none';
     }
@@ -481,132 +518,10 @@ function resetToBatches() {
 }
 
 // ==========================================
-// 5. SHOW RESULTS
-// ==========================================
-
-function showResults() {
-    let correct = 0;
-    let total = questions.length;
-    
-    questions.forEach((q, idx) => {
-        const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
-        if (userAnswers[idx] === correctAnswer) {
-            correct++;
-        }
-    });
-    
-    const percentage = Math.round((correct / total) * 100);
-    let grade = '';
-    let emoji = '';
-    let gradeClass = '';
-    
-    if (percentage >= 80) {
-        grade = 'A+';
-        emoji = '🌟';
-        gradeClass = 'grade-a-plus';
-        showCelebration();
-    } else if (percentage >= 70) {
-        grade = 'A';
-        emoji = '⭐';
-        gradeClass = 'grade-a';
-    } else if (percentage >= 60) {
-        grade = 'B';
-        emoji = '👍';
-        gradeClass = 'grade-b';
-        setTimeout(showCelebration, 300);
-    } else if (percentage >= 50) {
-        grade = 'C';
-        emoji = '📖';
-        gradeClass = 'grade-c';
-    } else if (percentage >= 40) {
-        grade = 'D';
-        emoji = '💪';
-        gradeClass = 'grade-d';
-    } else {
-        grade = 'F';
-        emoji = '📚';
-        gradeClass = 'grade-f';
-    }
-    
-    // Show results in quiz card
-    const quizCard = document.getElementById('quiz-card');
-    const footer = document.querySelector('.quiz-footer');
-    
-    quizCard.innerHTML = `
-        <div class="quiz-results">
-            <span class="result-icon">${emoji}</span>
-            <h2 style="color: #2d3748; margin-bottom: 10px;">কুইজ সম্পন্ন! 🎯</h2>
-            <div class="result-score">${correct} / ${total}</div>
-            <div class="result-detail">✅ সঠিক উত্তর: ${correct}</div>
-            <div class="result-detail">❌ ভুল উত্তর: ${total - correct}</div>
-            <div class="result-detail">📊 নম্বর: ${percentage}%</div>
-            <div class="result-grade ${gradeClass}">
-                গ্রেড: ${grade}
-            </div>
-            <button onclick="resetToBatches()" class="nav-btn primary" style="margin-top: 20px; width: 100%;">
-                🔄 নতুন কুইজ শুরু করুন
-            </button>
-        </div>
-    `;
-    
-    if (footer) {
-        footer.style.display = 'none';
-    }
-    
-    // Extra celebration for good results
-    if (percentage >= 80) {
-        setTimeout(showCelebration, 500);
-        setTimeout(showCelebration, 1200);
-    }
-}
-
-// ==========================================
 // 6. CELEBRATION ANIMATIONS
 // ==========================================
 
-function createEmojiBurst() {
-    const emojis = [];
-    const container = document.createElement('div');
-    container.className = 'emoji-burst-container';
-    document.body.appendChild(container);
-    
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    
-    const count = 30 + Math.floor(Math.random() * 20);
-    
-    for (let i = 0; i < count; i++) {
-        const emoji = document.createElement('div');
-        emoji.className = 'emoji-particle';
-        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-        
-        const angle = Math.random() * 2 * Math.PI;
-        const distance = 150 + Math.random() * 400;
-        const ex = Math.cos(angle) * distance;
-        const ey = Math.sin(angle) * distance - 150;
-        const erotate = (Math.random() - 0.5) * 720;
-        
-        const size = 28 + Math.random() * 42;
-        emoji.style.fontSize = size + 'px';
-        emoji.style.setProperty('--ex', ex + 'px');
-        emoji.style.setProperty('--ey', ey + 'px');
-        emoji.style.setProperty('--erotate', erotate + 'deg');
-        
-        emoji.style.left = (centerX - 40 + (Math.random() - 0.5) * 80) + 'px';
-        emoji.style.top = (centerY - 40 + (Math.random() - 0.5) * 80) + 'px';
-        emoji.style.animationDelay = (Math.random() * 0.4) + 's';
-        emoji.style.animationDuration = (1.5 + Math.random() * 0.8) + 's';
-        
-        container.appendChild(emoji);
-    }
-    
-    setTimeout(() => {
-        if (container.parentNode) {
-            container.remove();
-        }
-    }, 3000);
-}
-
+ 
 function createFireworks() {
     const container = document.createElement('div');
     container.className = 'firework-container';
@@ -615,27 +530,25 @@ function createFireworks() {
     const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#ff6348', '#7bed9f', '#ff4757', '#2ed573', '#f368e0', '#00d2d3'];
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
-    
-    const burstCount = 4 + Math.floor(Math.random() * 3);
+    const burstCount = 3 + Math.floor(Math.random() * 3);
     
     for (let b = 0; b < burstCount; b++) {
-        const burstX = centerX + (Math.random() - 0.5) * 300;
-        const burstY = centerY + (Math.random() - 0.5) * 250;
-        const particleCount = 30 + Math.floor(Math.random() * 40);
+        const burstX = centerX + (Math.random() - 0.5) * 250;
+        const burstY = centerY + (Math.random() - 0.5) * 200;
+        const particleCount = 25 + Math.floor(Math.random() * 35);
         const color = colors[Math.floor(Math.random() * colors.length)];
         const color2 = colors[Math.floor(Math.random() * colors.length)];
         
         for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
             particle.className = 'firework-particle';
-            
             const angle = Math.random() * 2 * Math.PI;
-            const distance = 100 + Math.random() * 280;
+            const distance = 80 + Math.random() * 250;
             const tx = Math.cos(angle) * distance;
             const ty = Math.sin(angle) * distance;
-            
-            const size = 4 + Math.random() * 10;
+            const size = 4 + Math.random() * 8;
             const useColor = Math.random() > 0.5 ? color : color2;
+            
             particle.style.width = size + 'px';
             particle.style.height = size + 'px';
             particle.style.background = useColor;
@@ -646,16 +559,10 @@ function createFireworks() {
             particle.style.animationDelay = (Math.random() * 0.3) + 's';
             particle.style.boxShadow = `0 0 ${size * 2}px ${useColor}`;
             particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-            
             container.appendChild(particle);
         }
     }
-    
-    setTimeout(() => {
-        if (container.parentNode) {
-            container.remove();
-        }
-    }, 2000);
+    setTimeout(() => { if (container.parentNode) container.remove(); }, 2000);
 }
 
 function createConfetti() {
@@ -664,15 +571,14 @@ function createConfetti() {
     document.body.appendChild(container);
     
     const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#ff6348', '#7bed9f', '#ff4757', '#2ed573', '#f368e0', '#ff9f43', '#00d2d3'];
-    const count = 100 + Math.floor(Math.random() * 80);
+    const count = 80 + Math.floor(Math.random() * 60);
     
     for (let i = 0; i < count; i++) {
         const piece = document.createElement('div');
         piece.className = 'confetti-piece';
-        
         const color = colors[Math.floor(Math.random() * colors.length)];
-        const width = 6 + Math.random() * 12;
-        const height = 6 + Math.random() * 12;
+        const width = 6 + Math.random() * 10;
+        const height = 6 + Math.random() * 10;
         const left = Math.random() * 100;
         const duration = 2.5 + Math.random() * 2.5;
         const delay = Math.random() * 2;
@@ -688,15 +594,9 @@ function createConfetti() {
         piece.style.setProperty('--rotation', rotation + 'deg');
         piece.style.animationDelay = delay + 's';
         piece.style.opacity = 0.7 + Math.random() * 0.3;
-        
         container.appendChild(piece);
     }
-    
-    setTimeout(() => {
-        if (container.parentNode) {
-            container.remove();
-        }
-    }, 5500);
+    setTimeout(() => { if (container.parentNode) container.remove(); }, 5500);
 }
 
 function showCelebration() {
@@ -707,36 +607,7 @@ function showCelebration() {
 }
 
 // ==========================================
-// 7. FULLSCREEN
-// ==========================================
-
-function toggleFullscreen() {
-    let elem = document.documentElement;
-    const btn = document.getElementById('fullscreenBtn');
-
-    if (!document.fullscreenElement) {
-        if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) {
-            elem.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) {
-            elem.msRequestFullscreen();
-        }
-        if (btn) btn.innerHTML = '✕ এক্সিট ফুল স্ক্রিন';
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        }
-        if (btn) btn.innerHTML = '🖥️ ফুল স্ক্রিন';
-    }
-}
-
-// ==========================================
-// 8. KEYBOARD SHORTCUTS
+// 7. KEYBOARD SHORTCUTS
 // ==========================================
 
 function handleKeyboardShortcuts(e) {
@@ -756,20 +627,16 @@ function handleKeyboardShortcuts(e) {
     if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
         const nextBtn = document.getElementById('next-btn');
-        if (nextBtn && !nextBtn.disabled) {
-            nextBtn.click();
-        }
+        if (nextBtn && !nextBtn.disabled) nextBtn.click();
     } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
         const prevBtn = document.getElementById('prev-btn');
-        if (prevBtn && !prevBtn.disabled) {
-            prevBtn.click();
-        }
+        if (prevBtn && !prevBtn.disabled) prevBtn.click();
     }
 }
 
 // ==========================================
-// 9. ERROR HANDLING
+// 8. ERROR HANDLING
 // ==========================================
 
 function showError(message) {
@@ -778,16 +645,16 @@ function showError(message) {
     errorDiv.style.cssText = `
         background: #fed7d7;
         color: #c53030;
-        padding: 20px;
+        padding: 15px;
         border-radius: 10px;
-        margin: 20px 0;
+        margin: 15px 0;
         text-align: center;
         border: 2px solid #fc8181;
     `;
     errorDiv.innerHTML = `
-        <i class="fas fa-exclamation-triangle" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
+        <i class="fas fa-exclamation-triangle" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
         <p>${message}</p>
-        <button onclick="this.parentElement.remove(); loadBatches();" style="margin-top: 10px; padding: 8px 20px; background: #c53030; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        <button onclick="this.parentElement.remove(); loadBatches();" style="margin-top: 8px; padding: 8px 20px; background: #c53030; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">
             🔄 পুনরায় চেষ্টা করুন
         </button>
     `;
@@ -795,7 +662,7 @@ function showError(message) {
 }
 
 // ==========================================
-// 10. EXPOSE TO GLOBAL SCOPE
+// 9. EXPOSE TO GLOBAL SCOPE
 // ==========================================
 
 window.loadBatches = loadBatches;
@@ -812,12 +679,12 @@ window.showBatchesView = showBatchesView;
 window.showSubjectsView = showSubjectsView;
 window.showChaptersView = showChaptersView;
 window.resetToBatches = resetToBatches;
-window.toggleFullscreen = toggleFullscreen;
 window.showError = showError;
 window.showResults = showResults;
 window.showCelebration = showCelebration;
 window.createEmojiBurst = createEmojiBurst;
 window.createFireworks = createFireworks;
 window.createConfetti = createConfetti;
+window.goBackToChapters = goBackToChapters;
 
-console.log('✅ Quiz System with Celebration Ready!');
+console.log('✅ Quiz System with Chapter Completion Tracking Ready!');
