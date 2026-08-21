@@ -565,7 +565,7 @@ function showResults() {
 // ==========================================
 
 function createEmojiBurst() {
-    const emojis = ['🎉', '🎊', '⭐', '✨', '🌟', '💫', '🎆', '🎇', '❤️', '🔥', '🥳', '🎈', '🏆', '💯'];
+    const emojis = [];
     const container = document.createElement('div');
     container.className = 'emoji-burst-container';
     document.body.appendChild(container);
