@@ -12,6 +12,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function toggleSidebar() {
         sidebar.classList.toggle('open');
+        // Toggle body class to prevent scrolling when sidebar is open
+        document.body.classList.toggle('sidebar-open');
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        document.body.classList.remove('sidebar-open');
     }
 
     if (menuBtn) {
@@ -28,9 +35,29 @@ document.addEventListener('DOMContentLoaded', function() {
             const isSidebar = sidebar.contains(e.target);
             const isMenuBtn = menuBtn && menuBtn.contains(e.target);
             if (!isSidebar && !isMenuBtn && sidebar.classList.contains('open')) {
-                sidebar.classList.remove('open');
+                closeSidebar();
             }
         }
+    });
+
+    // =============================================
+    // CLOSE SIDEBAR ON NAVIGATION ITEM CLICK (MOBILE)
+    // =============================================
+    const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
+    navItems.forEach(function(item) {
+        item.addEventListener('click', function(e) {
+            // Close sidebar on mobile when any nav item is clicked
+            if (window.innerWidth <= 992) {
+                // Don't close immediately for logout - let it navigate
+                if (!this.classList.contains('logout')) {
+                    // For normal navigation items
+                    closeSidebar();
+                } else {
+                    // For logout, close after a tiny delay to allow navigation
+                    setTimeout(closeSidebar, 100);
+                }
+            }
+        });
     });
 
     // Notification bell click
@@ -219,6 +246,15 @@ function startTimer(examId) {
 // NAVIGATION FUNCTIONS
 // =============================================
 
+// Helper function to close sidebar on mobile
+function closeSidebarOnMobile() {
+    const sidebar = document.getElementById('sidebar');
+    if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        document.body.classList.remove('sidebar-open');
+    }
+}
+
 // Select Gender for WhatsApp
 function selectGender(gender) {
     const maleBtn = document.querySelector('.gender-btn.male');
@@ -240,6 +276,7 @@ function selectGender(gender) {
     }
     
     linkContainer.style.display = 'block';
+    closeSidebarOnMobile();
 }
 
 // Show Class Notes
@@ -264,6 +301,8 @@ function showClassNotes() {
     if (resultsSection) resultsSection.style.display = 'none';
     if (rankSection) rankSection.style.display = 'none';
     if (whatsappSection) whatsappSection.style.display = 'none';
+    
+    closeSidebarOnMobile();
 }
 
 // Show My Exams / Online Test
@@ -293,6 +332,8 @@ function showMyExams() {
     if (resultsSection) resultsSection.style.display = 'none';
     if (rankSection) rankSection.style.display = 'none';
     if (whatsappSection) whatsappSection.style.display = 'none';
+    
+    closeSidebarOnMobile();
 }
 
 // Show Results
@@ -317,6 +358,8 @@ function showResults() {
     if (examsSection) examsSection.style.display = 'none';
     if (rankSection) rankSection.style.display = 'none';
     if (whatsappSection) whatsappSection.style.display = 'none';
+    
+    closeSidebarOnMobile();
 }
 
 // Show Rank
@@ -341,6 +384,8 @@ function showRank() {
     if (notesSection) notesSection.style.display = 'none';
     if (examsSection) examsSection.style.display = 'none';
     if (whatsappSection) whatsappSection.style.display = 'none';
+    
+    closeSidebarOnMobile();
 }
 
 // Show WhatsApp
@@ -365,6 +410,8 @@ function showWhatsApp() {
     if (notesSection) notesSection.style.display = 'none';
     if (examsSection) examsSection.style.display = 'none';
     if (rankSection) rankSection.style.display = 'none';
+    
+    closeSidebarOnMobile();
 }
 
 // =============================================
@@ -373,6 +420,7 @@ function showWhatsApp() {
 function showQuiz() {
     // নতুন ট্যাবে Quiz খুলবে
     window.open('/quiz', '_blank');
+    closeSidebarOnMobile();
 }
 
 // Start Online Test
@@ -388,6 +436,7 @@ document.addEventListener('keydown', function(e) {
         const sidebar = document.getElementById('sidebar');
         if (sidebar && sidebar.classList.contains('open')) {
             sidebar.classList.remove('open');
+            document.body.classList.remove('sidebar-open');
         }
     }
 });
@@ -402,6 +451,7 @@ window.showWhatsApp = showWhatsApp;
 window.selectGender = selectGender;
 window.startOnlineExam = startOnlineExam;
 window.initializeTimers = initializeTimers;
+window.closeSidebarOnMobile = closeSidebarOnMobile;
 
 // =============================================
 // CHANGE PASSWORD FUNCTIONS
@@ -424,6 +474,7 @@ function showChangePassword() {
             input.style.borderColor = '#e2e8f0';
         });
     }
+    closeSidebarOnMobile();
 }
 
 // Close Change Password Modal
