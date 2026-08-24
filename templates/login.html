@@ -3,206 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - Login</title>
+    <title>𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - Rank Management</title>
     
-    <!-- ============================================ -->
-    <!-- PWA META TAGS (নতুন যোগ) -->
-    <!-- ============================================ -->
+    <!-- PWA Manifest & Theme Color -->
     <link rel="manifest" href="/static/manifest.json">
-    <link rel="apple-touch-icon" href="/static/icon-192.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#667eea">
     <meta name="mobile-web-app-capable" content="yes">
-    
-    <!-- ============================================ -->
-    <!-- SEO META TAGS (নতুন যোগ) -->
-    <!-- ============================================ -->
-    <meta name="description" content="The Epsilon - A complete Learning Management System for tuition centers. Manage students, teachers, exams, results and more.">
-    <meta name="keywords" content="LMS, tuition management, student management, exam management, online learning">
-    <meta name="author" content="The Epsilon">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://epsilon0-2.onrender.com/">
-    
-    <!-- ============================================ -->
-    <!-- CSS -->
-    <!-- ============================================ -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/rank.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
- </head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
 <body>
-    <div class="login-wrapper">
-        <div class="login-container">
-            <!-- Left Side - Branding -->
-            <div class="login-brand">
-                <div class="brand-content">
-                    <div class="brand-logo">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <h1 class="brand-name">𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h1>
+
+    <!-- Center Screen Large Install Modal Option -->
+    <div id="pwaInstallModal" class="pwa-install-overlay">
+        <div class="pwa-install-card">
+            <i class="fas fa-download pwa-icon"></i>
+            <h2>Install App</h2>
+            <p>Get the best experience by installing <b>The Epsilon</b> application on your phone.</p>
+            <button id="btnPwaInstall" class="pwa-install-btn">
+                <i class="fas fa-mobile-alt"></i> INSTALL NOW
+            </button>
+            <button id="btnPwaClose" class="pwa-close-btn">Continue in Browser</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-btn" id="menuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="brand">
+                    <h1>𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h1>
+                    <span class="subtitle">Rank Management</span>
                 </div>
             </div>
+            <div class="top-bar-right">
+                <div class="date-time" id="dateTime">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="currentDateTime"></span>
+                </div>
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="admin-profile">
+                    <span class="admin-name">{{ session.get('username') }}</span>
+                    <img src="https://ui-avatars.com/api/?name={{ session.get('username') }}&background=667eea&color=fff&size=40" alt="User" class="profile-img">
+                </div>
+            </div>
+        </header>
 
-            <!-- Right Side - Login Form -->
-            <div class="login-form-wrapper">
-                <div class="login-form-container">
-                    <!-- Flash Messages -->
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="flash-message flash-{{ category }}">
-                                    <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
-                                    {{ message }}
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-
-                    <!-- 3 Oval Buttons -->
-                    <div class="login-type-selector">
-                        <button class="login-btn-oval admin-btn" onclick="selectLoginType('admin')">
-                            <div class="btn-icon">
-                                <i class="fas fa-user-shield"></i>
-                            </div>
-                            <span class="btn-label">Admin</span>
-                            <span class="btn-sub">Administrator Access</span>
-                            <div class="btn-glow"></div>
-                        </button>
-
-                        <button class="login-btn-oval teacher-btn" onclick="selectLoginType('teacher')">
-                            <div class="btn-icon">
-                                <i class="fas fa-chalkboard-teacher"></i>
-                            </div>
-                            <span class="btn-label">Teacher</span>
-                            <span class="btn-sub">Teacher Access</span>
-                            <div class="btn-glow"></div>
-                        </button>
-
-                        <button class="login-btn-oval student-btn" onclick="selectLoginType('student')">
-                            <div class="btn-icon">
-                                <i class="fas fa-user-graduate"></i>
-                            </div>
-                            <span class="btn-label">Student</span>
-                            <span class="btn-sub">Student Access</span>
-                            <div class="btn-glow"></div>
-                        </button>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
                     </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-                    <!-- Login Form - Hidden by default -->
-                    <div class="login-form-container-hidden" id="loginFormContainer" style="display: none;">
-                        <div class="form-header">
-                            <h2 id="formTitle">Login</h2>
-                            <p id="formSubtitle">Enter your credentials to continue</p>
-                        </div>
+        <div class="rank-header">
+            <div class="rank-header-content">
+                <h2><i class="fas fa-trophy"></i> Rank Management</h2>
+                <p>Select Exam, Subject & Class to view student rankings</p>
+            </div>
+        </div>
 
-                        <form method="POST" action="{{ url_for('login') }}" class="login-form" id="loginForm">
-                            <input type="hidden" name="login_type" id="loginType" value="admin">
+        <div class="filter-section">
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label><i class="fas fa-pencil-alt"></i> Select Exam</label>
+                    <select id="examSelect" onchange="filterRank()">
+                        <option value="">Choose Exam...</option>
+                        {% for exam in exams %}
+                            <option value="{{ exam.id }}" data-subject="{{ exam.subject }}" data-fullmarks="{{ exam.full_marks }}">
+                                {{ exam.exam_name }} - {{ exam.subject }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                            <div class="form-group">
-                                <label for="credential">
-                                    <i class="fas fa-user" id="credentialIcon"></i>
-                                    <span id="credentialLabel">Username</span>
-                                </label>
-                                <div class="input-wrapper">
-                                    <i class="fas fa-user input-icon" id="inputIcon"></i>
-                                    <input type="text" id="credential" name="phone" placeholder="Enter admin username" required>
-                                    <span class="input-highlight"></span>
-                                </div>
-                            </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-book"></i> Subject</label>
+                    <select id="subjectSelect" onchange="filterRank()">
+                        <option value="">Choose Subject...</option>
+                        {% for exam in exams %}
+                            <option value="{{ exam.subject }}">{{ exam.subject }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                            <div class="form-group">
-                                <label for="password">
-                                    <i class="fas fa-lock"></i>
-                                    Password
-                                </label>
-                                <div class="input-wrapper">
-                                    <i class="fas fa-key input-icon"></i>
-                                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                                    <button type="button" class="toggle-btn" id="togglePassword">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <span class="input-highlight"></span>
-                                </div>
-                            </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-graduation-cap"></i> Select Class</label>
+                    <select id="classSelect" onchange="filterRank()">
+                        <option value="">Choose Class...</option>
+                        {% for class in classes %}
+                            <option value="{{ class.class }}">Class {{ class.class }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
 
-                            <div class="form-options">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" checked>
-                                    <span class="checkmark"></span>
-                                    Remember me
-                                </label>
-                                <!-- WhatsApp Dynamic Link -->
-                                <a href="https://wa.me/919749469918?text=Sir%20I%20have%20forgotten%20my%20password.%20Could%20you%20please%20tell%20me%20the%20password?" target="_blank" class="forgot-link">Forgot Password?</a>
-                            </div>
-
-                            <button type="submit" class="login-btn" id="loginBtn">
-                                <i class="fas fa-sign-in-alt"></i>
-                                <span id="loginBtnText">Sign In</span>
-                                <span class="btn-shimmer"></span>
-                            </button>
-
-                            <!-- Register links - সম্পূর্ণ শর্তাধীন দেখানোর ব্যবস্থা করা হয়েছে -->
-                            <div class="register-links">
-                                <p class="register-text" id="registerText" style="display: none;">
-                                    New here? <a href="{{ url_for('teacher_register') }}" id="registerLink"> </a>
-                                </p>
-                                <p class="register-text student-register" id="studentRegisterText" style="display: none;">
-                                    New here? <a href="{{ url_for('student_register') }}">Register as Student</a>
-                                </p>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="form-footer">
-                        <p>&copy; 2026 𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』. All rights reserved.</p>
-                    </div>
+        <div class="rank-container">
+            <div class="rank-actions">
+                <button class="download-pdf-btn" onclick="downloadPDF()" style="display:none;" id="downloadBtn">
+                    <i class="fas fa-file-pdf"></i> Download PDF
+                </button>
+            </div>
+            <div id="rankListContainer">
+                <div class="empty-state">
+                    <i class="fas fa-trophy"></i>
+                    <h3>Select Exam & Class</h3>
+                    <p>Please select an exam and class to view rankings</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ============================================ -->
-    <!-- SCRIPTS -->
-    <!-- ============================================ -->
-    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/rank.js') }}"></script>
     
-    <!-- Register Links Toggle Logic -->
+    <!-- PWA Installation Logic -->
     <script>
-        const originalSelectLoginType = window.selectLoginType;
-        window.selectLoginType = function(type) {
-            if (typeof originalSelectLoginType === 'function') {
-                originalSelectLoginType(type);
-            }
-            
-            const registerText = document.getElementById('registerText');
-            const studentRegisterText = document.getElementById('studentRegisterText');
-            
-            if (type === 'student') {
-                if (registerText) registerText.style.display = 'none';
-                if (studentRegisterText) studentRegisterText.style.display = 'block';
-            } else {
-                if (registerText) registerText.style.display = 'none';
-                if (studentRegisterText) studentRegisterText.style.display = 'none';
-            }
-        };
-    </script>
+        let deferredPrompt;
+        const installModal = document.getElementById('pwaInstallModal');
+        const installBtn = document.getElementById('btnPwaInstall');
+        const closeBtn = document.getElementById('btnPwaClose');
 
-    <!-- ============================================ -->
-    <!-- SERVICE WORKER REGISTER (নতুন যোগ) -->
-    <!-- ============================================ -->
-    <script>
-        // Register Service Worker for PWA
+        // Service Worker Register
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
+            window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/static/sw.js')
-                    .then(function(registration) {
-                        console.log('✅ Service Worker registered successfully:', registration);
-                    })
-                    .catch(function(error) {
-                        console.log('❌ Service Worker registration failed:', error);
-                    });
+                    .then(reg => console.log('Service Worker Registered'))
+                    .catch(err => console.log('SW Registration Failed', err));
             });
+        }
+
+        // Catch the install prompt immediately on link open
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installModal.classList.add('show');
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                installModal.classList.remove('show');
+            } else {
+                alert('Steps to install:\n1. Open browser menu (⋮)\n2. Click "Add to Home screen" or "Install app"');
+            }
+        });
+
+        closeBtn.addEventListener('click', () => {
+            installModal.classList.remove('show');
+        });
+
+        // iOS Safari Detection
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        if (isIOS && !isStandalone) {
+            installModal.classList.add('show');
+            installBtn.innerText = "Tap Share (⎋) -> Add to Home Screen";
         }
     </script>
 </body>
