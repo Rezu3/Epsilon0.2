@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - Login</title>
     
-    <!-- ============================================ -->
-    <!-- PWA META TAGS (নতুন যোগ) -->
-    <!-- ============================================ -->
+    <!-- PWA META TAGS -->
     <link rel="manifest" href="/static/manifest.json">
     <link rel="apple-touch-icon" href="/static/icon-192.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,23 +13,33 @@
     <meta name="theme-color" content="#667eea">
     <meta name="mobile-web-app-capable" content="yes">
     
-    <!-- ============================================ -->
-    <!-- SEO META TAGS (নতুন যোগ) -->
-    <!-- ============================================ -->
+    <!-- SEO META TAGS -->
     <meta name="description" content="The Epsilon - A complete Learning Management System for tuition centers. Manage students, teachers, exams, results and more.">
     <meta name="keywords" content="LMS, tuition management, student management, exam management, online learning">
     <meta name="author" content="The Epsilon">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://epsilon0-2.onrender.com/">
     
-    <!-- ============================================ -->
     <!-- CSS -->
-    <!-- ============================================ -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
  </head>
 <body>
+
+    <!-- Center Screen Large Install Modal Option -->
+    <div id="pwaInstallModal" class="pwa-install-overlay">
+        <div class="pwa-install-card">
+            <i class="fas fa-download pwa-icon"></i>
+            <h2>Install App</h2>
+            <p>Get the best experience by installing <b>The Epsilon</b> application on your phone.</p>
+            <button id="btnPwaInstall" class="pwa-install-btn">
+                <i class="fas fa-mobile-alt"></i> INSTALL NOW
+            </button>
+            <button id="btnPwaClose" class="pwa-close-btn">Continue in Browser</button>
+        </div>
+    </div>
+
     <div class="login-wrapper">
         <div class="login-container">
             <!-- Left Side - Branding -->
@@ -132,7 +140,6 @@
                                     <span class="checkmark"></span>
                                     Remember me
                                 </label>
-                                <!-- WhatsApp Dynamic Link -->
                                 <a href="https://wa.me/919749469918?text=Sir%20I%20have%20forgotten%20my%20password.%20Could%20you%20please%20tell%20me%20the%20password?" target="_blank" class="forgot-link">Forgot Password?</a>
                             </div>
 
@@ -142,7 +149,6 @@
                                 <span class="btn-shimmer"></span>
                             </button>
 
-                            <!-- Register links - সম্পূর্ণ শর্তাধীন দেখানোর ব্যবস্থা করা হয়েছে -->
                             <div class="register-links">
                                 <p class="register-text" id="registerText" style="display: none;">
                                     New here? <a href="{{ url_for('teacher_register') }}" id="registerLink"> </a>
@@ -162,12 +168,9 @@
         </div>
     </div>
 
-    <!-- ============================================ -->
     <!-- SCRIPTS -->
-    <!-- ============================================ -->
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
     
-    <!-- Register Links Toggle Logic -->
     <script>
         const originalSelectLoginType = window.selectLoginType;
         window.selectLoginType = function(type) {
@@ -188,11 +191,13 @@
         };
     </script>
 
-    <!-- ============================================ -->
-    <!-- SERVICE WORKER REGISTER (নতুন যোগ) -->
-    <!-- ============================================ -->
+    <!-- SERVICE WORKER & FORCE INSTALL PROMPT -->
     <script>
-        // Register Service Worker for PWA
+        let deferredPrompt;
+        const installModal = document.getElementById('pwaInstallModal');
+        const installBtn = document.getElementById('btnPwaInstall');
+        const closeBtn = document.getElementById('btnPwaClose');
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/static/sw.js')
@@ -203,6 +208,40 @@
                         console.log('❌ Service Worker registration failed:', error);
                     });
             });
+        }
+
+        // Catch prompt immediately when link opens
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installModal.classList.add('show');
+            document.body.classList.add('modal-open');
+        });
+
+        // Trigger prompt popup
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                installModal.classList.remove('show');
+                document.body.classList.remove('modal-open');
+            } else {
+                alert('Steps to install:\n1. Open browser menu (⋮)\n2. Click "Add to Home screen" or "Install app"');
+            }
+        });
+
+        closeBtn.addEventListener('click', () => {
+            installModal.classList.remove('show');
+            document.body.classList.remove('modal-open');
+        });
+
+        // iOS Safari Support
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        if (isIOS && !isStandalone) {
+            installModal.classList.add('show');
+            installBtn.innerText = "Tap Share (⎋) -> Add to Home Screen";
         }
     </script>
 </body>
