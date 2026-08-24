@@ -634,3 +634,104 @@ body {
         font-size: 10px;
     }
 }
+
+
+
+
+
+
+/* Center Screen Install Popup Modal */
+.pwa-install-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 12, 41, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s ease-in-out;
+}
+
+.pwa-install-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.pwa-install-card {
+    background: #ffffff;
+    width: 90%;
+    max-width: 420px;
+    padding: 35px 25px;
+    border-radius: 24px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    transform: scale(0.8);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.pwa-install-overlay.show .pwa-install-card {
+    transform: scale(1);
+}
+
+.pwa-icon {
+    font-size: 50px;
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+    width: 90px;
+    height: 90px;
+    line-height: 90px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+}
+
+.pwa-install-card h2 {
+    font-size: 26px;
+    color: #2d3748;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.pwa-install-card p {
+    font-size: 14px;
+    color: #718096;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.pwa-install-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #ffffff;
+    border: none;
+    border-radius: 14px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pwa-install-btn:active {
+    transform: scale(0.98);
+}
+
+.pwa-close-btn {
+    background: transparent;
+    border: none;
+    color: #a0aec0;
+    margin-top: 15px;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: underline;
+}
