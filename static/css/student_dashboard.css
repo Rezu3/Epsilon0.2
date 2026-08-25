@@ -1478,3 +1478,335 @@ body {
         font-size: 14px;
     }
 }
+
+
+
+
+
+/* ============================================= */
+/* NOTICES SECTION STYLES - Student */
+/* ============================================= */
+
+.notices-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    display: block;
+}
+
+.notices-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.notices-section .section-header h2 {
+    font-size: 22px;
+    color: #2d3748;
+    font-weight: 700;
+}
+
+.notices-section .section-header h2 i {
+    color: #f093fb;
+    margin-right: 10px;
+}
+
+.notices-section .section-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.notices-section .total-count {
+    font-size: 14px;
+    color: #718096;
+    font-weight: 500;
+}
+
+.refresh-btn {
+    background: none;
+    border: none;
+    color: #a0aec0;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.refresh-btn:hover {
+    color: #667eea;
+    background: #f7fafc;
+    transform: rotate(180deg);
+}
+
+/* Notices List */
+.notices-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Loading State */
+.loading-notices {
+    text-align: center;
+    padding: 40px 20px;
+    color: #a0aec0;
+}
+
+.loading-notices i {
+    font-size: 36px;
+    margin-bottom: 10px;
+    color: #667eea;
+}
+
+.loading-notices p {
+    font-size: 14px;
+}
+
+/* Empty State */
+.empty-notices {
+    text-align: center;
+    padding: 50px 20px;
+    color: #a0aec0;
+}
+
+.empty-notices i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    color: #e2e8f0;
+}
+
+.empty-notices h3 {
+    font-size: 20px;
+    color: #4a5568;
+    margin-bottom: 8px;
+}
+
+.empty-notices p {
+    font-size: 14px;
+}
+
+.empty-notices.error i {
+    color: #f56565;
+}
+
+.retry-btn {
+    margin-top: 15px;
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.retry-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+/* Notice Item */
+.notice-item {
+    display: flex;
+    gap: 15px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.notice-item:hover {
+    transform: translateX(4px);
+    border-color: #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+.notice-item.unread {
+    background: linear-gradient(135deg, #f7fafc, #eef2ff);
+    border-left: 4px solid #667eea;
+}
+
+.notice-item.read {
+    opacity: 0.85;
+}
+
+.notice-item.read .notice-message {
+    color: #718096;
+}
+
+/* Status Dot */
+.notice-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 6px;
+}
+
+.notice-status-dot.unread-dot {
+    background: #667eea;
+    box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
+    animation: pulse-dot 2s infinite;
+}
+
+.notice-status-dot.read-dot {
+    background: #a0aec0;
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 0.7;
+    }
+}
+
+/* Notice Content */
+.notice-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.notice-header h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+}
+
+.notice-item.unread .notice-header h4 {
+    color: #1a202c;
+}
+
+.notice-date {
+    font-size: 12px;
+    color: #a0aec0;
+    white-space: nowrap;
+}
+
+.notice-date i {
+    margin-right: 4px;
+}
+
+.notice-message {
+    font-size: 14px;
+    color: #4a5568;
+    line-height: 1.6;
+    margin: 8px 0;
+    word-wrap: break-word;
+}
+
+.notice-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.notice-teacher {
+    font-size: 12px;
+    color: #a0aec0;
+}
+
+.notice-teacher i {
+    margin-right: 4px;
+    color: #f093fb;
+}
+
+.notice-unread-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    animation: fade-in-out 2s ease-in-out;
+}
+
+@keyframes fade-in-out {
+    0% { opacity: 0; transform: scale(0.8); }
+    20% { opacity: 1; transform: scale(1); }
+    80% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0.5; transform: scale(0.9); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .notices-section {
+        padding: 15px;
+        border-radius: 16px;
+    }
+    
+    .notices-section .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .notice-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .notice-date {
+        font-size: 11px;
+    }
+    
+    .notice-item {
+        padding: 14px 16px;
+    }
+    
+    .notice-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .notices-section {
+        padding: 12px;
+        border-radius: 12px;
+    }
+    
+    .notice-item {
+        padding: 12px 14px;
+    }
+    
+    .notice-header h4 {
+        font-size: 14px;
+    }
+    
+    .notice-message {
+        font-size: 13px;
+    }
+}
