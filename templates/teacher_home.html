@@ -50,7 +50,6 @@
                 <i class="fas fa-question-circle"></i>
                 <span>Quiz</span>
             </a>
-            <!-- Change Password Added Here -->
             <a href="javascript:void(0)" class="nav-item" onclick="showChangePassword()">
                 <i class="fas fa-key"></i>
                 <span>Change Password</span>
@@ -92,9 +91,10 @@
                     <i class="far fa-calendar-alt"></i>
                     <span id="currentDateTime"></span>
                 </div>
-                <div class="notification-bell">
+                <!-- ===== NOTIFICATION BELL - CLICK TO OPEN NOTICE MODAL ===== -->
+                <div class="notification-bell" onclick="openNoticeModal()">
                     <i class="fas fa-bell"></i>
-                    <span class="badge">5</span>
+                    <span class="badge" id="noticeBadge">0</span>
                 </div>
                 <div class="teacher-profile">
                     <span class="teacher-name">{{ session.get('username', 'Teacher') }}</span>
@@ -438,6 +438,103 @@
                     </button>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- NOTICE MODAL - Teacher Notice Write -->
+    <!-- ============================================= -->
+    <div class="notice-modal" id="noticeModal" style="display: none;">
+        <div class="modal-overlay" onclick="closeNoticeModal()"></div>
+        <div class="modal-content notice-modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-bullhorn"></i> Send Notice to Students</h3>
+                <button class="modal-close" onclick="closeNoticeModal()">&times;</button>
+            </div>
+            <form id="noticeForm" onsubmit="sendNotice(event)">
+                <div class="form-group">
+                    <label for="noticeTitle"><i class="fas fa-heading"></i> Notice Title</label>
+                    <input type="text" id="noticeTitle" placeholder="Enter notice title..." required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="noticeMessage"><i class="fas fa-file-alt"></i> Notice Message</label>
+                    <textarea id="noticeMessage" rows="5" placeholder="Write your notice here..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-users"></i> Send to</label>
+                    <div class="notice-target-options">
+                        <label class="target-option">
+                            <input type="radio" name="target" value="all" checked>
+                            <span>All Students</span>
+                        </label>
+                        <label class="target-option">
+                            <input type="radio" name="target" value="class">
+                            <span>Specific Class</span>
+                        </label>
+                        <label class="target-option">
+                            <input type="radio" name="target" value="subject">
+                            <span>Specific Subject</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group" id="classSelectGroup" style="display: none;">
+                    <label for="noticeClass"><i class="fas fa-graduation-cap"></i> Select Class</label>
+                    <select id="noticeClass">
+                        <option value="">Choose Class...</option>
+                        {% set class_list = [] %}
+                        {% for student in students %}
+                            {% if student.class not in class_list %}
+                                {% set class_list = class_list + [student.class] %}
+                                <option value="{{ student.class }}">Class {{ student.class }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group" id="subjectSelectGroup" style="display: none;">
+                    <label for="noticeSubject"><i class="fas fa-book"></i> Select Subject</label>
+                    <select id="noticeSubject">
+                        <option value="">Choose Subject...</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="English">English</option>
+                        <option value="Science">Science</option>
+                        <option value="Bangla">Bangla</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Biology">Biology</option>
+                        <option value="History">History</option>
+                        <option value="Geography">Geography</option>
+                        <option value="ICT">ICT</option>
+                        <option value="Religion">Religion</option>
+                    </select>
+                </div>
+                
+                <div class="notice-preview" id="noticePreview" style="display: none;">
+                    <h4><i class="fas fa-eye"></i> Preview</h4>
+                    <div class="preview-box">
+                        <div class="preview-title" id="previewTitle">Title</div>
+                        <div class="preview-message" id="previewMessage">Message</div>
+                        <div class="preview-meta">
+                            <span>From: <strong>{{ session.get('username', 'Teacher') }}</strong></span>
+                            <span id="previewTarget">To: All Students</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="notice-actions">
+                    <button type="button" class="preview-btn" onclick="previewNotice()">
+                        <i class="fas fa-eye"></i> Preview
+                    </button>
+                    <button type="submit" class="send-notice-btn">
+                        <i class="fas fa-paper-plane"></i> Send Notice
+                    </button>
+                </div>
+                
+                <div id="noticeStatus" class="notice-status" style="display: none;"></div>
+            </form>
         </div>
     </div>
 
