@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const notificationBell = document.querySelector('.notification-bell');
     if (notificationBell) {
         notificationBell.addEventListener('click', function() {
-            alert('📬 You have 5 new notifications');
+            alert('📬 Write a new message');
         });
     }
 
@@ -401,3 +401,201 @@ window.showChangePassword = showChangePassword;
 window.closeChangePassword = closeChangePassword;
 window.togglePasswordVisibility = togglePasswordVisibility;
 window.changePassword = changePassword;
+
+
+
+
+// =============================================
+// NOTICE MODAL FUNCTIONS
+// =============================================
+
+// Open Notice Modal
+function openNoticeModal() {
+    const modal = document.getElementById('noticeModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Reset form
+        document.getElementById('noticeForm').reset();
+        document.getElementById('noticePreview').style.display = 'none';
+        document.getElementById('noticeStatus').style.display = 'none';
+        document.getElementById('classSelectGroup').style.display = 'none';
+        document.getElementById('subjectSelectGroup').style.display = 'none';
+        
+        // Reset target radio
+        document.querySelector('input[name="target"][value="all"]').checked = true;
+    }
+}
+
+// Close Notice Modal
+function closeNoticeModal() {
+    const modal = document.getElementById('noticeModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Target selection change
+document.addEventListener('DOMContentLoaded', function() {
+    const targetRadios = document.querySelectorAll('input[name="target"]');
+    targetRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            const classGroup = document.getElementById('classSelectGroup');
+            const subjectGroup = document.getElementById('subjectSelectGroup');
+            
+            if (this.value === 'class') {
+                classGroup.style.display = 'block';
+                subjectGroup.style.display = 'none';
+            } else if (this.value === 'subject') {
+                classGroup.style.display = 'none';
+                subjectGroup.style.display = 'block';
+            } else {
+                classGroup.style.display = 'none';
+                subjectGroup.style.display = 'none';
+            }
+            
+            // Hide preview when target changes
+            document.getElementById('noticePreview').style.display = 'none';
+        });
+    });
+    
+    // Real-time preview on input
+    document.getElementById('noticeTitle').addEventListener('input', function() {
+        if (document.getElementById('noticePreview').style.display === 'block') {
+            previewNotice();
+        }
+    });
+    
+    document.getElementById('noticeMessage').addEventListener('input', function() {
+        if (document.getElementById('noticePreview').style.display === 'block') {
+            previewNotice();
+        }
+    });
+});
+
+// Preview Notice
+function previewNotice() {
+    const title = document.getElementById('noticeTitle').value || 'No Title';
+    const message = document.getElementById('noticeMessage').value || 'No Message';
+    const target = document.querySelector('input[name="target"]:checked');
+    const targetClass = document.getElementById('noticeClass').value;
+    const targetSubject = document.getElementById('noticeSubject').value;
+    
+    let targetText = 'All Students';
+    if (target && target.value === 'class' && targetClass) {
+        targetText = 'Class ' + targetClass;
+    } else if (target && target.value === 'subject' && targetSubject) {
+        targetText = 'Subject: ' + targetSubject;
+    }
+    
+    document.getElementById('previewTitle').textContent = title;
+    document.getElementById('previewMessage').textContent = message;
+    document.getElementById('previewTarget').textContent = 'To: ' + targetText;
+    document.getElementById('noticePreview').style.display = 'block';
+}
+
+// Send Notice
+function sendNotice(event) {
+    event.preventDefault();
+    
+    const title = document.getElementById('noticeTitle').value.trim();
+    const message = document.getElementById('noticeMessage').value.trim();
+    const target = document.querySelector('input[name="target"]:checked').value;
+    const targetClass = document.getElementById('noticeClass').value;
+    const targetSubject = document.getElementById('noticeSubject').value;
+    
+    // Validate
+    if (!title) {
+        showNoticeStatus('error', 'Please enter a notice title!');
+        document.getElementById('noticeTitle').focus();
+        return;
+    }
+    
+    if (!message) {
+        showNoticeStatus('error', 'Please enter a notice message!');
+        document.getElementById('noticeMessage').focus();
+        return;
+    }
+    
+    if (target === 'class' && !targetClass) {
+        showNoticeStatus('error', 'Please select a class!');
+        return;
+    }
+    
+    if (target === 'subject' && !targetSubject) {
+        showNoticeStatus('error', 'Please select a subject!');
+        return;
+    }
+    
+    // Disable submit button
+    const submitBtn = document.querySelector('.send-notice-btn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    
+    // Prepare data
+    const data = {
+        title: title,
+        message: message,
+        target: target,
+        target_class: targetClass,
+        target_subject: targetSubject
+    };
+    
+    // Send to server
+    fetch('/send_notice', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNoticeStatus('success', '✅ ' + data.message);
+            
+            // Reset form
+            document.getElementById('noticeForm').reset();
+            document.getElementById('noticePreview').style.display = 'none';
+            
+            // Close modal after 2 seconds
+            setTimeout(() => {
+                closeNoticeModal();
+                // Update notification badge
+                updateNotificationBadge();
+            }, 2000);
+        } else {
+            showNoticeStatus('error', '❌ ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNoticeStatus('error', '❌ An error occurred. Please try again.');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Notice';
+    });
+}
+
+// Show notice status
+function showNoticeStatus(type, message) {
+    const statusDiv = document.getElementById('noticeStatus');
+    statusDiv.style.display = 'block';
+    statusDiv.className = 'notice-status ' + type;
+    statusDiv.textContent = message;
+}
+
+// Update notification badge (will be implemented in step 4)
+function updateNotificationBadge() {
+    // This will be implemented later
+    console.log('📬 Notification badge updated');
+}
+
+// Make functions globally available
+window.openNoticeModal = openNoticeModal;
+window.closeNoticeModal = closeNoticeModal;
+window.previewNotice = previewNotice;
+window.sendNotice = sendNotice;
