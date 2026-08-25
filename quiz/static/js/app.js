@@ -202,13 +202,18 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
                 let statusText = '';
                 let statusColor = '';
                 
-                if (chapter.is_completed) {
+                // ===== TEACHER: সব চ্যাপ্টার আনলকড থাকবে =====
+                const isTeacher = USER_TYPE === 'teacher' || USER_TYPE === 'admin';
+                const isLocked = !isTeacher && chapter.is_locked;
+                const isCompleted = chapter.is_completed;
+                
+                if (isCompleted) {
                     statusIcon = '✅';
                     statusText = 'Completed';
                     statusColor = '#28a745';
                     card.style.borderColor = '#28a745';
                     card.style.background = '#f0fff4';
-                } else if (chapter.is_locked) {
+                } else if (isLocked) {
                     statusIcon = '🔒';
                     statusText = 'Locked';
                     statusColor = '#e53e3e';
@@ -221,7 +226,7 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
                 }
                 
                 card.innerHTML = `
-                    <i class="fas fa-${chapter.is_locked ? 'lock' : chapter.is_completed ? 'check-circle' : 'play-circle'}" 
+                    <i class="fas fa-${isLocked ? 'lock' : isCompleted ? 'check-circle' : 'play-circle'}" 
                        style="color:${statusColor};"></i>
                     Chapter ${chapter.order}: ${chapter.name}
                     <span style="font-size:0.7rem;color:${statusColor};display:block;margin-top:4px;">
@@ -229,7 +234,8 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
                     </span>
                 `;
                 
-                if (!chapter.is_locked) {
+                // ===== TEACHER: সব চ্যাপ্টার ক্লিকযোগ্য হবে =====
+                if (!isLocked || isTeacher) {
                     card.onclick = () => selectChapter(chapter.id, chapter.name);
                 }
                 
@@ -273,10 +279,30 @@ async function selectChapter(chapterId, chapterName, pushHistory = true) {
     try {
         const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${chapterId}/questions`);
         
+        // ===== TEACHER: 403 এরর হলেও কোয়েস্ট দেখাবে =====
         if (response.status === 403) {
             const error = await response.json();
-            showError(error.error || 'This chapter is locked! Complete previous chapter first.');
-            return;
+            const isTeacher = USER_TYPE === 'teacher' || USER_TYPE === 'admin';
+            
+            if (isTeacher) {
+                // Teacher হলে Lock এড়িয়ে যান
+                showError('⚠️ This chapter is locked for students, but as Teacher you can view it.');
+                // Try to get questions anyway
+                const retryResponse = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${chapterId}/questions?force=true`);
+                if (retryResponse.ok) {
+                    questions = await retryResponse.json();
+                    if (questions.length > 0) {
+                        restoreQuizLayout();
+                        showQuestion(0);
+                        showView('quiz-view');
+                        updateBreadcrumb();
+                        return;
+                    }
+                }
+            } else {
+                showError(error.error || 'This chapter is locked! Complete previous chapter first.');
+                return;
+            }
         }
         
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -352,7 +378,7 @@ function restoreQuizLayout() {
 }
 
 // ==========================================
-// FIXED: showQuestion function
+// FIXED: showQuestion function - সব প্রশ্নের উত্তর দিলে Submit আসবে
 // ==========================================
 function showQuestion(index) {
     if (!questions || questions.length === 0) return;
@@ -386,6 +412,7 @@ function showQuestion(index) {
             btn.className = 'option-btn';
             btn.innerHTML = `<span class="option-label">${String.fromCharCode(65 + optIdx)}</span> ${optText}`;
             
+            // যদি উত্তর দেওয়া হয়ে থাকে
             if (userAnswers[index] !== undefined) {
                 btn.classList.add('disabled');
                 if (optIdx === correctAnswer) btn.classList.add('correct');
@@ -397,7 +424,7 @@ function showQuestion(index) {
         });
     }
 
-    // ===== FIXED: Proper button management =====
+    // ===== Button Management =====
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     
@@ -413,7 +440,7 @@ function showQuestion(index) {
         }
     }
     
-    // ===== FIXED: Next button logic - সবসময় Submit দেখাবে যদি সব প্রশ্নের উত্তর দেওয়া হয় =====
+    // ===== Next button - সব প্রশ্নের উত্তর দিলেই Submit =====
     if (nextBtn) {
         nextBtn.disabled = false;
         nextBtn.style.display = 'flex';
@@ -421,20 +448,38 @@ function showQuestion(index) {
         nextBtn.style.visibility = 'visible';
         
         // সব প্রশ্নের উত্তর দেওয়া হয়েছে কিনা চেক করুন
-        const allAnswered = Object.keys(userAnswers).length === questions.length;
+        const answeredCount = Object.keys(userAnswers).length;
+        const totalQuestions = questions.length;
+        const allAnswered = answeredCount === totalQuestions;
         
-        if (index === questions.length - 1) {
-            // শেষ প্রশ্ন
-            if (allAnswered) {
-                nextBtn.innerHTML = '📤 Submit';
-                nextBtn.onclick = submitQuiz;
-            } else {
-                nextBtn.innerHTML = 'Last Question';
-                nextBtn.onclick = nextQuestion;
-            }
+        // শেষ প্রশ্ন কিনা চেক করুন
+        const isLastQuestion = index === totalQuestions - 1;
+        
+        if (isLastQuestion && allAnswered) {
+            // শেষ প্রশ্ন + সব উত্তর দেওয়া হয়েছে = Submit
+            nextBtn.innerHTML = '📤 Submit';
+            nextBtn.onclick = submitQuiz;
+            nextBtn.style.background = '#28a745';
+        } else if (isLastQuestion && !allAnswered) {
+            // শেষ প্রশ্ন + সব উত্তর দেওয়া হয়নি = Last Question
+            nextBtn.innerHTML = `⚠️ Answer ${answeredCount + 1}/${totalQuestions}`;
+            nextBtn.onclick = () => {
+                showError('Please answer all questions before submitting!');
+            };
+            nextBtn.style.background = '#e53e3e';
         } else {
-            nextBtn.innerHTML = 'Next →';
-            nextBtn.onclick = nextQuestion;
+            // শেষ প্রশ্ন না হলে = Next
+            if (userAnswers[index] !== undefined) {
+                nextBtn.innerHTML = 'Next →';
+                nextBtn.onclick = nextQuestion;
+                nextBtn.style.background = '#4facfe';
+            } else {
+                nextBtn.innerHTML = '⚠️ Answer First';
+                nextBtn.onclick = () => {
+                    showError('Please answer this question first!');
+                };
+                nextBtn.style.background = '#e53e3e';
+            }
         }
     }
 
@@ -445,33 +490,34 @@ function showQuestion(index) {
 }
 
 // ==========================================
-// FIXED: handleAnswer function
+// FIXED: handleAnswer function - ভুল উত্তর দিলেও Submit আসবে
 // ==========================================
 function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
+    // উত্তর সেভ করুন (ভুল হলেও সেভ হবে)
     userAnswers[questionIndex] = selectedIndex;
 
     if (selectedIndex === correctAnswer) {
         triggerCelebration();
     }
 
+    // প্রশ্ন দেখান (উত্তর সহ)
     showQuestion(questionIndex);
 
-    // ===== FIXED: সব প্রশ্নের উত্তর দেওয়া হলে Submit বাটন আপডেট করুন =====
-    const allAnswered = Object.keys(userAnswers).length === questions.length;
+    // ===== সব প্রশ্নের উত্তর দেওয়া হয়েছে কিনা চেক করুন =====
+    const totalQuestions = questions.length;
+    const answeredCount = Object.keys(userAnswers).length;
     
-    if (allAnswered) {
+    // ভুল উত্তর দিলেও Submit বাটন আসবে
+    if (answeredCount === totalQuestions) {
         const nextBtn = document.getElementById('next-btn');
         if (nextBtn) {
-            // শেষ প্রশ্নে থাকলে Submit দেখান
-            if (questionIndex === questions.length - 1) {
-                nextBtn.innerHTML = '📤 Submit';
-                nextBtn.onclick = submitQuiz;
-            } else {
-                // শেষ প্রশ্ন না হলে Next দেখান
-                nextBtn.innerHTML = 'Next →';
-                nextBtn.onclick = nextQuestion;
-            }
+            nextBtn.innerHTML = '📤 Submit';
+            nextBtn.onclick = submitQuiz;
             nextBtn.disabled = false;
+            nextBtn.style.display = 'flex';
+            nextBtn.style.visibility = 'visible';
+            nextBtn.style.opacity = '1';
+            nextBtn.style.background = '#28a745';
         }
     }
 }
@@ -579,7 +625,7 @@ async function submitQuiz() {
                 const footer = document.getElementById('quizFooter');
                 if (footer) footer.style.display = 'none';
             } else {
-                // ===== RETRY BUTTON - FIXED =====
+                // ===== RETRY BUTTON =====
                 quizCard.innerHTML = `
                     <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
                         <div style="font-size: 60px; margin-bottom: 10px;">😅</div>
@@ -622,7 +668,7 @@ async function submitQuiz() {
 }
 
 // ==========================================
-// RESET QUIZ - FIXED
+// RESET QUIZ
 // ==========================================
 function resetQuiz() {
     // Reset all state
@@ -636,7 +682,7 @@ function resetQuiz() {
     // Show first question
     showQuestion(0);
     
-    // ===== FIX: Ensure footer and buttons are properly reset =====
+    // Ensure footer and buttons are properly reset
     const footer = document.getElementById('quizFooter');
     if (footer) {
         footer.style.display = 'flex';
@@ -661,6 +707,7 @@ function resetQuiz() {
         nextBtn.style.opacity = '1';
         nextBtn.innerHTML = 'Next →';
         nextBtn.onclick = nextQuestion;
+        nextBtn.style.background = '#4facfe';
     }
     
     // Reset progress
