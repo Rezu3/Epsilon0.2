@@ -799,3 +799,200 @@ document.addEventListener('visibilitychange', function() {
 window.showNotices = showNotices;
 window.loadNotices = loadNotices;
 window.markNoticeRead = markNoticeRead;
+
+
+
+
+// =============================================
+// PUSH NOTIFICATION SYSTEM
+// =============================================
+
+// Check Notification Permission on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // ... আপনার existing DOMContentLoaded কোড ...
+    
+    // Check notification permission after 2 seconds
+    setTimeout(function() {
+        checkNotificationPermission();
+    }, 3000);
+});
+
+// Check notification permission status
+function checkNotificationPermission() {
+    if (!('Notification' in window)) {
+        console.log('⚠️ This browser does not support notifications');
+        return;
+    }
+    
+    // Check if already installed as PWA
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                        window.navigator.standalone === true;
+    
+    // Only show permission request if app is installed and not granted
+    if (isStandalone && Notification.permission === 'default') {
+        document.getElementById('notificationPermissionSection').style.display = 'block';
+    } else if (Notification.permission === 'granted') {
+        // Already granted, subscribe to push
+        subscribeToPush();
+    } else if (Notification.permission === 'denied') {
+        console.log('🔕 Notification permission denied');
+    }
+}
+
+// Request Notification Permission
+function requestNotificationPermission() {
+    if (!('Notification' in window)) {
+        alert('This browser does not support notifications');
+        return;
+    }
+    
+    Notification.requestPermission().then(function(permission) {
+        if (permission === 'granted') {
+            console.log('✅ Notification permission granted!');
+            document.getElementById('notificationPermissionSection').style.display = 'none';
+            
+            // Subscribe to push
+            subscribeToPush();
+            
+            // Show success message
+            showNotificationToast('✅ Notifications enabled! You will receive updates.', 'success');
+        } else if (permission === 'denied') {
+            console.log('❌ Notification permission denied');
+            document.getElementById('notificationPermissionSection').style.display = 'none';
+            showNotificationToast('⚠️ Notifications disabled. Enable from browser settings.', 'warning');
+        }
+    });
+}
+
+// Dismiss permission request
+function dismissNotificationPermission() {
+    document.getElementById('notificationPermissionSection').style.display = 'none';
+    // Store dismissal in localStorage
+    localStorage.setItem('notification_dismissed', 'true');
+}
+
+// Subscribe to Push Notifications
+function subscribeToPush() {
+    if (!('serviceWorker' in navigator)) {
+        console.log('⚠️ Service Worker not supported');
+        return;
+    }
+    
+    navigator.serviceWorker.ready.then(function(registration) {
+        // Check if already subscribed
+        registration.pushManager.getSubscription().then(function(subscription) {
+            if (subscription) {
+                console.log('✅ Already subscribed to push');
+                return;
+            }
+            
+            // Subscribe with VAPID public key
+            const applicationServerKey = urlBase64ToUint8Array(
+                'BP9fT8x3Lgk7yX5pM2nR6vW8zQ4sA1bC3dE5fG7hI9jK1lM3nO5pQ7rS9tU1vW3xY5z'
+            );
+            
+            registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: applicationServerKey
+            }).then(function(subscription) {
+                console.log('✅ Push subscription successful!');
+                
+                // Send subscription to server
+                savePushSubscription(subscription);
+                
+            }).catch(function(error) {
+                console.log('❌ Push subscription failed:', error);
+            });
+        });
+    });
+}
+
+// Save push subscription to server
+function savePushSubscription(subscription) {
+    const data = {
+        endpoint: subscription.endpoint,
+        auth_key: btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('auth')))),
+        p256dh_key: btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('p256dh'))))
+    };
+    
+    fetch('/save_push_subscription', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('✅ Push subscription saved to server');
+        } else {
+            console.log('❌ Failed to save push subscription:', data.message);
+        }
+    })
+    .catch(error => {
+        console.log('❌ Error saving push subscription:', error);
+    });
+}
+
+// Convert base64 to Uint8Array (for VAPID key)
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
+// Show notification toast
+function showNotificationToast(message, type) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        padding: 16px 24px;
+        border-radius: 12px;
+        color: white;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        z-index: 10001;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        animation: slideUp 0.5s ease-out;
+        max-width: 350px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    `;
+    
+    if (type === 'success') {
+        toast.style.background = '#48bb78';
+    } else if (type === 'warning') {
+        toast.style.background = '#ed8936';
+    } else {
+        toast.style.background = '#4a5568';
+    }
+    
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+        ${message}
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideDown 0.5s ease-in';
+        setTimeout(() => toast.remove(), 500);
+    }, 4000);
+}
+
+// Make functions globally available
+window.requestNotificationPermission = requestNotificationPermission;
+window.dismissNotificationPermission = dismissNotificationPermission;
+window.checkNotificationPermission = checkNotificationPermission;
+window.subscribeToPush = subscribeToPush;
+window.savePushSubscription = savePushSubscription;
