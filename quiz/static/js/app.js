@@ -378,7 +378,7 @@ function restoreQuizLayout() {
 }
 
 // ==========================================
-// FIXED: showQuestion function - সব প্রশ্নের উত্তর দিলে Submit আসবে
+// FIXED: showQuestion function - "Answer First" বাদ
 // ==========================================
 function showQuestion(index) {
     if (!questions || questions.length === 0) return;
@@ -412,7 +412,6 @@ function showQuestion(index) {
             btn.className = 'option-btn';
             btn.innerHTML = `<span class="option-label">${String.fromCharCode(65 + optIdx)}</span> ${optText}`;
             
-            // যদি উত্তর দেওয়া হয়ে থাকে
             if (userAnswers[index] !== undefined) {
                 btn.classList.add('disabled');
                 if (optIdx === correctAnswer) btn.classList.add('correct');
@@ -440,7 +439,7 @@ function showQuestion(index) {
         }
     }
     
-    // ===== Next button - সব প্রশ্নের উত্তর দিলেই Submit =====
+    // ===== FIXED: Next button - সবসময় Next থাকবে, "Answer First" বাদ =====
     if (nextBtn) {
         nextBtn.disabled = false;
         nextBtn.style.display = 'flex';
@@ -460,26 +459,11 @@ function showQuestion(index) {
             nextBtn.innerHTML = '📤 Submit';
             nextBtn.onclick = submitQuiz;
             nextBtn.style.background = '#28a745';
-        } else if (isLastQuestion && !allAnswered) {
-            // শেষ প্রশ্ন + সব উত্তর দেওয়া হয়নি = Last Question
-            nextBtn.innerHTML = `⚠️ Answer ${answeredCount + 1}/${totalQuestions}`;
-            nextBtn.onclick = () => {
-                showError('Please answer all questions before submitting!');
-            };
-            nextBtn.style.background = '#e53e3e';
         } else {
-            // শেষ প্রশ্ন না হলে = Next
-            if (userAnswers[index] !== undefined) {
-                nextBtn.innerHTML = 'Next →';
-                nextBtn.onclick = nextQuestion;
-                nextBtn.style.background = '#4facfe';
-            } else {
-                nextBtn.innerHTML = '⚠️ Answer First';
-                nextBtn.onclick = () => {
-                    showError('Please answer this question first!');
-                };
-                nextBtn.style.background = '#e53e3e';
-            }
+            // সব ক্ষেত্রেই Next দেখাবে
+            nextBtn.innerHTML = 'Next →';
+            nextBtn.onclick = nextQuestion;
+            nextBtn.style.background = '#4facfe';
         }
     }
 
