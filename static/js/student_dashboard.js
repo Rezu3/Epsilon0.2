@@ -591,3 +591,211 @@ document.addEventListener('keydown', function(e) {
         closeChangePassword();
     }
 });
+
+
+
+// =============================================
+// NOTICE FUNCTIONS - Student
+// =============================================
+
+// Load Notices on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // ... আপনার existing DOMContentLoaded কোড ...
+    
+    // Load notices after 1 second
+    setTimeout(function() {
+        loadNotices();
+    }, 1500);
+});
+
+// Show Notices (called from notification bell)
+function showNotices() {
+    const noticesSection = document.getElementById('noticesSection');
+    if (noticesSection) {
+        // Hide other sections
+        document.getElementById('classNotesSection').style.display = 'none';
+        document.getElementById('myExamsSection').style.display = 'none';
+        document.getElementById('resultsSection').style.display = 'none';
+        document.getElementById('rankSection').style.display = 'none';
+        document.getElementById('whatsappSection').style.display = 'none';
+        
+        // Show notices section
+        noticesSection.style.display = 'block';
+        noticesSection.scrollIntoView({ behavior: 'smooth' });
+        
+        // Highlight the section
+        noticesSection.style.transition = 'all 0.3s ease';
+        noticesSection.style.boxShadow = '0 0 0 3px #f093fb';
+        setTimeout(() => {
+            noticesSection.style.boxShadow = 'none';
+        }, 2000);
+        
+        // Reload notices
+        loadNotices();
+    }
+    closeSidebarOnMobile();
+}
+
+// Load Notices from Server
+function loadNotices() {
+    const noticesList = document.getElementById('noticesList');
+    const noticeCount = document.getElementById('noticeCount');
+    const noticeBadge = document.getElementById('noticeBadge');
+    
+    // Show loading state
+    noticesList.innerHTML = `
+        <div class="loading-notices">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading notices...</p>
+        </div>
+    `;
+    
+    fetch('/get_student_notices')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const notices = data.notices || [];
+                const unreadCount = data.unread_count || 0;
+                
+                // Update badge
+                if (noticeBadge) {
+                    noticeBadge.textContent = unreadCount;
+                    if (unreadCount > 0) {
+                        noticeBadge.style.display = 'flex';
+                        noticeBadge.style.background = '#f56565';
+                    } else {
+                        noticeBadge.style.display = 'none';
+                    }
+                }
+                
+                // Update count
+                if (noticeCount) {
+                    noticeCount.textContent = notices.length + ' Notices';
+                }
+                
+                if (notices.length === 0) {
+                    noticesList.innerHTML = `
+                        <div class="empty-notices">
+                            <i class="fas fa-bullhorn"></i>
+                            <h3>No Notices Yet</h3>
+                            <p>Your teachers will send notices here</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Display notices
+                let html = '';
+                notices.forEach(function(notice) {
+                    const isRead = notice.is_read || false;
+                    const date = new Date(notice.created_at);
+                    const dateStr = date.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    const timeStr = date.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    html += `
+                        <div class="notice-item ${isRead ? 'read' : 'unread'}" onclick="markNoticeRead(${notice.id})">
+                            <div class="notice-status-dot ${isRead ? 'read-dot' : 'unread-dot'}"></div>
+                            <div class="notice-content">
+                                <div class="notice-header">
+                                    <h4>${escapeHtml(notice.title)}</h4>
+                                    <span class="notice-date">
+                                        <i class="far fa-calendar-alt"></i> ${dateStr} at ${timeStr}
+                                    </span>
+                                </div>
+                                <p class="notice-message">${escapeHtml(notice.message)}</p>
+                                <div class="notice-footer">
+                                    <span class="notice-teacher">
+                                        <i class="fas fa-chalkboard-teacher"></i> From: ${escapeHtml(notice.teacher_name)}
+                                    </span>
+                                    ${!isRead ? '<span class="notice-unread-badge">New</span>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                noticesList.innerHTML = html;
+                
+            } else {
+                noticesList.innerHTML = `
+                    <div class="empty-notices error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>Error Loading Notices</h3>
+                        <p>${data.message || 'Please try again later'}</p>
+                        <button onclick="loadNotices()" class="retry-btn">
+                            <i class="fas fa-sync-alt"></i> Retry
+                        </button>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading notices:', error);
+            noticesList.innerHTML = `
+                <div class="empty-notices error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Connection Error</h3>
+                    <p>Unable to load notices. Please check your connection.</p>
+                    <button onclick="loadNotices()" class="retry-btn">
+                        <i class="fas fa-sync-alt"></i> Retry
+                    </button>
+                </div>
+            `;
+        });
+}
+
+// Mark Notice as Read
+function markNoticeRead(noticeId) {
+    fetch('/mark_notice_read', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ notice_id: noticeId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Reload notices to update UI
+            loadNotices();
+        }
+    })
+    .catch(error => {
+        console.error('Error marking notice as read:', error);
+    });
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Check for new notices periodically (every 30 seconds)
+setInterval(function() {
+    // Only check if page is visible
+    if (!document.hidden) {
+        loadNotices();
+    }
+}, 30000);
+
+// Listen for visibility change to reload when tab becomes active
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        loadNotices();
+    }
+});
+
+// Make functions globally available
+window.showNotices = showNotices;
+window.loadNotices = loadNotices;
+window.markNoticeRead = markNoticeRead;
