@@ -26,6 +26,12 @@
                 <i class="fas fa-home"></i>
                 <span>Home</span>
             </a>
+            <!-- ===== NOTICE NAV ITEM ===== -->
+            <a href="#" class="nav-item" onclick="showNotices()">
+                <i class="fas fa-bullhorn"></i>
+                <span>Notices <span class="notice-nav-badge" id="noticeNavBadge" style="display:none; background:#f56565; color:white; border-radius:50%; padding:2px 8px; font-size:11px; margin-left:8px;">0</span></span>
+            </a>
+            <!-- ===== NOTICE END ===== -->
             <a href="#" class="nav-item" onclick="showClassNotes()">
                 <i class="fas fa-book"></i>
                 <span>Class Notes</span>
@@ -43,9 +49,9 @@
                 <span>Rank</span>
             </a>
             <!-- ===== QUIZ - Blueprint URL ===== -->
-             <a href="{{ url_for('quiz.quiz_home') }}" class="nav-item quiz-nav">
-           <i class="fas fa-question-circle"></i>
-            <span>Quiz</span>
+            <a href="{{ url_for('quiz.quiz_home') }}" class="nav-item quiz-nav">
+                <i class="fas fa-question-circle"></i>
+                <span>Quiz</span>
             </a>
             <!-- ===== QUIZ END ===== -->
             <a href="#" class="nav-item" onclick="showWhatsApp()">
@@ -93,10 +99,12 @@
                     <i class="far fa-calendar-alt"></i>
                     <span id="currentDateTime"></span>
                 </div>
-                <div class="notification-bell">
+                <!-- ===== NOTIFICATION BELL - CLICK TO SHOW NOTICES ===== -->
+                <div class="notification-bell" onclick="showNotices()">
                     <i class="fas fa-bell"></i>
-                    <span class="badge">2</span>
+                    <span class="badge" id="noticeBadge">0</span>
                 </div>
+                <!-- ===== NOTIFICATION BELL END ===== -->
                 <div class="student-profile">
                     <span class="student-name">{{ student.name if student else 'Student' }}</span>
                     <img src="https://ui-avatars.com/api/?name={{ student.name if student else 'Student' }}&background=4facfe&color=fff&size=40" alt="Student" class="profile-img">
@@ -188,7 +196,26 @@
                 </div>
             </div>
         </div>
-
+        <!-- ============================================= -->
+        <!-- PUSH NOTIFICATION PERMISSION -->
+        <!-- ============================================= -->
+        <div class="notification-permission-section" id="notificationPermissionSection" style="display: none;">
+            <div class="permission-card">
+                <div class="permission-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="permission-content">
+                    <h4>Enable Notifications</h4>
+                    <p>Get instant notifications about new notices, exam updates, and results</p>
+                </div>
+                <button class="enable-notification-btn" onclick="requestNotificationPermission()">
+                    <i class="fas fa-check-circle"></i> Enable Notifications
+                </button>
+                <button class="skip-notification-btn" onclick="dismissNotificationPermission()">
+                    <i class="fas fa-times"></i> Skip
+                </button>
+            </div>
+        </div>
         <!-- Class Notes Section -->
         <div class="class-notes-section" id="classNotesSection" style="display: none;">
             <div class="section-header">
@@ -317,6 +344,29 @@
                         <p>No results available yet</p>
                     </div>
                 {% endif %}
+            </div>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- NOTICES SECTION - Student Notice View -->
+        <!-- ============================================= -->
+        <div class="notices-section" id="noticesSection" style="display: none;">
+            <div class="section-header">
+                <h2><i class="fas fa-bullhorn"></i> Notices</h2>
+                <div class="section-actions">
+                    <span class="total-count" id="noticeCount">0 Notices</span>
+                    <button class="refresh-btn" onclick="loadNotices()" title="Refresh Notices">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="notices-list" id="noticesList">
+                <!-- Notices will be loaded here dynamically -->
+                <div class="loading-notices">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading notices...</p>
+                </div>
             </div>
         </div>
 
