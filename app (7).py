@@ -1,0 +1,2128 @@
+from flask import Flask, render_template, request, redirect, session, flash, url_for, jsonify, send_file
+import sqlite3
+import os
+from datetime import datetime
+
+# ===== QUIZ BLUEPRINT IMPORT =====
+from quiz import quiz_bp
+
+app = Flask(__name__)
+app.secret_key = "tution_management_secret_key_2026"
+
+# ===== যোগ করুন =====
+ADMIN_USERNAME = "Epsilon"
+ADMIN_PASSWORD = "885410"
+
+# ------------------------
+# Database configuration
+# ------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "tution.db")
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_database():
+    """Initialize database with all required tables"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+
+ 
+    
+    # ... আপনার অন্যান্য TABLE গুলো ...
+    
+    # ===== NOTICES TABLE =====
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS notices (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            teacher_id INTEGER NOT NULL,
+            teacher_name TEXT NOT NULL,
+            title TEXT NOT NULL,
+            message TEXT NOT NULL,
+            target_class TEXT,
+            target_subject TEXT,
+            is_global BOOLEAN DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (teacher_id) REFERENCES teachers(id)
+        )
+    ''')
+    
+    # ===== STUDENT_NOTICES TABLE =====
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS student_notices (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            notice_id INTEGER NOT NULL,
+            student_id INTEGER NOT NULL,
+            is_read BOOLEAN DEFAULT 0,
+            read_at TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (notice_id) REFERENCES notices(id),
+            FOREIGN KEY (student_id) REFERENCES students(id),
+            UNIQUE(notice_id, student_id)
+        )
+    ''')
+    
+    # ===== PUSH_SUBSCRIPTIONS TABLE =====
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS push_subscriptions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER NOT NULL,
+            endpoint TEXT NOT NULL,
+            auth_key TEXT NOT NULL,
+            p256dh_key TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_id) REFERENCES students(id),
+            UNIQUE(student_id, endpoint)
+        )
+    ''')
+    
+      
+    
+    
+    # Teachers table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS teachers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            phone TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    # Students table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            class TEXT NOT NULL,
+            school TEXT NOT NULL,
+            phone TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            fees_total REAL DEFAULT 0,
+            fees_paid REAL DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    # Exams table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS exams (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            exam_name TEXT NOT NULL,
+            teacher_name TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            full_marks INTEGER NOT NULL,
+            exam_date DATE NOT NULL,
+            exam_type TEXT DEFAULT 'offline',
+            exam_time TEXT,
+            duration INTEGER DEFAULT 0,
+            class TEXT,
+            status TEXT DEFAULT 'Upcoming',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    # Results table (পুরনো - offline exam এর জন্য)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS results_offline (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            exam_id INTEGER NOT NULL,
+            student_id INTEGER NOT NULL,
+            marks REAL DEFAULT 0,
+            grade TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (exam_id) REFERENCES exams(id),
+            FOREIGN KEY (student_id) REFERENCES students(id)
+        )
+    ''')
+    
+    # ===== NEW: Results table for Quiz =====
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            exam_id INTEGER,
+            student_id INTEGER NOT NULL,
+            marks REAL DEFAULT 0,
+            grade TEXT,
+            quiz_subject TEXT,
+            quiz_chapter TEXT,
+            quiz_batch TEXT,
+            total_questions INTEGER DEFAULT 0,
+            correct_answers INTEGER DEFAULT 0,
+            percentage REAL DEFAULT 0,
+            is_completed BOOLEAN DEFAULT 0,
+            completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (exam_id) REFERENCES exams(id),
+            FOREIGN KEY (student_id) REFERENCES students(id)
+        )
+    ''')
+    
+    # ===== NEW: quiz_progress table =====
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS quiz_progress (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER NOT NULL,
+            batch_id TEXT NOT NULL,
+            subject_id TEXT NOT NULL,
+            chapter_id TEXT NOT NULL,
+            is_completed BOOLEAN DEFAULT 0,
+            score INTEGER DEFAULT 0,
+            total INTEGER DEFAULT 0,
+            percentage REAL DEFAULT 0,
+            completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_id) REFERENCES students(id),
+            UNIQUE(student_id, batch_id, subject_id, chapter_id)
+        )
+    ''')
+    
+    # Quizzes table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS quizzes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            quiz_name TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            total_marks INTEGER DEFAULT 10,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    # Study Materials table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS study_materials (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            class TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            topic TEXT NOT NULL,
+            filename TEXT NOT NULL,
+            file_path TEXT NOT NULL,
+            file_type TEXT NOT NULL,
+            uploaded_by TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    # ===== Check and add missing columns to results table =====
+    try:
+        cursor.execute("PRAGMA table_info(results)")
+        columns = [col['name'] for col in cursor.fetchall()]
+        
+        if 'quiz_subject' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN quiz_subject TEXT")
+        if 'quiz_chapter' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN quiz_chapter TEXT")
+        if 'quiz_batch' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN quiz_batch TEXT")
+        if 'total_questions' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN total_questions INTEGER DEFAULT 0")
+        if 'correct_answers' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN correct_answers INTEGER DEFAULT 0")
+        if 'percentage' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN percentage REAL DEFAULT 0")
+        if 'is_completed' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN is_completed BOOLEAN DEFAULT 0")
+        if 'completed_at' not in columns:
+            cursor.execute("ALTER TABLE results ADD COLUMN completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    except Exception as e:
+        print(f"⚠️ Note: {e}")
+    
+    conn.commit()
+    conn.close()
+    print("✅ Database initialized successfully!")
+
+# ===== DATABASE INITIALIZE =====
+init_database()
+
+# ------------------------
+# Database Download Route
+# ------------------------
+@app.route("/download_database")
+def download_database():
+    """Download the database file"""
+    try:
+        if os.path.exists(DB_PATH):
+            return send_file(DB_PATH, as_attachment=True, download_name='tution.db')
+        else:
+            flash('Database file not found!', 'error')
+            return redirect(url_for('login'))
+    except Exception as e:
+        flash('Error downloading database: ' + str(e), 'error')
+        return redirect(url_for('login'))
+
+# ------------------------
+# Login Page
+# ------------------------
+@app.route("/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        login_type = request.form.get("login_type")
+        phone = request.form.get("phone")
+        password = request.form.get("password")
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        if login_type == "admin":
+            if phone == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+                session['user_type'] = 'admin'
+                session['user_id'] = 0
+                session['username'] = ADMIN_USERNAME
+                conn.close()
+                flash('Login successful! Welcome Admin.', 'success')
+                return redirect(url_for('admin_dashboard'))
+            else:
+                conn.close()
+                flash('Invalid admin credentials! Please try again.', 'error')
+                return redirect(url_for('login'))
+        
+        elif login_type == "teacher":
+            cursor.execute('SELECT * FROM teachers WHERE phone = ? AND password = ?', 
+                          (phone, password))
+            user = cursor.fetchone()
+            if user:
+                session['user_type'] = 'teacher'
+                session['user_id'] = user['id']
+                session['username'] = user['name']
+                conn.close()
+                flash('Login successful! Welcome Teacher.', 'success')
+                return redirect(url_for('teacher_home'))
+                
+        elif login_type == "student":
+            cursor.execute('SELECT * FROM students WHERE phone = ? AND password = ?', 
+                          (phone, password))
+            user = cursor.fetchone()
+            if user:
+                session['user_type'] = 'student'
+                session['user_id'] = user['id']
+                session['username'] = user['name']
+                # ===== STUDENT CLASS SAVE IN SESSION =====
+                session['student_class'] = user['class']
+                conn.close()
+                flash('Login successful! Welcome Student.', 'success')
+                return redirect(url_for('student_dashboard'))
+        
+        conn.close()
+        flash('Invalid credentials! Please try again.', 'error')
+        return redirect(url_for('login'))
+    
+    return render_template('login.html')
+
+# ===== YOUR OTHER ROUTES (teacher_register, student_register, admin_dashboard, etc.) =====
+# ... আপনার অন্যান্য রাউট গুলো এখানে থাকবে ...
+
+ 
+# ------------------------
+# Registration Pages
+# ------------------------
+@app.route("/teacher_register", methods=["GET", "POST"])
+def teacher_register():
+    if request.method == "POST":
+        name = request.form.get("name")
+        phone = request.form.get("phone")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+        
+        if not name or not phone or not password:
+            flash('All fields are required!', 'error')
+            return render_template('teacher_register.html')
+        
+        if password != confirm_password:
+            flash('Passwords do not match!', 'error')
+            return render_template('teacher_register.html')
+        
+        if len(password) < 6:
+            flash('Password must be at least 6 characters!', 'error')
+            return render_template('teacher_register.html')
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        try:
+            cursor.execute('INSERT INTO teachers (name, phone, password) VALUES (?, ?, ?)',
+                          (name, phone, password))
+            conn.commit()
+            flash('Teacher registration successful! Please login.', 'success')
+            conn.close()
+            return redirect(url_for('login'))
+        except sqlite3.IntegrityError:
+            flash('Phone number already registered!', 'error')
+            conn.close()
+            return render_template('teacher_register.html')
+    
+    return render_template('teacher_register.html')
+
+@app.route("/student_register", methods=["GET", "POST"])
+def student_register():
+    if request.method == "POST":
+        name = request.form.get("name")
+        class_name = request.form.get("class")
+        school = request.form.get("school")
+        phone = request.form.get("phone")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+        
+        if not all([name, class_name, school, phone, password]):
+            flash('All fields are required!', 'error')
+            return render_template('student_register.html')
+        
+        if password != confirm_password:
+            flash('Passwords do not match!', 'error')
+            return render_template('student_register.html')
+        
+        if len(password) < 6:
+            flash('Password must be at least 6 characters!', 'error')
+            return render_template('student_register.html')
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        try:
+            cursor.execute('''INSERT INTO students 
+                          (name, class, school, phone, password) 
+                          VALUES (?, ?, ?, ?, ?)''',
+                          (name, class_name, school, phone, password))
+            conn.commit()
+            flash('Student registration successful! Please login.', 'success')
+            conn.close()
+            return redirect(url_for('login'))
+        except sqlite3.IntegrityError:
+            flash('Phone number already registered!', 'error')
+            conn.close()
+            return render_template('student_register.html')
+    
+    return render_template('student_register.html')
+
+# ------------------------
+# Admin Dashboard
+# ------------------------
+@app.route("/admin_dashboard")
+def admin_dashboard():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        flash('Please login as admin first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT COUNT(*) as count FROM students')
+    total_students = cursor.fetchone()['count']
+    
+    cursor.execute('SELECT COUNT(*) as count FROM teachers')
+    total_teachers = cursor.fetchone()['count']
+    
+    cursor.execute('SELECT SUM(fees_total) as total, SUM(fees_paid) as paid FROM students')
+    fees_data = cursor.fetchone()
+    total_fees = fees_data['total'] or 0
+    total_paid = fees_data['paid'] or 0
+    total_due = total_fees - total_paid
+    
+    conn.close()
+    
+    return render_template('admin_dashboard.html', 
+                         total_students=total_students,
+                         total_teachers=total_teachers,
+                         total_fees=total_fees,
+                         total_paid=total_paid,
+                         total_due=total_due)
+
+# ------------------------
+# Teacher Home
+# ------------------------
+@app.route("/teacher_home")
+def teacher_home():
+    if 'user_type' not in session or session['user_type'] != 'teacher':
+        flash('Please login as teacher first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Get all students
+    cursor.execute('SELECT * FROM students ORDER BY created_at DESC')
+    students = cursor.fetchall()
+    
+    # Get unique classes count
+    cursor.execute('SELECT COUNT(DISTINCT class) as count FROM students')
+    class_count = cursor.fetchone()['count']
+    
+    # Get total exams count
+    cursor.execute('SELECT COUNT(*) as count FROM exams')
+    total_exams = cursor.fetchone()['count']
+    
+    # Get study materials
+    cursor.execute('SELECT * FROM study_materials ORDER BY created_at DESC')
+    study_materials = cursor.fetchall()
+    
+    conn.close()
+    
+    return render_template('teacher_home.html', 
+                         students=students,
+                         class_count=class_count,
+                         total_exams=total_exams,
+                         study_materials=study_materials)
+
+# ------------------------
+# View Student Dashboard as Teacher
+# ------------------------
+@app.route("/student_dashboard_as_teacher/<int:student_id>")
+def student_dashboard_as_teacher(student_id):
+    if 'user_type' not in session or session['user_type'] != 'teacher':
+        flash('Please login as teacher first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Get student info
+    cursor.execute('SELECT * FROM students WHERE id = ?', (student_id,))
+    student = cursor.fetchone()
+    
+    if not student:
+        flash('Student not found!', 'error')
+        return redirect(url_for('teacher_home'))
+    
+    # Get student's results
+    cursor.execute('''
+        SELECT r.*, e.exam_name, e.subject, e.full_marks, e.exam_date
+        FROM results r
+        JOIN exams e ON r.exam_id = e.id
+        WHERE r.student_id = ?
+        ORDER BY r.created_at DESC
+    ''', (student_id,))
+    student_results = cursor.fetchall()
+    
+    # Get total students count
+    cursor.execute('SELECT COUNT(*) as count FROM students')
+    total_students = cursor.fetchone()['count']
+    
+    # Get student's rank
+    cursor.execute('''
+        SELECT student_id, SUM(marks) as total_marks
+        FROM results
+        GROUP BY student_id
+        ORDER BY total_marks DESC
+    ''')
+    all_ranks = cursor.fetchall()
+    
+    student_rank = None
+    rank_percentage = 0
+    
+    for idx, row in enumerate(all_ranks):
+        if row['student_id'] == student_id:
+            student_rank = idx + 1
+            if total_students > 0:
+                rank_percentage = round((student_rank / total_students) * 100, 1)
+            break
+    
+    # Get class rank
+    if student:
+        cursor.execute('''
+            SELECT s.id, SUM(r.marks) as total_marks
+            FROM results r
+            JOIN students s ON r.student_id = s.id
+            WHERE s.class = ?
+            GROUP BY r.student_id
+            ORDER BY total_marks DESC
+        ''', (student['class'],))
+        class_ranks = cursor.fetchall()
+        
+        class_rank = None
+        for idx, row in enumerate(class_ranks):
+            if row['id'] == student_id:
+                class_rank = idx + 1
+                break
+    else:
+        class_rank = None
+    
+    # Get total exams taken
+    cursor.execute('SELECT COUNT(*) as count FROM results WHERE student_id = ?', (student_id,))
+    total_exams_taken = cursor.fetchone()['count']
+    
+    # Get class notes
+    cursor.execute('''
+        SELECT * FROM study_materials 
+        WHERE class = ? 
+        ORDER BY created_at DESC
+    ''', (student['class'],))
+    class_notes = cursor.fetchall()
+    
+    # Get online exams for this student's class
+    cursor.execute('''
+        SELECT * FROM exams 
+        WHERE exam_type = 'online' 
+        AND class = ?
+        ORDER BY created_at DESC
+    ''', (student['class'],))
+    my_exams = cursor.fetchall()
+    
+    conn.close()
+    
+    return render_template('student_dashboard.html', 
+                         student=student,
+                         student_results=student_results,
+                         total_students=total_students,
+                         student_rank=student_rank,
+                         class_rank=class_rank,
+                         rank_percentage=rank_percentage,
+                         total_exams_taken=total_exams_taken,
+                         class_notes=class_notes,
+                         my_exams=my_exams)
+
+# ------------------------
+# Study Material Routes
+# ------------------------
+@app.route("/upload_study_material", methods=["POST"])
+def upload_study_material():
+    if 'user_type' not in session or session['user_type'] != 'teacher':
+        flash('Unauthorized access!', 'error')
+        return redirect(url_for('login'))
+    
+    class_name = request.form.get('class')
+    subject = request.form.get('subject')
+    topic = request.form.get('topic')
+    file = request.files.get('file')
+    
+    if not all([class_name, subject, topic, file]):
+        flash('All fields are required!', 'error')
+        return redirect(url_for('teacher_home'))
+    
+    # Create study_materials directory if not exists
+    upload_dir = os.path.join(BASE_DIR, 'static', 'study_materials')
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+    
+    # Save file
+    filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{file.filename}"
+    file_path = os.path.join(upload_dir, filename)
+    file.save(file_path)
+    
+    # Get file extension
+    file_ext = file.filename.split('.')[-1].lower()
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('''
+            INSERT INTO study_materials (class, subject, topic, filename, file_path, file_type, uploaded_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (class_name, subject, topic, file.filename, filename, file_ext, session['username']))
+        
+        conn.commit()
+        flash('Study material uploaded successfully!', 'success')
+    except Exception as e:
+        flash('Error uploading: ' + str(e), 'error')
+    finally:
+        conn.close()
+    
+    return redirect(url_for('teacher_home'))
+
+@app.route("/download_material/<int:material_id>")
+def download_material(material_id):
+    if 'user_type' not in session:
+        flash('Please login first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM study_materials WHERE id = ?', (material_id,))
+    material = cursor.fetchone()
+    conn.close()
+    
+    if not material:
+        flash('Material not found!', 'error')
+        return redirect(url_for('teacher_home'))
+    
+    file_path = os.path.join(BASE_DIR, 'static', 'study_materials', material['file_path'])
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True, download_name=material['filename'])
+    else:
+        flash('File not found!', 'error')
+        return redirect(url_for('teacher_home'))
+
+@app.route("/delete_material/<int:material_id>", methods=["POST"])
+def delete_material(material_id):
+    if 'user_type' not in session or session['user_type'] != 'teacher':
+        flash('Unauthorized access!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM study_materials WHERE id = ?', (material_id,))
+    material = cursor.fetchone()
+    
+    if material:
+        # Delete file from disk
+        file_path = os.path.join(BASE_DIR, 'static', 'study_materials', material['file_path'])
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        
+        # Delete from database
+        cursor.execute('DELETE FROM study_materials WHERE id = ?', (material_id,))
+        conn.commit()
+        flash('Material deleted successfully!', 'success')
+    else:
+        flash('Material not found!', 'error')
+    
+    conn.close()
+    return redirect(url_for('teacher_home'))
+
+# ------------------------
+# Exam Routes
+# ------------------------
+@app.route("/exam")
+def exam():
+    if 'user_type' not in session:
+        flash('Please login first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Check and add new columns if not exists
+    cursor.execute("PRAGMA table_info(exams)")
+    columns = [col['name'] for col in cursor.fetchall()]
+    
+    if 'exam_type' not in columns:
+        cursor.execute("ALTER TABLE exams ADD COLUMN exam_type TEXT DEFAULT 'offline'")
+    if 'exam_time' not in columns:
+        cursor.execute("ALTER TABLE exams ADD COLUMN exam_time TEXT")
+    if 'duration' not in columns:
+        cursor.execute("ALTER TABLE exams ADD COLUMN duration INTEGER DEFAULT 0")
+    if 'class' not in columns:
+        cursor.execute("ALTER TABLE exams ADD COLUMN class TEXT")
+    if 'status' not in columns:
+        cursor.execute("ALTER TABLE exams ADD COLUMN status TEXT DEFAULT 'Upcoming'")
+    
+    cursor.execute('SELECT * FROM exams ORDER BY created_at DESC')
+    exams = cursor.fetchall()
+    
+    cursor.execute('SELECT name FROM teachers ORDER BY name')
+    teachers = cursor.fetchall()
+    
+    cursor.execute('SELECT DISTINCT class FROM students ORDER BY class')
+    all_students = cursor.fetchall()
+    
+    conn.close()
+    
+    if session['user_type'] == 'admin':
+        return render_template('exam.html', exams=exams, teachers=teachers, all_students=all_students, user_type='admin')
+    elif session['user_type'] == 'teacher':
+        return render_template('exam.html', exams=exams, teachers=teachers, all_students=all_students, user_type='teacher')
+    else:
+        return render_template('exam.html', exams=exams, teachers=teachers, all_students=all_students, user_type='student')
+
+@app.route("/add_exam", methods=["POST"])
+def add_exam():
+    if 'user_type' not in session:
+        flash('Please login first!', 'error')
+        return redirect(url_for('login'))
+    
+    exam_name = request.form.get('exam_name')
+    teacher_name = request.form.get('teacher_name')
+    subject = request.form.get('subject')
+    full_marks = request.form.get('full_marks')
+    exam_date = request.form.get('exam_date')
+    exam_type = request.form.get('exam_type', 'offline')
+    
+    # Online exam fields
+    exam_time = request.form.get('exam_time', '')
+    duration = request.form.get('duration', '')
+    exam_class = request.form.get('class', '')
+    
+    if not all([exam_name, teacher_name, subject, full_marks, exam_date]):
+        flash('All fields are required!', 'error')
+        return redirect(url_for('exam'))
+    
+    # Online exam validation
+    if exam_type == 'online':
+        if not exam_time or not duration or not exam_class:
+            flash('For online exam, Time, Duration and Class are required!', 'error')
+            return redirect(url_for('exam'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Offline exam এ empty string কে None করে দিচ্ছি
+        if exam_type == 'offline':
+            exam_time = None
+            duration = None
+            exam_class = None
+        
+        cursor.execute('''
+            INSERT INTO exams (exam_name, teacher_name, subject, full_marks, exam_date, exam_type, exam_time, duration, class, status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (exam_name, teacher_name, subject, full_marks, exam_date, exam_type, exam_time, duration, exam_class, 'Upcoming'))
+        
+        conn.commit()
+        flash('Exam created successfully!', 'success')
+        
+    except Exception as e:
+        flash('Error creating exam: ' + str(e), 'error')
+        print(f"❌ Error: {e}")
+    finally:
+        conn.close()
+    
+    return redirect(url_for('exam'))
+
+@app.route("/delete_exam/<int:exam_id>", methods=["POST"])
+def delete_exam(exam_id):
+    if 'user_type' not in session:
+        flash('Please login first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('DELETE FROM exams WHERE id = ?', (exam_id,))
+        conn.commit()
+        flash('Exam deleted successfully!', 'success')
+    except Exception as e:
+        flash('Error deleting exam: ' + str(e), 'error')
+    finally:
+        conn.close()
+    
+    return redirect(url_for('exam'))
+
+
+
+# =============================================
+# 🔥 GET EXAM DATA FOR EDITING
+# =============================================
+@app.route("/get_exam_data/<int:exam_id>")
+def get_exam_data(exam_id):
+    if 'user_type' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM exams WHERE id = ?', (exam_id,))
+    exam = cursor.fetchone()
+    conn.close()
+    
+    if exam:
+        return jsonify(dict(exam))
+    else:
+        return jsonify({'error': 'Exam not found'}), 404
+
+# =============================================
+# 🔥 EDIT EXAM
+# =============================================
+@app.route("/edit_exam/<int:exam_id>", methods=["POST"])
+def edit_exam(exam_id):
+    if 'user_type' not in session:
+        flash('Please login first!', 'error')
+        return redirect(url_for('login'))
+    
+    exam_name = request.form.get('exam_name')
+    teacher_name = request.form.get('teacher_name')
+    subject = request.form.get('subject')
+    full_marks = request.form.get('full_marks')
+    exam_date = request.form.get('exam_date')
+    exam_type = request.form.get('exam_type', 'offline')
+    
+    # Online exam fields
+    exam_time = request.form.get('exam_time', '')
+    duration = request.form.get('duration', '')
+    exam_class = request.form.get('class', '')
+    
+    if not all([exam_name, teacher_name, subject, full_marks, exam_date]):
+        flash('All fields are required!', 'error')
+        return redirect(url_for('exam'))
+    
+    # Online exam validation
+    if exam_type == 'online':
+        if not exam_time or not duration or not exam_class:
+            flash('For online exam, Time, Duration and Class are required!', 'error')
+            return redirect(url_for('exam'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        if exam_type == 'offline':
+            exam_time = None
+            duration = None
+            exam_class = None
+        
+        cursor.execute('''
+            UPDATE exams 
+            SET exam_name = ?, teacher_name = ?, subject = ?, full_marks = ?, 
+                exam_date = ?, exam_type = ?, exam_time = ?, duration = ?, class = ?
+            WHERE id = ?
+        ''', (exam_name, teacher_name, subject, full_marks, exam_date, exam_type, 
+              exam_time, duration, exam_class, exam_id))
+        
+        conn.commit()
+        flash('Exam updated successfully!', 'success')
+        
+    except Exception as e:
+        flash('Error updating exam: ' + str(e), 'error')
+        print(f"❌ Error: {e}")
+    finally:
+        conn.close()
+    
+    return redirect(url_for('exam'))
+# ------------------------
+# Result Routes
+# ------------------------
+# ------------------------
+# Result Routes
+# ------------------------
+def calculate_grade(marks, full_marks):
+    if full_marks <= 0:
+        return 'N/A'
+    
+    try:
+        marks = float(marks)
+    except (ValueError, TypeError):
+        return 'N/A'
+    
+    percentage = (marks / full_marks) * 100
+    
+    if percentage >= 80:
+        return 'A+'
+    elif percentage >= 70:
+        return 'A'
+    elif percentage >= 60:
+        return 'A-'
+    elif percentage >= 50:
+        return 'B'
+    elif percentage >= 40:
+        return 'C'
+    elif percentage >= 33:
+        return 'D'
+    else:
+        return 'F'
+
+@app.route("/results")
+def results():
+    if 'user_type' not in session:
+        flash('Please login first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT id, exam_name, subject, full_marks FROM exams ORDER BY created_at DESC')
+    exams = cursor.fetchall()
+    
+    cursor.execute('SELECT DISTINCT class FROM students ORDER BY class')
+    classes = cursor.fetchall()
+    
+    conn.close()
+    
+    if session['user_type'] == 'admin':
+        return render_template('results.html', exams=exams, classes=classes, user_type='admin')
+    elif session['user_type'] == 'teacher':
+        return render_template('results.html', exams=exams, classes=classes, user_type='teacher')
+    else:
+        return render_template('results.html', exams=exams, classes=classes, user_type='student')
+
+@app.route("/get_students_by_class", methods=["POST"])
+def get_students_by_class():
+    if 'user_type' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    class_name = request.form.get('class_name')
+    exam_id = request.form.get('exam_id')
+    
+    if not class_name or not exam_id:
+        return jsonify({'error': 'Missing parameters'}), 400
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT * FROM students WHERE class = ? ORDER BY name', (class_name,))
+    students = cursor.fetchall()
+    
+    cursor.execute('SELECT id, exam_name, subject, full_marks FROM exams WHERE id = ?', (exam_id,))
+    exam = cursor.fetchone()
+    
+    if exam:
+        # results এর সাথে result_id ও নিন
+        cursor.execute('SELECT id as result_id, student_id, marks FROM results WHERE exam_id = ?', (exam_id,))
+        results = cursor.fetchall()
+        result_dict = {r['student_id']: r for r in results}
+        
+        students_list = []
+        for student in students:
+            student_dict = dict(student)
+            result = result_dict.get(student['id'])
+            if result:
+                student_dict['marks'] = result['marks']
+                student_dict['result_id'] = result['result_id']
+                student_dict['grade'] = calculate_grade(float(result['marks']), exam['full_marks'])
+            else:
+                student_dict['marks'] = ''
+                student_dict['result_id'] = None
+                student_dict['grade'] = ''
+            students_list.append(student_dict)
+    else:
+        students_list = [dict(student) for student in students]
+    
+    conn.close()
+    
+    return render_template('partials/student_marks.html', students=students_list, exam=exam)
+
+@app.route("/save_results", methods=["POST"])
+def save_results():
+    if 'user_type' not in session:
+        flash('Please login first!', 'error')
+        return redirect(url_for('login'))
+    
+    exam_id = request.form.get('exam_id')
+    student_ids = request.form.getlist('student_id[]')
+    marks = request.form.getlist('marks[]')
+    
+    if not exam_id or not student_ids:
+        flash('No data to save!', 'error')
+        return redirect(url_for('results'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT full_marks FROM exams WHERE id = ?', (exam_id,))
+    exam = cursor.fetchone()
+    full_marks = exam['full_marks'] if exam else 100
+    
+    try:
+        for i, student_id in enumerate(student_ids):
+            mark = marks[i] if i < len(marks) and marks[i] else 0
+            mark = float(mark) if mark else 0
+            
+            grade = calculate_grade(mark, full_marks)
+            
+            cursor.execute('SELECT * FROM results WHERE exam_id = ? AND student_id = ?', 
+                          (exam_id, student_id))
+            existing = cursor.fetchone()
+            
+            if existing:
+                cursor.execute('''UPDATE results SET marks = ?, grade = ? 
+                              WHERE exam_id = ? AND student_id = ?''',
+                              (mark, grade, exam_id, student_id))
+            else:
+                cursor.execute('''INSERT INTO results (exam_id, student_id, marks, grade) 
+                              VALUES (?, ?, ?, ?)''',
+                              (exam_id, student_id, mark, grade))
+        
+        conn.commit()
+        flash('Results saved successfully!', 'success')
+    except Exception as e:
+        conn.rollback()
+        flash('Error saving results: ' + str(e), 'error')
+    finally:
+        conn.close()
+    
+    return redirect(url_for('results'))
+
+# =============================================
+# 🔥 DELETE RESULT - JSON Response (AJAX এর জন্য)
+# =============================================
+@app.route("/delete_result/<int:result_id>", methods=["POST"])
+def delete_result(result_id):
+    if 'user_type' not in session:
+        return jsonify({'success': False, 'message': 'Please login first!'}), 401
+    
+    # Admin এবং Teacher ডিলিট করতে পারবে
+    if session['user_type'] not in ['admin', 'teacher']:
+        return jsonify({'success': False, 'message': 'Unauthorized access!'}), 403
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Check if result exists
+        cursor.execute('SELECT * FROM results WHERE id = ?', (result_id,))
+        result = cursor.fetchone()
+        
+        if not result:
+            return jsonify({'success': False, 'message': 'Result not found!'}), 404
+        
+        # Get exam_id and student_id for logging
+        exam_id = result['exam_id']
+        student_id = result['student_id']
+        
+        # Delete the result
+        cursor.execute('DELETE FROM results WHERE id = ?', (result_id,))
+        conn.commit()
+        
+        print(f"✅ Result deleted: exam_id={exam_id}, student_id={student_id}")
+        
+        return jsonify({'success': True, 'message': 'Result deleted successfully! Student can retake the exam.'})
+        
+    except Exception as e:
+        print(f"❌ Delete error: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        conn.close()
+# ------------------------
+# Rank Routes
+# ------------------------
+@app.route("/rank")
+def rank():
+    if 'user_type' not in session:
+        flash('Please login first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Get all exams
+    cursor.execute('SELECT id, exam_name, subject, full_marks FROM exams ORDER BY created_at DESC')
+    exams = cursor.fetchall()
+    
+    # Get all distinct classes
+    cursor.execute('SELECT DISTINCT class FROM students ORDER BY class')
+    classes = cursor.fetchall()
+    
+    conn.close()
+    
+    if session['user_type'] == 'admin':
+        return render_template('rank.html', exams=exams, classes=classes, user_type='admin')
+    elif session['user_type'] == 'teacher':
+        return render_template('rank.html', exams=exams, classes=classes, user_type='teacher')
+    else:
+        return render_template('rank.html', exams=exams, classes=classes, user_type='student')
+
+@app.route("/get_rank_data", methods=["POST"])
+def get_rank_data():
+    if 'user_type' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    class_name = request.form.get('class_name')
+    exam_id = request.form.get('exam_id')
+    
+    if not class_name or not exam_id:
+        return jsonify({'error': 'Missing parameters'}), 400
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Get students by class with their results
+    cursor.execute('''
+        SELECT s.id, s.name, s.class, s.school, 
+               r.marks, r.grade,
+               e.full_marks, e.exam_name, e.subject
+        FROM students s
+        LEFT JOIN results r ON s.id = r.student_id AND r.exam_id = ?
+        LEFT JOIN exams e ON e.id = ?
+        WHERE s.class = ?
+        ORDER BY r.marks DESC NULLS LAST
+    ''', (exam_id, exam_id, class_name))
+    
+    students = cursor.fetchall()
+    
+    # Get exam details
+    cursor.execute('SELECT exam_name, subject, full_marks FROM exams WHERE id = ?', (exam_id,))
+    exam = cursor.fetchone()
+    
+    conn.close()
+    
+    return render_template('partials/rank_list.html', students=students, exam=exam, class_name=class_name)
+
+# ------------------------
+# Online Test Routes
+# ------------------------
+@app.route("/online_test/<int:exam_id>")
+def online_test(exam_id):
+    if 'user_type' not in session or session['user_type'] != 'student':
+        flash('Please login as student first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Get exam details
+    cursor.execute('SELECT * FROM exams WHERE id = ? AND exam_type = "online"', (exam_id,))
+    exam = cursor.fetchone()
+    
+    if not exam:
+        flash('Exam not found!', 'error')
+        return redirect(url_for('student_dashboard'))
+    
+    # Check if student has already taken this exam
+    cursor.execute('SELECT * FROM results WHERE exam_id = ? AND student_id = ?', 
+                  (exam_id, session['user_id']))
+    existing_result = cursor.fetchone()
+    
+    if existing_result:
+        flash('You have already taken this test!', 'error')
+        return redirect(url_for('student_dashboard'))
+    
+    conn.close()
+    
+    return render_template('test.html', exam=exam)
+
+# ------------------------
+# Submit Online Test (JSON)
+# ------------------------
+@app.route("/submit_online_test", methods=["POST"])
+def submit_online_test():
+    if 'user_type' not in session or session['user_type'] != 'student':
+        return jsonify({'success': False, 'error': 'Unauthorized'}), 401
+    
+    data = request.get_json()
+    exam_id = data.get('exam_id')
+    marks = data.get('marks', 0)
+    grade = data.get('grade', '')
+    
+    if not exam_id:
+        return jsonify({'success': False, 'error': 'Exam ID required'}), 400
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Check if already submitted
+    cursor.execute('SELECT * FROM results WHERE exam_id = ? AND student_id = ?', 
+                  (exam_id, session['user_id']))
+    existing = cursor.fetchone()
+    
+    if existing:
+        conn.close()
+        return jsonify({'success': False, 'error': 'Already submitted'}), 400
+    
+    try:
+        cursor.execute('''
+            INSERT INTO results (exam_id, student_id, marks, grade)
+            VALUES (?, ?, ?, ?)
+        ''', (exam_id, session['user_id'], marks, grade))
+        
+        conn.commit()
+        conn.close()
+        return jsonify({'success': True, 'message': 'Exam submitted successfully!'})
+    except Exception as e:
+        conn.close()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ------------------------
+# Student Dashboard
+# ------------------------
+@app.route("/student_dashboard")
+def student_dashboard():
+    if 'user_type' not in session or session['user_type'] != 'student':
+        flash('Please login as student first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Get student info
+    cursor.execute('SELECT * FROM students WHERE id = ?', (session['user_id'],))
+    student = cursor.fetchone()
+    
+    if not student:
+        flash('Student not found!', 'error')
+        return redirect(url_for('login'))
+    
+    # Debug
+    print("=" * 50)
+    print("👨‍🎓 STUDENT DASHBOARD")
+    print(f"   Student: {student['name']}")
+    print(f"   Class: {student['class']}")
+    print("=" * 50)
+    
+    # Get student's results
+    cursor.execute('''
+        SELECT r.*, e.exam_name, e.subject, e.full_marks, e.exam_date
+        FROM results r
+        JOIN exams e ON r.exam_id = e.id
+        WHERE r.student_id = ?
+        ORDER BY r.created_at DESC
+    ''', (session['user_id'],))
+    student_results = cursor.fetchall()
+    
+    # Get total students count
+    cursor.execute('SELECT COUNT(*) as count FROM students')
+    total_students = cursor.fetchone()['count']
+    
+    # Get student's rank
+    cursor.execute('''
+        SELECT student_id, SUM(marks) as total_marks
+        FROM results
+        GROUP BY student_id
+        ORDER BY total_marks DESC
+    ''')
+    all_ranks = cursor.fetchall()
+    
+    student_rank = None
+    rank_percentage = 0
+    
+    for idx, row in enumerate(all_ranks):
+        if row['student_id'] == session['user_id']:
+            student_rank = idx + 1
+            if total_students > 0:
+                rank_percentage = round((student_rank / total_students) * 100, 1)
+            break
+    
+    # Get class rank
+    if student:
+        cursor.execute('''
+            SELECT s.id, SUM(r.marks) as total_marks
+            FROM results r
+            JOIN students s ON r.student_id = s.id
+            WHERE s.class = ?
+            GROUP BY r.student_id
+            ORDER BY total_marks DESC
+        ''', (student['class'],))
+        class_ranks = cursor.fetchall()
+        
+        class_rank = None
+        for idx, row in enumerate(class_ranks):
+            if row['id'] == session['user_id']:
+                class_rank = idx + 1
+                break
+    else:
+        class_rank = None
+    
+    # Get total exams taken
+    cursor.execute('SELECT COUNT(*) as count FROM results WHERE student_id = ?', (session['user_id'],))
+    total_exams_taken = cursor.fetchone()['count']
+    
+    # Get class notes
+    cursor.execute('''
+        SELECT * FROM study_materials 
+        WHERE class = ? 
+        ORDER BY created_at DESC
+    ''', (student['class'],))
+    class_notes = cursor.fetchall()
+    
+    # =============================================
+    # 🔥 FIXED: শুধু Student এর Class এর Online Exam দেখাবে
+    # =============================================
+    
+    student_class = str(student['class']) if student['class'] is not None else ''
+    print(f"🔍 Student Class: '{student_class}'")
+    
+    # ✅ শুধুমাত্র Student এর Class এর Exam (যা Taken না)
+    cursor.execute('''
+        SELECT * FROM exams 
+        WHERE exam_type = 'online' 
+        AND class = ?
+        AND status = 'Upcoming'
+        ORDER BY created_at DESC
+    ''', (student_class,))
+    all_class_exams = cursor.fetchall()
+    
+    # Check which exams are already taken
+    cursor.execute('SELECT exam_id FROM results WHERE student_id = ?', (session['user_id'],))
+    taken_exams = [row['exam_id'] for row in cursor.fetchall()]
+    
+    # ফিল্টার: শুধু যেগুলো Taken না
+    my_exams = []
+    for exam in all_class_exams:
+        if exam['id'] not in taken_exams:
+            my_exams.append(exam)
+    
+    print(f"📚 Exams for class '{student_class}': {len(my_exams)}")
+    for exam in my_exams:
+        print(f"   - {exam['exam_name']}")
+    
+    conn.close()
+    
+    return render_template('student_dashboard.html', 
+                         student=student,
+                         student_results=student_results,
+                         total_students=total_students,
+                         student_rank=student_rank,
+                         class_rank=class_rank,
+                         rank_percentage=rank_percentage,
+                         total_exams_taken=total_exams_taken,
+                         class_notes=class_notes,
+                         my_exams=my_exams)
+# ------------------------
+# Admin - Students & Teachers
+# ------------------------
+@app.route("/admin/students")
+def admin_students():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        flash('Please login as admin first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Get all students
+    cursor.execute('SELECT * FROM students ORDER BY created_at DESC')
+    students = cursor.fetchall()
+    
+    # Dictionary to store results for each student
+    student_results = {}
+    student_ranks = {}
+    
+    # Get all results with exam details
+    cursor.execute('''
+        SELECT 
+            r.student_id, 
+            r.marks, 
+            r.grade, 
+            e.exam_name, 
+            e.full_marks,
+            e.subject
+        FROM results r
+        JOIN exams e ON r.exam_id = e.id
+        ORDER BY r.created_at DESC
+    ''')
+    all_results = cursor.fetchall()
+    
+    # Group results by student_id
+    for result in all_results:
+        student_id = result['student_id']
+        if student_id not in student_results:
+            student_results[student_id] = []
+        student_results[student_id].append({
+            'exam_name': result['exam_name'],
+            'subject': result['subject'],
+            'marks': result['marks'],
+            'full_marks': result['full_marks'],
+            'grade': result['grade']
+        })
+    
+    # Get ranks for each student
+    cursor.execute('''
+        SELECT 
+            student_id, 
+            SUM(marks) as total_marks,
+            RANK() OVER (ORDER BY SUM(marks) DESC) as rank_position
+        FROM results
+        GROUP BY student_id
+    ''')
+    rank_data = cursor.fetchall()
+    
+    for rank in rank_data:
+        student_ranks[rank['student_id']] = rank['rank_position']
+    
+    conn.close()
+    
+    return render_template('admin_students.html', 
+                         students=students,
+                         student_results=student_results,
+                         student_ranks=student_ranks)
+
+@app.route("/admin/teachers")
+def admin_teachers():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        flash('Please login as admin first!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM teachers ORDER BY created_at DESC')
+    teachers = cursor.fetchall()
+    conn.close()
+    
+    return render_template('admin_teachers.html', teachers=teachers)
+
+@app.route("/admin/delete_student/<int:student_id>", methods=["POST"])
+def delete_student(student_id):
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        flash('Unauthorized access!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM students WHERE id = ?', (student_id,))
+    conn.commit()
+    conn.close()
+    
+    flash('Student deleted successfully!', 'success')
+    return redirect(url_for('admin_students'))
+
+@app.route("/admin/delete_teacher/<int:teacher_id>", methods=["POST"])
+def delete_teacher(teacher_id):
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        flash('Unauthorized access!', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM teachers WHERE id = ?', (teacher_id,))
+    conn.commit()
+    conn.close()
+    
+    flash('Teacher deleted successfully!', 'success')
+    return redirect(url_for('admin_teachers'))
+
+# ------------------------
+# Edit Student Route
+# ------------------------
+@app.route("/edit_student", methods=["POST"])
+def edit_student():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        flash('Unauthorized access!', 'error')
+        return redirect(url_for('login'))
+    
+    student_id = request.form.get('student_id')
+    name = request.form.get('name')
+    class_name = request.form.get('class')
+    school = request.form.get('school')
+    phone = request.form.get('phone')
+    password = request.form.get('password')
+    
+    if not all([student_id, name, class_name, school, phone]):
+        flash('All fields are required!', 'error')
+        return redirect(url_for('admin_students'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        if password and len(password) >= 6:
+            cursor.execute('''UPDATE students 
+                          SET name = ?, class = ?, school = ?, phone = ?, password = ?
+                          WHERE id = ?''',
+                          (name, class_name, school, phone, password, student_id))
+        else:
+            cursor.execute('''UPDATE students 
+                          SET name = ?, class = ?, school = ?, phone = ?
+                          WHERE id = ?''',
+                          (name, class_name, school, phone, student_id))
+        
+        conn.commit()
+        flash('Student updated successfully!', 'success')
+    except sqlite3.IntegrityError:
+        flash('Phone number already exists!', 'error')
+    except Exception as e:
+        flash('Error updating student: ' + str(e), 'error')
+    finally:
+        conn.close()
+    
+    return redirect(url_for('admin_students'))
+
+@app.route("/get_student_data/<int:student_id>")
+def get_student_data(student_id):
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM students WHERE id = ?', (student_id,))
+    student = cursor.fetchone()
+    conn.close()
+    
+    if student:
+        return jsonify(dict(student))
+    else:
+        return jsonify({'error': 'Student not found'}), 404
+
+# ------------------------
+# Edit Teacher Route
+# ------------------------
+@app.route("/edit_teacher", methods=["POST"])
+def edit_teacher():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        flash('Unauthorized access!', 'error')
+        return redirect(url_for('login'))
+    
+    teacher_id = request.form.get('teacher_id')
+    name = request.form.get('name')
+    phone = request.form.get('phone')
+    password = request.form.get('password')
+    
+    if not all([teacher_id, name, phone]):
+        flash('Name and Phone are required!', 'error')
+        return redirect(url_for('admin_teachers'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        if password and len(password) >= 6:
+            cursor.execute('''UPDATE teachers 
+                          SET name = ?, phone = ?, password = ?
+                          WHERE id = ?''',
+                          (name, phone, password, teacher_id))
+            flash('Teacher updated successfully with new password!', 'success')
+        else:
+            cursor.execute('''UPDATE teachers 
+                          SET name = ?, phone = ?
+                          WHERE id = ?''',
+                          (name, phone, teacher_id))
+            flash('Teacher updated successfully!', 'success')
+        
+        conn.commit()
+    except sqlite3.IntegrityError:
+        flash('Phone number already exists!', 'error')
+    except Exception as e:
+        flash('Error updating teacher: ' + str(e), 'error')
+    finally:
+        conn.close()
+    
+    return redirect(url_for('admin_teachers'))
+
+@app.route("/get_teacher_data/<int:teacher_id>")
+def get_teacher_data(teacher_id):
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM teachers WHERE id = ?', (teacher_id,))
+    teacher = cursor.fetchone()
+    conn.close()
+    
+    if teacher:
+        return jsonify({
+            'id': teacher['id'],
+            'name': teacher['name'],
+            'phone': teacher['phone'],
+            'password': teacher['password']
+        })
+    else:
+        return jsonify({'error': 'Teacher not found'}), 404
+
+# ------------------------
+# Change Password Route
+# ------------------------
+@app.route("/change_password", methods=["POST"])
+def change_password():
+    # Check if user is logged in
+    if 'user_type' not in session or session['user_type'] != 'student':
+        return jsonify({'success': False, 'message': 'Please login as student first!'}), 401
+    
+    data = request.get_json()
+    
+    # Check if data exists
+    if not data:
+        return jsonify({'success': False, 'message': 'Invalid request'}), 400
+    
+    current_password = data.get('current_password')
+    new_password = data.get('new_password')
+    
+    # Validate inputs
+    if not current_password or not new_password:
+        return jsonify({'success': False, 'message': 'All fields are required'})
+    
+    if len(new_password) < 6:
+        return jsonify({'success': False, 'message': 'Password must be at least 6 characters'})
+    
+    student_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get current password from database
+        cursor.execute('SELECT password FROM students WHERE id = ?', (student_id,))
+        student = cursor.fetchone()
+        
+        if not student:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Student not found'})
+        
+        # Check if current password matches
+        if student['password'] != current_password:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Current password is incorrect'})
+        
+        # Update password
+        cursor.execute('UPDATE students SET password = ? WHERE id = ?', (new_password, student_id))
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Password changed successfully'})
+        
+    except Exception as e:
+        conn.close()
+        print(f"Error changing password: {e}")  # For debugging
+        return jsonify({'success': False, 'message': 'An error occurred. Please try again.'}), 500
+
+ 
+# ------------------------
+# Change Password Route for Teacher
+# ------------------------
+@app.route("/change_password_teacher", methods=["POST"])
+def change_password_teacher():
+    # Check if user is logged in as teacher
+    if 'user_type' not in session or session['user_type'] != 'teacher':
+        return jsonify({'success': False, 'message': 'Please login as teacher first!'}), 401
+    
+    data = request.get_json()
+    
+    # Check if data exists
+    if not data:
+        return jsonify({'success': False, 'message': 'Invalid request'}), 400
+    
+    current_password = data.get('current_password')
+    new_password = data.get('new_password')
+    
+    # Validate inputs
+    if not current_password or not new_password:
+        return jsonify({'success': False, 'message': 'All fields are required'})
+    
+    if len(new_password) < 6:
+        return jsonify({'success': False, 'message': 'Password must be at least 6 characters'})
+    
+    teacher_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get current password from database
+        cursor.execute('SELECT password FROM teachers WHERE id = ?', (teacher_id,))
+        teacher = cursor.fetchone()
+        
+        if not teacher:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Teacher not found'})
+        
+        # Check if current password matches
+        if teacher['password'] != current_password:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Current password is incorrect'})
+        
+        # Update password
+        cursor.execute('UPDATE teachers SET password = ? WHERE id = ?', (new_password, teacher_id))
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Password changed successfully'})
+        
+    except Exception as e:
+        conn.close()
+        print(f"Error changing password: {e}")
+        return jsonify({'success': False, 'message': 'An error occurred. Please try again.'}), 500
+
+
+
+# =============================================
+# NOTICE SYSTEM - BACKEND ROUTES
+# =============================================
+
+# Send Notice (Teacher)
+@app.route("/send_notice", methods=["POST"])
+def send_notice():
+    """Teacher sends a notice to students"""
+    
+    # Check if user is logged in as teacher
+    if 'user_type' not in session or session['user_type'] != 'teacher':
+        return jsonify({'success': False, 'message': 'Please login as teacher first!'}), 401
+    
+    data = request.get_json()
+    
+    # Validate input
+    title = data.get('title', '').strip()
+    message = data.get('message', '').strip()
+    target = data.get('target', 'all')
+    target_class = data.get('target_class', '')
+    target_subject = data.get('target_subject', '')
+    
+    if not title or not message:
+        return jsonify({'success': False, 'message': 'Title and message are required!'})
+    
+    teacher_id = session['user_id']
+    teacher_name = session.get('username', 'Teacher')
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Insert notice into database
+        cursor.execute('''
+            INSERT INTO notices (teacher_id, teacher_name, title, message, target_class, target_subject, is_global)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (teacher_id, teacher_name, title, message, 
+              target_class if target == 'class' else None,
+              target_subject if target == 'subject' else None,
+              1 if target == 'all' else 0))
+        
+        notice_id = cursor.lastrowid
+        conn.commit()
+        
+        # Get target students
+        students = get_target_students(cursor, target, target_class, target_subject)
+        
+        # Insert into student_notices table
+        for student in students:
+            cursor.execute('''
+                INSERT OR IGNORE INTO student_notices (notice_id, student_id, is_read)
+                VALUES (?, ?, 0)
+            ''', (notice_id, student['id']))
+        
+        conn.commit()
+        
+        # Send Push Notifications to students
+        push_count = send_push_notifications(students, title, message, notice_id)
+        
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'message': f'Notice sent successfully to {len(students)} students! (Push: {push_count} delivered)',
+            'notice_id': notice_id,
+            'student_count': len(students),
+            'push_count': push_count
+        })
+        
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        print(f"❌ Error sending notice: {e}")
+        return jsonify({'success': False, 'message': 'Error sending notice: ' + str(e)}), 500
+
+
+def get_target_students(cursor, target, target_class, target_subject):
+    """Get students based on target filter"""
+    
+    if target == 'all':
+        cursor.execute('SELECT id, name, class, phone FROM students')
+        return cursor.fetchall()
+    
+    elif target == 'class' and target_class:
+        cursor.execute('SELECT id, name, class, phone FROM students WHERE class = ?', (target_class,))
+        return cursor.fetchall()
+    
+    elif target == 'subject' and target_subject:
+        # For subject, get all students (filter will be applied in app)
+        # You can modify this to filter by subject if you have subject-wise students
+        cursor.execute('SELECT id, name, class, phone FROM students')
+        return cursor.fetchall()
+    
+    return []
+
+
+def send_push_notifications(students, title, message, notice_id):
+    """Send push notifications to all students"""
+    
+    push_count = 0
+    
+    for student in students:
+        try:
+            # Get push subscription for this student
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                SELECT endpoint, auth_key, p256dh_key 
+                FROM push_subscriptions 
+                WHERE student_id = ?
+            ''', (student['id'],))
+            
+            subscription = cursor.fetchone()
+            conn.close()
+            
+            if subscription:
+                # Send push notification using web-push
+                # For now, we'll just log it
+                print(f"📬 Push to student {student['id']}: {title}")
+                push_count += 1
+                
+                # TODO: Implement actual web-push sending
+                # You need to install web-push library:
+                # pip install pywebpush
+                
+        except Exception as e:
+            print(f"⚠️ Error sending push to student {student['id']}: {e}")
+    
+    return push_count
+
+
+# Get Student Notices
+@app.route("/get_student_notices")
+def get_student_notices():
+    """Get all notices for a student"""
+    
+    if 'user_type' not in session or session['user_type'] != 'student':
+        return jsonify({'success': False, 'message': 'Please login as student first!'}), 401
+    
+    student_id = session['user_id']
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get student's class
+        cursor.execute('SELECT class FROM students WHERE id = ?', (student_id,))
+        student = cursor.fetchone()
+        
+        if not student:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Student not found!'})
+        
+        student_class = student['class']
+        
+        # Get notices for this student
+        cursor.execute('''
+            SELECT 
+                n.id,
+                n.teacher_name,
+                n.title,
+                n.message,
+                n.created_at,
+                COALESCE(sn.is_read, 0) as is_read
+            FROM notices n
+            LEFT JOIN student_notices sn ON n.id = sn.notice_id AND sn.student_id = ?
+            WHERE 
+                n.is_global = 1 
+                OR n.target_class = ?
+                OR n.target_class IS NULL
+            ORDER BY n.created_at DESC
+        ''', (student_id, student_class))
+        
+        notices = cursor.fetchall()
+        
+        # Get unread count
+        cursor.execute('''
+            SELECT COUNT(*) as count 
+            FROM notices n
+            LEFT JOIN student_notices sn ON n.id = sn.notice_id AND sn.student_id = ?
+            WHERE 
+                (n.is_global = 1 OR n.target_class = ? OR n.target_class IS NULL)
+                AND (sn.is_read = 0 OR sn.is_read IS NULL)
+        ''', (student_id, student_class))
+        
+        unread_count = cursor.fetchone()['count']
+        
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'notices': [dict(notice) for notice in notices],
+            'unread_count': unread_count
+        })
+        
+    except Exception as e:
+        conn.close()
+        print(f"❌ Error getting notices: {e}")
+        return jsonify({'success': False, 'message': 'Error loading notices'}), 500
+
+
+# Mark Notice as Read
+@app.route("/mark_notice_read", methods=["POST"])
+def mark_notice_read():
+    """Mark a notice as read by a student"""
+    
+    if 'user_type' not in session or session['user_type'] != 'student':
+        return jsonify({'success': False, 'message': 'Please login as student first!'}), 401
+    
+    data = request.get_json()
+    notice_id = data.get('notice_id')
+    
+    if not notice_id:
+        return jsonify({'success': False, 'message': 'Notice ID required!'})
+    
+    student_id = session['user_id']
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Update student_notices
+        cursor.execute('''
+            UPDATE student_notices 
+            SET is_read = 1, read_at = CURRENT_TIMESTAMP
+            WHERE notice_id = ? AND student_id = ?
+        ''', (notice_id, student_id))
+        
+        # If no record exists, insert one
+        if cursor.rowcount == 0:
+            cursor.execute('''
+                INSERT INTO student_notices (notice_id, student_id, is_read, read_at)
+                VALUES (?, ?, 1, CURRENT_TIMESTAMP)
+            ''', (notice_id, student_id))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Notice marked as read'})
+        
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        print(f"❌ Error marking notice as read: {e}")
+        return jsonify({'success': False, 'message': 'Error marking notice as read'}), 500
+
+
+# Get Unread Notice Count (for badge)
+@app.route("/get_unread_notice_count")
+def get_unread_notice_count():
+    """Get unread notice count for student"""
+    
+    if 'user_type' not in session or session['user_type'] != 'student':
+        return jsonify({'success': False, 'count': 0})
+    
+    student_id = session['user_id']
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get student's class
+        cursor.execute('SELECT class FROM students WHERE id = ?', (student_id,))
+        student = cursor.fetchone()
+        
+        if not student:
+            conn.close()
+            return jsonify({'success': False, 'count': 0})
+        
+        student_class = student['class']
+        
+        # Get unread count
+        cursor.execute('''
+            SELECT COUNT(*) as count 
+            FROM notices n
+            LEFT JOIN student_notices sn ON n.id = sn.notice_id AND sn.student_id = ?
+            WHERE 
+                (n.is_global = 1 OR n.target_class = ? OR n.target_class IS NULL)
+                AND (sn.is_read = 0 OR sn.is_read IS NULL)
+        ''', (student_id, student_class))
+        
+        count = cursor.fetchone()['count']
+        conn.close()
+        
+        return jsonify({'success': True, 'count': count})
+        
+    except Exception as e:
+        conn.close()
+        return jsonify({'success': False, 'count': 0})
+
+
+# Get All Notices (for Admin/Teacher view)
+@app.route("/get_all_notices")
+def get_all_notices():
+    """Get all notices (for admin/teacher)"""
+    
+    if 'user_type' not in session:
+        return jsonify({'success': False, 'message': 'Please login first!'}), 401
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('''
+            SELECT 
+                n.*,
+                COUNT(sn.id) as total_read,
+                (SELECT COUNT(*) FROM student_notices WHERE notice_id = n.id) as total_sent
+            FROM notices n
+            LEFT JOIN student_notices sn ON n.id = sn.notice_id AND sn.is_read = 1
+            GROUP BY n.id
+            ORDER BY n.created_at DESC
+        ''')
+        
+        notices = cursor.fetchall()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'notices': [dict(notice) for notice in notices]
+        })
+        
+    except Exception as e:
+        conn.close()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# Delete Notice (for Admin/Teacher)
+@app.route("/delete_notice/<int:notice_id>", methods=["POST"])
+def delete_notice(notice_id):
+    """Delete a notice"""
+    
+    if 'user_type' not in session:
+        return jsonify({'success': False, 'message': 'Please login first!'}), 401
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Delete from student_notices first (foreign key)
+        cursor.execute('DELETE FROM student_notices WHERE notice_id = ?', (notice_id,))
+        
+        # Delete notice
+        cursor.execute('DELETE FROM notices WHERE id = ?', (notice_id,))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Notice deleted successfully!'})
+        
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+
+
+
+
+# =============================================
+# PUSH SUBSCRIPTION ROUTE
+# =============================================
+
+@app.route("/save_push_subscription", methods=["POST"])
+def save_push_subscription():
+    """Save student's push subscription"""
+    
+    if 'user_type' not in session or session['user_type'] != 'student':
+        return jsonify({'success': False, 'message': 'Please login as student first!'}), 401
+    
+    data = request.get_json()
+    endpoint = data.get('endpoint')
+    auth_key = data.get('auth_key')
+    p256dh_key = data.get('p256dh_key')
+    
+    if not all([endpoint, auth_key, p256dh_key]):
+        return jsonify({'success': False, 'message': 'Missing subscription data!'})
+    
+    student_id = session['user_id']
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Check if subscription exists
+        cursor.execute('SELECT id FROM push_subscriptions WHERE student_id = ? AND endpoint = ?', 
+                      (student_id, endpoint))
+        existing = cursor.fetchone()
+        
+        if existing:
+            # Update existing subscription
+            cursor.execute('''
+                UPDATE push_subscriptions 
+                SET auth_key = ?, p256dh_key = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE student_id = ? AND endpoint = ?
+            ''', (auth_key, p256dh_key, student_id, endpoint))
+        else:
+            # Insert new subscription
+            cursor.execute('''
+                INSERT INTO push_subscriptions (student_id, endpoint, auth_key, p256dh_key)
+                VALUES (?, ?, ?, ?)
+            ''', (student_id, endpoint, auth_key, p256dh_key))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Push subscription saved!'})
+        
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        print(f"❌ Error saving push subscription: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+# ------------------------
+# Logout
+# ------------------------
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash('Logged out successfully!', 'success')
+    return redirect(url_for('login'))
+
+
+
+# =============================================
+# REGISTER QUIZ BLUEPRINT
+# =============================================
+app.register_blueprint(quiz_bp, url_prefix='/quiz')
+
+if __name__ == "__main__":
+    app.run(debug=True, host='0.0.0.0', port=5000)
