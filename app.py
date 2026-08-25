@@ -14,7 +14,7 @@ app.secret_key = "tution_management_secret_key_2026"
 # ===== VAPID KEYS ===== ✅ যোগ করতে হবে
 VAPID_PUBLIC_KEY = "BP9fT8x3Lgk7yX5pM2nR6vW8zQ4sA1bC3dE5fG7hI9jK1lM3nO5pQ7rS9tU1vW3xY5z"
 VAPID_PRIVATE_KEY = "8x3Lgk7yX5pM2nR6vW8zQ4sA1bC3dE5fG7hI9jK1lM3n"
-VAPID_EMAIL = "your-email@example.com"
+VAPID_EMAIL = "rezuphysics@gmail.com"
 
 # ===== যোগ করুন =====
 ADMIN_USERNAME = "Epsilon"
