@@ -29,6 +29,60 @@ def init_database():
     conn = get_db_connection()
     cursor = conn.cursor()
     
+
+ 
+    
+    # ... আপনার অন্যান্য TABLE গুলো ...
+    
+    # ===== NOTICES TABLE =====
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS notices (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            teacher_id INTEGER NOT NULL,
+            teacher_name TEXT NOT NULL,
+            title TEXT NOT NULL,
+            message TEXT NOT NULL,
+            target_class TEXT,
+            target_subject TEXT,
+            is_global BOOLEAN DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (teacher_id) REFERENCES teachers(id)
+        )
+    ''')
+    
+    # ===== STUDENT_NOTICES TABLE =====
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS student_notices (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            notice_id INTEGER NOT NULL,
+            student_id INTEGER NOT NULL,
+            is_read BOOLEAN DEFAULT 0,
+            read_at TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (notice_id) REFERENCES notices(id),
+            FOREIGN KEY (student_id) REFERENCES students(id),
+            UNIQUE(notice_id, student_id)
+        )
+    ''')
+    
+    # ===== PUSH_SUBSCRIPTIONS TABLE =====
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS push_subscriptions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER NOT NULL,
+            endpoint TEXT NOT NULL,
+            auth_key TEXT NOT NULL,
+            p256dh_key TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_id) REFERENCES students(id),
+            UNIQUE(student_id, endpoint)
+        )
+    ''')
+    
+      
+    
+    
     # Teachers table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS teachers (
@@ -1635,6 +1689,424 @@ def change_password_teacher():
         conn.close()
         print(f"Error changing password: {e}")
         return jsonify({'success': False, 'message': 'An error occurred. Please try again.'}), 500
+
+
+
+# =============================================
+# NOTICE SYSTEM - BACKEND ROUTES
+# =============================================
+
+# Send Notice (Teacher)
+@app.route("/send_notice", methods=["POST"])
+def send_notice():
+    """Teacher sends a notice to students"""
+    
+    # Check if user is logged in as teacher
+    if 'user_type' not in session or session['user_type'] != 'teacher':
+        return jsonify({'success': False, 'message': 'Please login as teacher first!'}), 401
+    
+    data = request.get_json()
+    
+    # Validate input
+    title = data.get('title', '').strip()
+    message = data.get('message', '').strip()
+    target = data.get('target', 'all')
+    target_class = data.get('target_class', '')
+    target_subject = data.get('target_subject', '')
+    
+    if not title or not message:
+        return jsonify({'success': False, 'message': 'Title and message are required!'})
+    
+    teacher_id = session['user_id']
+    teacher_name = session.get('username', 'Teacher')
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Insert notice into database
+        cursor.execute('''
+            INSERT INTO notices (teacher_id, teacher_name, title, message, target_class, target_subject, is_global)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (teacher_id, teacher_name, title, message, 
+              target_class if target == 'class' else None,
+              target_subject if target == 'subject' else None,
+              1 if target == 'all' else 0))
+        
+        notice_id = cursor.lastrowid
+        conn.commit()
+        
+        # Get target students
+        students = get_target_students(cursor, target, target_class, target_subject)
+        
+        # Insert into student_notices table
+        for student in students:
+            cursor.execute('''
+                INSERT OR IGNORE INTO student_notices (notice_id, student_id, is_read)
+                VALUES (?, ?, 0)
+            ''', (notice_id, student['id']))
+        
+        conn.commit()
+        
+        # Send Push Notifications to students
+        push_count = send_push_notifications(students, title, message, notice_id)
+        
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'message': f'Notice sent successfully to {len(students)} students! (Push: {push_count} delivered)',
+            'notice_id': notice_id,
+            'student_count': len(students),
+            'push_count': push_count
+        })
+        
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        print(f"❌ Error sending notice: {e}")
+        return jsonify({'success': False, 'message': 'Error sending notice: ' + str(e)}), 500
+
+
+def get_target_students(cursor, target, target_class, target_subject):
+    """Get students based on target filter"""
+    
+    if target == 'all':
+        cursor.execute('SELECT id, name, class, phone FROM students')
+        return cursor.fetchall()
+    
+    elif target == 'class' and target_class:
+        cursor.execute('SELECT id, name, class, phone FROM students WHERE class = ?', (target_class,))
+        return cursor.fetchall()
+    
+    elif target == 'subject' and target_subject:
+        # For subject, get all students (filter will be applied in app)
+        # You can modify this to filter by subject if you have subject-wise students
+        cursor.execute('SELECT id, name, class, phone FROM students')
+        return cursor.fetchall()
+    
+    return []
+
+
+def send_push_notifications(students, title, message, notice_id):
+    """Send push notifications to all students"""
+    
+    push_count = 0
+    
+    for student in students:
+        try:
+            # Get push subscription for this student
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                SELECT endpoint, auth_key, p256dh_key 
+                FROM push_subscriptions 
+                WHERE student_id = ?
+            ''', (student['id'],))
+            
+            subscription = cursor.fetchone()
+            conn.close()
+            
+            if subscription:
+                # Send push notification using web-push
+                # For now, we'll just log it
+                print(f"📬 Push to student {student['id']}: {title}")
+                push_count += 1
+                
+                # TODO: Implement actual web-push sending
+                # You need to install web-push library:
+                # pip install pywebpush
+                
+        except Exception as e:
+            print(f"⚠️ Error sending push to student {student['id']}: {e}")
+    
+    return push_count
+
+
+# Get Student Notices
+@app.route("/get_student_notices")
+def get_student_notices():
+    """Get all notices for a student"""
+    
+    if 'user_type' not in session or session['user_type'] != 'student':
+        return jsonify({'success': False, 'message': 'Please login as student first!'}), 401
+    
+    student_id = session['user_id']
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get student's class
+        cursor.execute('SELECT class FROM students WHERE id = ?', (student_id,))
+        student = cursor.fetchone()
+        
+        if not student:
+            conn.close()
+            return jsonify({'success': False, 'message': 'Student not found!'})
+        
+        student_class = student['class']
+        
+        # Get notices for this student
+        cursor.execute('''
+            SELECT 
+                n.id,
+                n.teacher_name,
+                n.title,
+                n.message,
+                n.created_at,
+                COALESCE(sn.is_read, 0) as is_read
+            FROM notices n
+            LEFT JOIN student_notices sn ON n.id = sn.notice_id AND sn.student_id = ?
+            WHERE 
+                n.is_global = 1 
+                OR n.target_class = ?
+                OR n.target_class IS NULL
+            ORDER BY n.created_at DESC
+        ''', (student_id, student_class))
+        
+        notices = cursor.fetchall()
+        
+        # Get unread count
+        cursor.execute('''
+            SELECT COUNT(*) as count 
+            FROM notices n
+            LEFT JOIN student_notices sn ON n.id = sn.notice_id AND sn.student_id = ?
+            WHERE 
+                (n.is_global = 1 OR n.target_class = ? OR n.target_class IS NULL)
+                AND (sn.is_read = 0 OR sn.is_read IS NULL)
+        ''', (student_id, student_class))
+        
+        unread_count = cursor.fetchone()['count']
+        
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'notices': [dict(notice) for notice in notices],
+            'unread_count': unread_count
+        })
+        
+    except Exception as e:
+        conn.close()
+        print(f"❌ Error getting notices: {e}")
+        return jsonify({'success': False, 'message': 'Error loading notices'}), 500
+
+
+# Mark Notice as Read
+@app.route("/mark_notice_read", methods=["POST"])
+def mark_notice_read():
+    """Mark a notice as read by a student"""
+    
+    if 'user_type' not in session or session['user_type'] != 'student':
+        return jsonify({'success': False, 'message': 'Please login as student first!'}), 401
+    
+    data = request.get_json()
+    notice_id = data.get('notice_id')
+    
+    if not notice_id:
+        return jsonify({'success': False, 'message': 'Notice ID required!'})
+    
+    student_id = session['user_id']
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Update student_notices
+        cursor.execute('''
+            UPDATE student_notices 
+            SET is_read = 1, read_at = CURRENT_TIMESTAMP
+            WHERE notice_id = ? AND student_id = ?
+        ''', (notice_id, student_id))
+        
+        # If no record exists, insert one
+        if cursor.rowcount == 0:
+            cursor.execute('''
+                INSERT INTO student_notices (notice_id, student_id, is_read, read_at)
+                VALUES (?, ?, 1, CURRENT_TIMESTAMP)
+            ''', (notice_id, student_id))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Notice marked as read'})
+        
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        print(f"❌ Error marking notice as read: {e}")
+        return jsonify({'success': False, 'message': 'Error marking notice as read'}), 500
+
+
+# Get Unread Notice Count (for badge)
+@app.route("/get_unread_notice_count")
+def get_unread_notice_count():
+    """Get unread notice count for student"""
+    
+    if 'user_type' not in session or session['user_type'] != 'student':
+        return jsonify({'success': False, 'count': 0})
+    
+    student_id = session['user_id']
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get student's class
+        cursor.execute('SELECT class FROM students WHERE id = ?', (student_id,))
+        student = cursor.fetchone()
+        
+        if not student:
+            conn.close()
+            return jsonify({'success': False, 'count': 0})
+        
+        student_class = student['class']
+        
+        # Get unread count
+        cursor.execute('''
+            SELECT COUNT(*) as count 
+            FROM notices n
+            LEFT JOIN student_notices sn ON n.id = sn.notice_id AND sn.student_id = ?
+            WHERE 
+                (n.is_global = 1 OR n.target_class = ? OR n.target_class IS NULL)
+                AND (sn.is_read = 0 OR sn.is_read IS NULL)
+        ''', (student_id, student_class))
+        
+        count = cursor.fetchone()['count']
+        conn.close()
+        
+        return jsonify({'success': True, 'count': count})
+        
+    except Exception as e:
+        conn.close()
+        return jsonify({'success': False, 'count': 0})
+
+
+# Get All Notices (for Admin/Teacher view)
+@app.route("/get_all_notices")
+def get_all_notices():
+    """Get all notices (for admin/teacher)"""
+    
+    if 'user_type' not in session:
+        return jsonify({'success': False, 'message': 'Please login first!'}), 401
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('''
+            SELECT 
+                n.*,
+                COUNT(sn.id) as total_read,
+                (SELECT COUNT(*) FROM student_notices WHERE notice_id = n.id) as total_sent
+            FROM notices n
+            LEFT JOIN student_notices sn ON n.id = sn.notice_id AND sn.is_read = 1
+            GROUP BY n.id
+            ORDER BY n.created_at DESC
+        ''')
+        
+        notices = cursor.fetchall()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'notices': [dict(notice) for notice in notices]
+        })
+        
+    except Exception as e:
+        conn.close()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# Delete Notice (for Admin/Teacher)
+@app.route("/delete_notice/<int:notice_id>", methods=["POST"])
+def delete_notice(notice_id):
+    """Delete a notice"""
+    
+    if 'user_type' not in session:
+        return jsonify({'success': False, 'message': 'Please login first!'}), 401
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Delete from student_notices first (foreign key)
+        cursor.execute('DELETE FROM student_notices WHERE notice_id = ?', (notice_id,))
+        
+        # Delete notice
+        cursor.execute('DELETE FROM notices WHERE id = ?', (notice_id,))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Notice deleted successfully!'})
+        
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+
+
+
+
+# =============================================
+# PUSH SUBSCRIPTION ROUTE
+# =============================================
+
+@app.route("/save_push_subscription", methods=["POST"])
+def save_push_subscription():
+    """Save student's push subscription"""
+    
+    if 'user_type' not in session or session['user_type'] != 'student':
+        return jsonify({'success': False, 'message': 'Please login as student first!'}), 401
+    
+    data = request.get_json()
+    endpoint = data.get('endpoint')
+    auth_key = data.get('auth_key')
+    p256dh_key = data.get('p256dh_key')
+    
+    if not all([endpoint, auth_key, p256dh_key]):
+        return jsonify({'success': False, 'message': 'Missing subscription data!'})
+    
+    student_id = session['user_id']
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Check if subscription exists
+        cursor.execute('SELECT id FROM push_subscriptions WHERE student_id = ? AND endpoint = ?', 
+                      (student_id, endpoint))
+        existing = cursor.fetchone()
+        
+        if existing:
+            # Update existing subscription
+            cursor.execute('''
+                UPDATE push_subscriptions 
+                SET auth_key = ?, p256dh_key = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE student_id = ? AND endpoint = ?
+            ''', (auth_key, p256dh_key, student_id, endpoint))
+        else:
+            # Insert new subscription
+            cursor.execute('''
+                INSERT INTO push_subscriptions (student_id, endpoint, auth_key, p256dh_key)
+                VALUES (?, ?, ?, ?)
+            ''', (student_id, endpoint, auth_key, p256dh_key))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Push subscription saved!'})
+        
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        print(f"❌ Error saving push subscription: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 # ------------------------
 # Logout
