@@ -351,6 +351,9 @@ function restoreQuizLayout() {
     `;
 }
 
+// ==========================================
+// FIXED: showQuestion function
+// ==========================================
 function showQuestion(index) {
     if (!questions || questions.length === 0) return;
     const q = questions[index];
@@ -383,7 +386,6 @@ function showQuestion(index) {
             btn.className = 'option-btn';
             btn.innerHTML = `<span class="option-label">${String.fromCharCode(65 + optIdx)}</span> ${optText}`;
             
-            // Check if this question was already answered
             if (userAnswers[index] !== undefined) {
                 btn.classList.add('disabled');
                 if (optIdx === correctAnswer) btn.classList.add('correct');
@@ -395,7 +397,7 @@ function showQuestion(index) {
         });
     }
 
-    // ===== FIX: Proper button management =====
+    // ===== FIXED: Proper button management =====
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     
@@ -411,17 +413,25 @@ function showQuestion(index) {
         }
     }
     
-    // Next button
+    // ===== FIXED: Next button logic - সবসময় Submit দেখাবে যদি সব প্রশ্নের উত্তর দেওয়া হয় =====
     if (nextBtn) {
         nextBtn.disabled = false;
         nextBtn.style.display = 'flex';
         nextBtn.style.opacity = '1';
         nextBtn.style.visibility = 'visible';
         
+        // সব প্রশ্নের উত্তর দেওয়া হয়েছে কিনা চেক করুন
+        const allAnswered = Object.keys(userAnswers).length === questions.length;
+        
         if (index === questions.length - 1) {
-            const allAnswered = Object.keys(userAnswers).length === questions.length;
-            nextBtn.innerHTML = allAnswered ? '📤 Submit' : 'Last Question';
-            nextBtn.onclick = allAnswered ? submitQuiz : nextQuestion;
+            // শেষ প্রশ্ন
+            if (allAnswered) {
+                nextBtn.innerHTML = '📤 Submit';
+                nextBtn.onclick = submitQuiz;
+            } else {
+                nextBtn.innerHTML = 'Last Question';
+                nextBtn.onclick = nextQuestion;
+            }
         } else {
             nextBtn.innerHTML = 'Next →';
             nextBtn.onclick = nextQuestion;
@@ -435,7 +445,7 @@ function showQuestion(index) {
 }
 
 // ==========================================
-// ANSWER HANDLING
+// FIXED: handleAnswer function
 // ==========================================
 function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
     userAnswers[questionIndex] = selectedIndex;
@@ -446,15 +456,22 @@ function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
 
     showQuestion(questionIndex);
 
-    // Update next button if all questions are answered
-    if (Object.keys(userAnswers).length === questions.length) {
+    // ===== FIXED: সব প্রশ্নের উত্তর দেওয়া হলে Submit বাটন আপডেট করুন =====
+    const allAnswered = Object.keys(userAnswers).length === questions.length;
+    
+    if (allAnswered) {
         const nextBtn = document.getElementById('next-btn');
         if (nextBtn) {
-            nextBtn.innerHTML = '📤 Submit';
-            nextBtn.onclick = submitQuiz;
+            // শেষ প্রশ্নে থাকলে Submit দেখান
+            if (questionIndex === questions.length - 1) {
+                nextBtn.innerHTML = '📤 Submit';
+                nextBtn.onclick = submitQuiz;
+            } else {
+                // শেষ প্রশ্ন না হলে Next দেখান
+                nextBtn.innerHTML = 'Next →';
+                nextBtn.onclick = nextQuestion;
+            }
             nextBtn.disabled = false;
-            nextBtn.style.display = 'flex';
-            nextBtn.style.opacity = '1';
         }
     }
 }
