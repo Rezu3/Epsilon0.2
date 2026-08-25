@@ -45,11 +45,12 @@
             <a href="{{ url_for('rank') }}" class="nav-item">
                 <i class="fas fa-trophy"></i>
                 <span>Rank</span>
-            </a>
-            <a href="javascript:void(0)" class="nav-item" onclick="showQuiz()">
+             <!-- ===== QUIZ - Blueprint URL ===== -->
+            <a href="{{ url_for('quiz.quiz_home') }}" class="nav-item quiz-nav">
                 <i class="fas fa-question-circle"></i>
                 <span>Quiz</span>
             </a>
+            <!-- ===== QUIZ END ===== -->
             <a href="javascript:void(0)" class="nav-item" onclick="showChangePassword()">
                 <i class="fas fa-key"></i>
                 <span>Change Password</span>
