@@ -273,64 +273,70 @@
 })();
 </script>
 <!-- ============================================= -->
-<!-- 🛡️ ANTI-AI OCR & VISION PROTECTION SCRIPT -->
+<!-- 🛡️ HARDENED ANTI-AI OCR PROTECTION -->
 <!-- ============================================= -->
 <script>
-(function antiAIPass() {
+(function hardAntiAI() {
     'use strict';
 
-    // ১. ব্যাকগ্রাউন্ডে ডায়নামিক নয়েজ ওয়াটারমার্ক (AI Vision Blur)
-    function applyNoiseOverlay() {
-        const questionContainer = document.getElementById('questionContainer');
-        if (!questionContainer) return;
+    function protectExamContent() {
+        // প্রশ্ন ও অপশনগুলো সিলেক্ট করা
+        const elements = document.querySelectorAll('.question-container, .option, .mathjax');
 
-        const canvas = document.createElement('canvas');
-        canvas.width = 80;
-        canvas.height = 80;
-        const ctx = canvas.getContext('2d');
+        elements.forEach(el => {
+            // ১. AI OCR কনফিউজ করার জন্য ডায়নামিক টেক্সট-শ্যাডো ও ফিল্টার
+            el.style.textShadow = '0 0 0.6px rgba(0,0,0,0.8), 0.3px 0.3px 0px rgba(0,0,0,0.5)';
+            el.style.letterSpacing = '0.3px';
 
-        // হালকা র্যান্ডম ডট তৈরি যা AI OCR-কে কনফিউজ করবে
-        for (let i = 0; i < 35; i++) {
-            ctx.fillStyle = `rgba(0, 0, 0, ${Math.random() * 0.07})`;
-            ctx.fillRect(Math.random() * 80, Math.random() * 80, 2, 2);
-        }
-
-        questionContainer.style.backgroundImage = `url(${canvas.toDataURL()})`;
-    }
-
-    // ২. অক্ষরের অতি সূক্ষ্ম ঘূর্ণন (Micro-Rotation for Bounding Box Bypass)
-    function applyMicroTransform() {
-        const targets = document.querySelectorAll('.question-container p, .option, .mathjax span');
-        
-        targets.forEach(el => {
-            const randomRotate = (Math.random() * 0.8 - 0.4).toFixed(2); // -0.4deg থেকে +0.4deg
-            const randomSkew = (Math.random() * 0.4 - 0.2).toFixed(2);
-            
-            el.style.display = 'inline-block';
-            el.style.transform = `rotate(${randomRotate}deg) skewX(${randomSkew}deg)`;
+            // ২. সূক্ষ্ম ট্রান্সফরমেশন
+            const rotate = (Math.random() * 0.6 - 0.3).toFixed(2);
+            el.style.transform = `rotate(${rotate}deg)`;
+            el.style.display = 'block';
         });
+
+        // ৩. ডায়নামিক স্ট্রাইপ ও নয়েজ লেয়ার ইনজেকশন
+        const container = document.getElementById('questionContainer');
+        if (container) {
+            container.style.position = 'relative';
+            
+            // পূর্বে তৈরি ওয়াটারমার্ক থাকলে রিমুভ করা
+            const oldLayer = document.getElementById('aiPoisonLayer');
+            if (oldLayer) oldLayer.remove();
+
+            const poisonLayer = document.createElement('div');
+            poisonLayer.id = 'aiPoisonLayer';
+            poisonLayer.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 10;
+                background: repeating-linear-gradient(
+                    45deg,
+                    rgba(0, 0, 0, 0.03),
+                    rgba(0, 0, 0, 0.03) 2px,
+                    transparent 2px,
+                    transparent 4px
+                );
+            `;
+            container.appendChild(poisonLayer);
+        }
     }
 
-    // ৩. প্রশ্ন পরিবর্তন বা নতুন প্রশ্ন লোড হলে ফাংশন দুটি চালু করা
-    function initializeProtection() {
-        applyNoiseOverlay();
-        applyMicroTransform();
-    }
-
-    // প্রথমবার পেজ লোড হলে এবং প্রতি ১.৫ সেকেন্ড পরপর চেক করে স্ক্রিন আপডেট রাখা
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(initializeProtection, 800);
-    });
-
-    // ডাইনামিক প্রশ্ন নেভিগেশন (Next/Prev ক্লিকে পুনঃপ্রয়োগ)
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.nav-btn') || e.target.closest('.q-btn')) {
-            setTimeout(initializeProtection, 400);
+    // পেজ লোড ও প্রশ্ন নেভিগেশনে রান করা
+    document.addEventListener('DOMContentLoaded', () => setTimeout(protectExamContent, 600));
+    
+    // প্রতিবার অপশন বা নেভিগেশন ক্লিকে রেন্ডার
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.nav-btn') || e.target.closest('.q-btn') || e.target.closest('.option')) {
+            setTimeout(protectExamContent, 300);
         }
     });
-
 })();
 </script>
+
 
 </body>
 </html>
