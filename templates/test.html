@@ -272,5 +272,222 @@
 
 })();
 </script>
+<script>
+// =============================================
+// 🛡️ SCREEN SHARE DETECTION + BLACK SCREEN ONLY
+// =============================================
+
+(function screenShareBlocker() {
+    
+    console.log('🛡️ Screen Share Blocker Active');
+    
+    // =============================================
+    // 1. SCREEN SHARE DETECTION - Window Size Change
+    // =============================================
+    let lastWidth = window.innerWidth;
+    let lastHeight = window.innerHeight;
+    let screenShareCount = 0;
+    let isBlackScreen = false;
+    const WARNING_THRESHOLD = 2; // ২ বার Detect হলে Black Screen
+    
+    // =============================================
+    // 2. BLACK SCREEN FUNCTION - শুধু Page Black করবে
+    // =============================================
+    function activateBlackScreen(reason) {
+        if (isBlackScreen) return; // ইতিমধ্যে Black Screen থাকলে
+        
+        isBlackScreen = true;
+        
+        // পুরো Page Black করে দেওয়া
+        const overlay = document.createElement('div');
+        overlay.id = 'blackScreenOverlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000000;
+            z-index: 999999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            animation: fadeIn 0.5s ease;
+        `;
+        
+        overlay.innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <div style="font-size: 80px; margin-bottom: 20px;">🚫</div>
+                <h1 style="font-size: 32px; color: #ff6b6b; margin-bottom: 15px;">⚠️ SCREEN SHARE DETECTED!</h1>
+                <p style="font-size: 18px; color: #cccccc; max-width: 500px; line-height: 1.6;">
+                    Screen sharing is strictly prohibited during the exam.
+                </p>
+                <p style="font-size: 16px; color: #ff6b6b; margin-top: 10px;">
+                    Reason: ${reason}
+                </p>
+                <p style="font-size: 14px; color: #888888; margin-top: 20px;">
+                    ⏳ Exam will be auto-submitted by the system...
+                </p>
+            </div>
+        `;
+        
+        // Animation যোগ করা
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: scale(0.9); }
+                to { opacity: 1; transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        document.body.appendChild(overlay);
+        
+        // Exam Content Blur করে দেওয়া
+        const examContainer = document.querySelector('.exam-container');
+        if (examContainer) {
+            examContainer.style.filter = 'blur(10px)';
+            examContainer.style.opacity = '0.3';
+            examContainer.style.pointerEvents = 'none';
+        }
+        
+        // সব Question Option ডিজেবল করে দেওয়া
+        document.querySelectorAll('.option input, .option').forEach(function(el) {
+            el.style.pointerEvents = 'none';
+            el.style.opacity = '0.5';
+        });
+        
+        // Submit Button ডিজেবল
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+            submitBtn.style.pointerEvents = 'none';
+            submitBtn.style.opacity = '0.5';
+        }
+    }
+    
+    // =============================================
+    // 3. SCREEN SHARE MONITORING
+    // =============================================
+    function checkScreenShare() {
+        const currentWidth = window.innerWidth;
+        const currentHeight = window.innerHeight;
+        const screenWidth = window.screen.width;
+        const screenHeight = window.screen.height;
+        
+        // Window Size পরিবর্তন হয়েছে কিনা চেক
+        const widthChanged = Math.abs(currentWidth - lastWidth) > 50;
+        const heightChanged = Math.abs(currentHeight - lastHeight) > 50;
+        
+        // Screen Resolution এর সাথে তুলনা
+        const isSmallerThanScreen = currentWidth < screenWidth * 0.85 || 
+                                    currentHeight < screenHeight * 0.85;
+        
+        // Screen Share Detection Logic
+        if ((widthChanged || heightChanged) && isSmallerThanScreen) {
+            screenShareCount++;
+            console.log(`⚠️ Screen Share Detection #${screenShareCount}`);
+            
+            if (screenShareCount >= WARNING_THRESHOLD) {
+                // Black Screen Activate
+                activateBlackScreen('Multiple screen share detections');
+            } else {
+                // প্রথম Warning
+                showWarningToast('⚠️ Screen share detected! This is your first warning.');
+            }
+        } else {
+            // কয়েক সেকেন্ড পর Detection Reset
+            setTimeout(function() {
+                if (screenShareCount < WARNING_THRESHOLD) {
+                    screenShareCount = 0;
+                }
+            }, 10000);
+        }
+        
+        lastWidth = currentWidth;
+        lastHeight = currentHeight;
+    }
+    
+    // =============================================
+    // 4. WARNING TOAST
+    // =============================================
+    function showWarningToast(message) {
+        // পুরানো Toast Remove
+        const oldToast = document.querySelector('.screen-share-toast');
+        if (oldToast) oldToast.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = 'screen-share-toast';
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff6b6b;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            z-index: 99999;
+            box-shadow: 0 8px 30px rgba(255, 107, 107, 0.4);
+            animation: slideDown 0.5s ease;
+            max-width: 90%;
+            text-align: center;
+        `;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideUp 0.5s ease';
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+    
+    // =============================================
+    // 5. TAB SWITCH DETECTION - এটাও Black Screen করবে
+    // =============================================
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            activateBlackScreen('Tab switch detected');
+        }
+    });
+    
+    // =============================================
+    // 6. WINDOW FOCUS LOSS
+    // =============================================
+    document.addEventListener('blur', function() {
+        activateBlackScreen('Window focus lost');
+    });
+    
+    // =============================================
+    // 7. ANIMATION STYLES
+    // =============================================
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 1; transform: translateX(-50%) translateY(0); }
+            to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // =============================================
+    // 8. START MONITORING - প্রতি 2 সেকেন্ড পরে
+    // =============================================
+    setInterval(checkScreenShare, 2000);
+    
+    console.log('✅ Screen Share Blocker Activated Successfully!');
+    
+})();
+    </script>
+
 </body>
 </html>
