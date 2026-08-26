@@ -424,16 +424,6 @@ const questions = [
 
 
 
-
-
-
-
-
-
-
-
-
-
 // =============================================
 // EXAM STATE
 // =============================================
@@ -462,6 +452,36 @@ const nextBtn = document.getElementById('nextBtn');
 const submitBtn = document.getElementById('submitBtn');
 const securityWarning = document.getElementById('securityWarning');
 const warningMessage = document.getElementById('warningMessage');
+
+// =============================================
+// DETECT SPLIT SCREEN & POP-UP
+// =============================================
+function detectSplitScreenOrPopup() {
+    // Check window size vs screen size (for split screen)
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    
+    // If window is significantly smaller than screen (split screen)
+    if (windowWidth < screenWidth * 0.85 || windowHeight < screenHeight * 0.85) {
+        return true;
+    }
+    
+    // Check if window is in a popup (small window)
+    if (windowWidth < 600 || windowHeight < 400) {
+        return true;
+    }
+    
+    // Check for multiple screens using window.screen.availWidth/Height
+    if (window.screen.availWidth && window.screen.availHeight) {
+        if (windowWidth < window.screen.availWidth * 0.85 || windowHeight < window.screen.availHeight * 0.85) {
+            return true;
+        }
+    }
+    
+    return false;
+}
 
 // =============================================
 // QUESTION NAVIGATOR FUNCTIONS
@@ -511,7 +531,7 @@ function updateNavigator() {
 }
 
 // =============================================
-// CLEAR SELECTION - ভুল উত্তর দাগ Remove
+// CLEAR SELECTION
 // =============================================
 function clearSelection(questionIndex) {
     if (isExamSubmitted || isSubmitting) return;
@@ -559,7 +579,39 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    //startExam();
+    // =============================================
+    // SPLIT SCREEN & POP-UP DETECTION ON LOAD
+    // =============================================
+    if (detectSplitScreenOrPopup()) {
+        alert('⚠️ Split screen or pop-up window detected!\n\nPlease close all split screens and pop-ups, then refresh the page to start the exam.');
+        // Disable all buttons and show message
+        document.querySelectorAll('button').forEach(btn => btn.disabled = true);
+        document.getElementById('questionContainer').innerHTML = `
+            <div class="split-screen-warning">
+                <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f56565;"></i>
+                <h2 style="color: #f56565; margin-top: 15px;">⚠️ Split Screen or Pop-up Detected!</h2>
+                <p style="color: #718096; max-width: 500px; margin: 10px auto;">
+                    Please close all split screens and pop-up windows, then refresh the page to start the exam.
+                </p>
+                <button onclick="location.reload()" style="
+                    background: #4facfe;
+                    color: #fff;
+                    border: none;
+                    padding: 12px 30px;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    margin-top: 15px;
+                ">
+                    <i class="fas fa-sync-alt"></i> Refresh Page
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    startExam();
     
     // Security Features
     history.pushState(null, null, location.href);
@@ -668,6 +720,15 @@ function showSecurityWarning(message) {
 // START EXAM
 // =============================================
 function startExam() {
+    // =============================================
+    // SPLIT SCREEN & POP-UP DETECTION
+    // =============================================
+    if (detectSplitScreenOrPopup()) {
+        alert('⚠️ Split screen or pop-up window detected!\n\nPlease close all split screens and pop-ups, then refresh the page to start the exam.');
+        // Prevent exam from starting
+        return;
+    }
+    
     timeLeft = examDuration * 60;
     updateTimerDisplay();
     
@@ -838,14 +899,13 @@ function submitExam() {
 }
 
 // =============================================
-// REVIEW TOGGLE - MathJax রেন্ডার সহ
+// REVIEW TOGGLE
 // =============================================
 function toggleReview() {
     const reviewSection = document.getElementById('reviewSection');
     if (reviewSection) {
         if (reviewSection.style.display === 'none' || reviewSection.style.display === '') {
             reviewSection.style.display = 'block';
-            // MathJax রেন্ডার
             if (window.MathJax && MathJax.typesetPromise) {
                 MathJax.typesetPromise([reviewSection]).catch(function(err) {
                     console.log('MathJax error:', err);
@@ -858,10 +918,9 @@ function toggleReview() {
 }
 
 // =============================================
-// SHOW RESULT (আপডেটেড - MathJax + Clear Selection সহ)
+// SHOW RESULT
 // =============================================
 function showResult(correct, wrong, skipped, total, percentage, grade, reason = '') {
-    // Review section - প্রতিটি প্রশ্নের জন্য Clear Selection বাটন সহ
     let reviewItems = '';
     for (let i = 0; i < questions.length; i++) {
         const q = questions[i];
@@ -938,7 +997,7 @@ function showResult(correct, wrong, skipped, total, percentage, grade, reason = 
                 </div>
                 <div class="score-details">
                     <span class="score-grade">Grade: <strong>${grade}</strong></span>
-                    <span class="score-message">${percentage >= 80 ? '🌟 Excellent!' : percentage >= 60 ? '👍 Good Job!' : '📚 Keep Practicing!'}</span>
+                    <span class="score-message">${percentage >= 80 ? '🌟 Excellent!' : percentage >= 60 ? '👏 Good Job!' : '📚 Keep Practicing!'}</span>
                 </div>
             </div>
             
@@ -968,7 +1027,6 @@ function showResult(correct, wrong, skipped, total, percentage, grade, reason = 
     resultDiv.innerHTML = resultHTML;
     document.querySelector('.exam-container').appendChild(resultDiv.firstElementChild);
     
-    // MathJax রেন্ডার
     if (window.MathJax && MathJax.typesetPromise) {
         MathJax.typesetPromise([resultDiv]).catch(function(err) {
             console.log('MathJax error:', err);
@@ -1018,50 +1076,6 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-
-// =============================================
-// SECURE FULLSCREEN & POP-UP CHECK
-// =============================================
-
-function isMultiWindowOrPopUp() {
-    const screenWidth = window.screen.width;
-    const screenHeight = window.screen.height;
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-
-    const widthPercentage = (windowWidth / screenWidth) * 100;
-    const heightPercentage = (windowHeight / screenHeight) * 100;
-
-    return (widthPercentage < 95 || heightPercentage < 95);
-}
-
-function handleStartTestClick() {
-    if (isMultiWindowOrPopUp()) {
-        alert("⚠️ পপ-আপ মোড বা স্প্লিট স্ক্রিন বন্ধ করে পুরো স্ক্রিনে ব্রাউজার চালু করুন!");
-        return;
-    }
-
-    // Fullscreen Request
-    const elem = document.documentElement;
-    if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
-    }
-
-    // Modal বন্ধ করে পরীক্ষা ও টাইমার শুরু
-    const overlay = document.getElementById('startModalOverlay');
-    if (overlay) {
-        overlay.style.display = 'none';
-    }
-
-    startExam();
-}
-
-// Global Scope এ এক্সপোজ করুন
-window.handleStartTestClick = handleStartTestClick;
 // =============================================
 // MAKE FUNCTIONS GLOBAL
 // =============================================
@@ -1076,3 +1090,4 @@ window.forceLogout = forceLogout;
 window.goToQuestion = goToQuestion;
 window.updateNavigator = updateNavigator;
 window.clearSelection = clearSelection;
+window.detectSplitScreenOrPopup = detectSplitScreenOrPopup;
