@@ -474,7 +474,28 @@ function showQuiz() {
 // ONLINE TEST - START
 // =============================================
 
+// =============================================
+// ONLINE TEST - START (SECURE CHECK)
+// =============================================
+
+function isMultiWindowOrPopUp() {
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    const widthPercentage = (windowWidth / screenWidth) * 100;
+    const heightPercentage = (windowHeight / screenHeight) * 100;
+
+    return (widthPercentage < 95 || heightPercentage < 95);
+}
+
 function startOnlineExam(examId) {
+    if (isMultiWindowOrPopUp()) {
+        alert("⚠️ পপ-আপ উইন্ডো (Pop-up View) বা স্প্লিট স্ক্রিন (Split Screen) মোডে পরীক্ষা দেওয়া নিষেধ!\n\nঅনুগ্রহ করে ফুল স্ক্রিন মোডে ব্রাউজারটি ওপেন করুন এবং আবার চেষ্টা করুন।");
+        return;
+    }
+
     if (confirm('📝 Are you ready to start the test?')) {
         window.location.href = '/online_test/' + examId;
     }
