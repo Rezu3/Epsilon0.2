@@ -559,7 +559,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    startExam();
+    //startExam();
     
     // Security Features
     history.pushState(null, null, location.href);
@@ -1018,6 +1018,50 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+
+// =============================================
+// SECURE FULLSCREEN & POP-UP CHECK
+// =============================================
+
+function isMultiWindowOrPopUp() {
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    const widthPercentage = (windowWidth / screenWidth) * 100;
+    const heightPercentage = (windowHeight / screenHeight) * 100;
+
+    return (widthPercentage < 95 || heightPercentage < 95);
+}
+
+function handleStartTestClick() {
+    if (isMultiWindowOrPopUp()) {
+        alert("⚠️ পপ-আপ মোড বা স্প্লিট স্ক্রিন বন্ধ করে পুরো স্ক্রিনে ব্রাউজার চালু করুন!");
+        return;
+    }
+
+    // Fullscreen Request
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+    }
+
+    // Modal বন্ধ করে পরীক্ষা ও টাইমার শুরু
+    const overlay = document.getElementById('startModalOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+
+    startExam();
+}
+
+// Global Scope এ এক্সপোজ করুন
+window.handleStartTestClick = handleStartTestClick;
 // =============================================
 // MAKE FUNCTIONS GLOBAL
 // =============================================
