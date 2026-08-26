@@ -261,6 +261,84 @@ const questions = [
 
 
 
+// =============================================
+// 🔥 POP-UP / SPLIT SCREEN DETECTION - EXAM PAGE
+// =============================================
+
+(function checkEnvironment() {
+    // 1. Picture-in-Picture (PiP) চেক
+    const isPiPActive = document.pictureInPictureElement !== null;
+    
+    // 2. Window Openers (pop-up windows) চেক
+    const hasPopups = window.opener !== null || window.parent !== window;
+    
+    // 3. Multiple windows/tabs detection
+    const isSplitScreen = window.outerWidth < window.screen.availWidth || 
+                           window.outerHeight < window.screen.availHeight;
+    
+    // 4. Fullscreen check
+    const isNotFullscreen = !document.fullscreenElement && 
+                            !document.mozFullScreenElement && 
+                            !document.webkitFullscreenElement;
+    
+    // 5. Window focus check
+    const isWindowFocused = document.hasFocus();
+    
+    // 6. Mobile split screen
+    const isSplitScreenMobile = window.screen.width < window.screen.availWidth || 
+                                window.screen.height < window.screen.availHeight;
+    
+    // =============================================
+    // যদি কোনো সমস্যা থাকে - Alert দেখিয়ে Redirect
+    // =============================================
+    if (isPiPActive || hasPopups || isSplitScreen || isSplitScreenMobile || (isNotFullscreen && !isWindowFocused)) {
+        alert('⚠️ Please close all pop-ups, split screens, and PiP mode before starting the exam!');
+        window.location.href = '/student_dashboard';
+        return;
+    }
+    
+    // =============================================
+    // Fullscreen强制 করতে চাইলে (Optional)
+    // =============================================
+    // যদি Fullscreen না থাকে তাহলে Auto Fullscreen
+    if (isNotFullscreen) {
+        setTimeout(function() {
+            try {
+                document.documentElement.requestFullscreen();
+            } catch(e) {
+                console.log('Fullscreen request failed');
+            }
+        }, 1000);
+    }
+})();
+
+// =============================================
+// 🛡️ CONTINUOUS MONITORING - প্রতি 2 সেকেন্ড পরে চেক
+// =============================================
+setInterval(function() {
+    const isPiPActive = document.pictureInPictureElement !== null;
+    const hasPopups = window.opener !== null || window.parent !== window;
+    const isSplitScreen = window.outerWidth < window.screen.availWidth || 
+                           window.outerHeight < window.screen.availHeight;
+    const isSplitScreenMobile = window.screen.width < window.screen.availWidth || 
+                                window.screen.height < window.screen.availHeight;
+    
+    if (isPiPActive || hasPopups || isSplitScreen || isSplitScreenMobile) {
+        alert('⚠️ Pop-up or split screen detected! Exam will be closed.');
+        window.location.href = '/student_dashboard';
+    }
+}, 2000);
+
+// =============================================
+// 🛡️ VISIBILITY CHANGE - Tab Switch Detection
+// =============================================
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        alert('⚠️ Tab switch detected! Exam will be closed.');
+        window.location.href = '/student_dashboard';
+    }
+});
+
 
 
 
