@@ -1,27 +1,27 @@
 const questions = [
     {
         id: 1,
-        question: `নিম্নলিখিত কোনটি সত্য?`,
+        question: `$5\\text{ kg}$ ভরের একটি বস্তুকে $20\\text{ N}$ বল দ্বারা ঠেলা হচ্ছে। যদি ঘর্ষণ বল $5\\text{ N}$ হয়, তবে বস্তুর ত্বরণ কত?`,
         image: null,
         options: [
-            `$2 + 5i > 1 + 4i$`,
-            `$5 + 3i > 6 + 7i$`,
-            `$5 + 7i > 5 + 3i$`,
-            `এদের কোনটিই নয়`
+            `$2\\text{ ms}^{-2}$`,
+            `$3\\text{ ms}^{-2}$`,
+            `$4\\text{ ms}^{-2}$`,
+            `$5\\text{ ms}^{-2}$`
         ],
-        correct: 3
+        correct: 1
     },
     {
         id: 2,
-        question: `$(x, y)$ বাস্তব এবং $x + iy = -i(-2 + 3i)$ হলে, $(x, y)$ হবে –`,
+        question: `কোনো বস্তুর ভরবেগ $10\\%$ বৃদ্ধি পেলে গতিশক্তি কত শতাংশ বৃদ্ধি পাবে?`,
         image: null,
         options: [
-            `$(2, -3)$`,
-            `$(3, 2)$`,
-            `$(-2, 3)$`,
-            `$(-3, -2)$`
+            `$10\\%$`,
+            `$20\\%$`,
+            `$21\\%$`,
+            `$100\\%$`
         ],
-        correct: 1
+        correct: 2
     },
      {
         id: 3,
@@ -37,377 +37,219 @@ const questions = [
     },
     {
         id: 4,
-        question: `যদি $i^2 = -1$ হয় তবে $\\sum_{n=0}^{225} i^n = $`,
+        question: `$1000\\text{ kg}$ ভরের একটি গাড়ি $20\\text{ ms}^{-1}$ বেগে চলছে। $2000\\text{ N}$ ব্রেক বল প্রয়োগ করলে গাড়িটি থামতে কত দূরত্ব অতিক্রম করবে?`,
         image: null,
         options: [
-            `$0$`,
-            `$1 + i$`,
-            `$-1$`,
-            `$i$`
+            `$50\\text{ m}$`,
+            `$100\\text{ m}$`,
+            `$200\\text{ m}$`,
+            `$400\\text{ m}$`
         ],
         correct: 1
     },
     {
         id: 5,
-        question: `যদি $\\frac{1 - i\\alpha}{1 + i\\alpha} = A + iB$ হয়, তবে $A^2 + B^2$-এর মান –`,
+        question: `নিউটনের তৃতীয় সূত্র অনুযায়ী ক্রিয়া ও প্রতিক্রিয়া বল —`,
         image: null,
         options: [
-            `$1$`,
-            `$\\alpha$`,
-            `$\\alpha^2$`,
-            `$-1$`
-        ],
-        correct: 0
-    },
-    {
-        id: 6,
-        question: `যদি $\\frac{z - 2}{z + 2}$ $(z \\neq -2)$ বিশুদ্ধ অবাস্তব সংখ্যা হয়, তবে $|z|$-এর মান –`,
-        image: null,
-        options: [
-            `$4$`,
-            `$3$`,
-            `$2$`,
-            `$1$`
-        ],
-        correct: 2
-    },
-    {
-        id: 7,
-        question: `$k$-এর যে ক্ষুদ্রতম মানের জন্য $x^2 + 5x + k = 0$ সমীকরণটির কাল্পনিক বীজ থাকবে সেটি হলো –`,
-        image: null,
-        options: [
-            `$4$`,
-            `$5$`,
-            `$6$`,
-            `$7$`
+            `একই বস্তুর ওপর কাজ করে`,
+            `সর্বদা সমান ও বিপরীতমুখী`,
+            `বিভিন্ন বস্তুর ওপর কাজ করে`,
+            `(b) ও (c) উভয়ই সত্য`
         ],
         correct: 3
     },
     {
-        id: 8,
-        question: `$y^2 - (1 - 2i)y + 1 + 5i = 0$-এর সমাধান হবে –`,
+        id: 6,
+        question: `$m_1$ ও $m_2$ ভরের দুটি বস্তু একটি হালকা সুতার সাহায্যে ঘর্ষণহীন কপিকলের ওপর দিয়ে ঝুলছে। সুতার টান কত?`,
+        image: "q6.png",
+        options: [
+            `$\\frac{2m_1m_2g}{m_1+m_2}$`,
+            `$\\frac{m_1m_2g}{m_1+m_2}$`,
+            `$(m_1+m_2)g$`,
+            `$(m_1-m_2)g$`
+        ],
+        correct: 0
+    },
+    {
+        id: 7,
+        question: `$2\\text{ kg}$ ভরের একটি বল $10\\text{ ms}^{-1}$ বেগে দেয়ালে লম্বভাবে আঘাত করে $5\\text{ ms}^{-1}$ বেগে ফিরে আসে। বল কর্তৃক প্রযুক্ত ঘাত কত?`,
         image: null,
         options: [
-            `$(-1 + i), (2 - 3i)$`,
-            `$(-1 + i), (2 + 3i)$`,
-            `$(-1 + i), (-2 + 3i)$`,
-            `$(-1 - i), (-2 - 3i)$`
+            `$10\\text{ Ns}$`,
+            `$20\\text{ Ns}$`,
+            `$30\\text{ Ns}$`,
+            `$40\\text{ Ns}$`
+        ],
+        correct: 2
+    },
+    {
+        id: 8,
+        question: `একটি রকেট প্রতি সেকেন্ডে $100\\text{ kg}$ গ্যাস $500\\text{ ms}^{-1}$ বেগে নির্গত করে। রকেটের ওপর প্রযুক্ত বল কত?`,
+        image: null,
+        options: [
+            `$50000\\text{ N}$`,
+            `$5000\\text{ N}$`,
+            `$500\\text{ N}$`,
+            `$50\\text{ N}$`
         ],
         correct: 0
     },
     {
         id: 9,
-        question: `$ix^2 - x + 12i = 0$-এর সমাধান হবে –`,
+        question: `$\\mu$ ঘর্ষণ গুণাঙ্ক যুক্ত আনুভূমিক তলে $m$ ভরের একটি বস্তুকে $F$ বলে টানা হচ্ছে। বস্তুটি না সরার শর্ত কী?`,
         image: null,
         options: [
-            `$4i, -3i$`,
-            `$-4i, 3i$`,
-            `$4i, 3i$`,
-            `$-4i, -3i$`
+            `$F < \\mu mg$`,
+            `$F > \\mu mg$`,
+            `$F = \\mu mg$`,
+            `$F = mg$`
         ],
         correct: 0
     },
     {
         id: 10,
-        question: `$x$ একটি অখণ্ড সংখ্যা হলে $-x^2 + 7x - 6 > 0$ অসমীকরণের সমাধান সেটটি হয় –`,
+        question: `$10\\text{ kg}$ ভরের একটি বস্তুকে খাড়া উপরের দিকে $100\\text{ N}$ বল দিয়ে তোলা হচ্ছে। বস্তুর ত্বরণ কত? $g = 10\\text{ ms}^{-2}$`,
         image: null,
         options: [
-            `\\{2, 4\\}`,
-            `\\{3, 5\\}`,
-            `\\{2, 3, 4, 5\\}`,
-            `\\{4, 5\\}`
+            `$0\\text{ ms}^{-2}$`,
+            `$5\\text{ ms}^{-2}$`,
+            `$10\\text{ ms}^{-2}$`,
+            `$20\\text{ ms}^{-2}$`
+        ],
+        correct: 0
+    },
+    {
+        id: 11,
+        question: `কোনো বস্তুর ওপর ক্রিয়াশীল বল শূন্য হলে, বস্তুটি —`,
+        image: null,
+        options: [
+            `সর্বদা স্থির থাকবে`,
+            `সর্বদা সমবেগে চলবে`,
+            `স্থির থাকবে অথবা সমবেগে চলবে`,
+            `ত্বরিত হবে`
         ],
         correct: 2
     },
     {
-        id: 11,
-        question: `$\\frac{2x+3}{4} + 2 \\le \\frac{1}{4} + \\frac{4x}{3}$, $x \\in \\mathbb{R}$ অসমীকরণটির সমাধান সেট হবে –`,
+        id: 12,
+        question: `তিনটি ব্লক $m_1=10\\text{ kg}, m_2=6\\text{ kg}, m_3=4\\text{ kg}$ একটি মসৃণ তলের উপর রাখা আছে। $40\\text{ N}$ বল দিয়ে টানা হলে $m_1$ ও $m_2$ এর মধ্যবর্তী টান কত?`,
+        image: "q12.png",
+        options: [
+            `$40\\text{ N}$`,
+            `$30\\text{ N}$`,
+            `$20\\text{ N}$`,
+            `$10\\text{ N}$`
+        ],
+        correct: 2
+    },
+    {
+        id: 13,
+        question: `একটি বন্দুক থেকে $0.01\\text{ kg}$ ভরের গুলি $100\\text{ ms}^{-1}$ বেগে ছোড়া হয়। বন্দুকের ভর $5\\text{ kg}$ হলে বন্দুকের পশ্চাদ্বেগ কত?`,
         image: null,
         options: [
-            `$(3, \\infty)$`,
-            `$[3, \\infty)$`,
-            `$[-3, \\infty)$`,
-            `কোনোটিই নয়`
+            `$0.1\\text{ ms}^{-1}$`,
+            `$0.2\\text{ ms}^{-1}$`,
+            `$0.5\\text{ ms}^{-1}$`,
+            `$1\\text{ ms}^{-1}$`
         ],
         correct: 1
     },
     {
-        id: 12,
-        question: `$\\frac{x+2}{x^2+1} > \\frac{1}{2}$-এর পূর্ণসংখ্যাত সমাধান সংখ্যা হবে –`,
-        image: null,
-        options: [
-            `$3$`,
-            `$2$`,
-            `$4$`,
-            `$0$`
-        ],
-        correct: 0
-    },
-    {
-        id: 13,
-        question: `$5(7x + 5) < 163 + 6(5x + 2)$ এবং $9x - 5 > 2(x + 6)$, $x \\in \\mathbb{R}$ অসমীকরণ দুটির সমাধান সেট –`,
-        image: null,
-        options: [
-            `$(-\\frac{17}{7}, 30)$`,
-            `$(\\frac{17}{7}, -30)$`,
-            `$(\\frac{17}{7}, 30)$`,
-            `$[\\frac{17}{7}, 30]$`
-        ],
-        correct: 2
-    },
-    {
         id: 14,
-        question: `$\\frac{3}{|x+1|} > 2$ অসমীকরণটির সমাধান সেট –`,
+        question: `$60^\\circ$ কোণে আনত একটি মসৃণ তল বরাবর $m$ ভরের একটি বস্তু গড়িয়ে পড়ছে। বস্তুর ত্বরণ কত?`,
         image: null,
         options: [
-            `$[-1, \\frac{7}{3}]$`,
-            `$(-\\frac{5}{2}, -1] \\cup (-1, \\frac{1}{2})$`,
-            `$(-\\frac{5}{2}, -1) \\cup (-1, \\frac{1}{2})$`,
-            `$[-\\frac{3}{2}, \\frac{1}{2}]$`
+            `$g$`,
+            `$\\frac{g}{2}$`,
+            `$\\frac{\\sqrt{3}g}{2}$`,
+            `$\\frac{g}{\\sqrt{2}}$`
         ],
-        correct: 2
+        correct: 1
     },
     {
         id: 15,
-        question: `$\\frac{|x-1|}{x+2} < 1$ ($x \\neq -2$) অসমীকরণটির সমাধান সেট -`,
+        question: `$F = kt$ বল $t=0$ সময়ে স্থির থাকা $m$ ভরের বস্তুর ওপর প্রযুক্ত হলে $t$ সময়ে বস্তুর বেগ কত হবে?`,
         image: null,
         options: [
-            `$(-\\infty, -2) \\cup (-\\frac{1}{2}, \\infty)$`,
-            `$(-\\infty, -2] \\cup (-\\frac{1}{2}, \\infty)$`,
-            `$(-\\infty, -2] \\cup [-\\frac{1}{2}, \\infty)$`,
-            `কোনোটিই নয়`
+            `$\\frac{kt}{m}$`,
+            `$\\frac{kt^2}{2m}$`,
+            `$\\frac{kt^2}{m}$`,
+            `$\\frac{2kt}{m}$`
         ],
-        correct: 0
+        correct: 1
     },
     {
         id: 16,
-        question: `$|x-2| \\ge |x-4|$ অসমীকরণটির সমাধান সেট –`,
+        question: `একটি লোক $500\\text{ N}$ ওজন নিয়ে লিফটে দাঁড়িয়ে আছে। লিফট $2\\text{ ms}^{-2}$ ত্বরণে উপরে উঠলে লোকটির আপাত ওজন কত? $g = 10\\text{ ms}^{-2}$`,
         image: null,
         options: [
-            `$[2, \\infty)$`,
-            `$(2, \\infty)$`,
-            `$[3, \\infty)$`,
-            `$(3, \\infty)$`
+            `$400\\text{ N}$`,
+            `$500\\text{ N}$`,
+            `$600\\text{ N}$`,
+            `$700\\text{ N}$`
         ],
         correct: 2
     },
     {
         id: 17,
-        question: `$\\frac{|x|+1}{|x|-1} < 0$ অসমীকরণটির সমাধান সেট হবে –`,
-        image: null,
+        question: `বল এবং সময়ের লেখচিত্র দেওয়া আছে। $0$ থেকে $4\\text{ s}$ সময়ে ভরবেগের পরিবর্তন কত?`,
+        image: "q17.png",
         options: [
-            `$[-1, 1)$`,
-            `$(-1, 1)$`,
-            `$[-1, 1]$`,
-            `$(-1, 1]$`
+            `$6\\text{ Ns}$`,
+            `$12\\text{ Ns}$`,
+            `$18\\text{ Ns}$`,
+            `$24\\text{ Ns}$`
         ],
         correct: 1
     },
     {
         id: 18,
-        question: `$\\frac{1}{2-|x|} \\ge 1$ ($x \\neq \\pm 2$) অসমীকরণটির সমাধান সেট -`,
+        question: `$5\\text{ kg}$ ভরের একটি বস্তুকে $30^\\circ$ কোণে আনত $10\\text{ m}$ লম্বা মসৃণ তলের উপর থেকে ছেড়ে দেওয়া হলো। নিচে পৌঁছাতে কত সময় লাগবে?`,
         image: null,
         options: [
-            `$[-2, -1) \\cup (1, 2]$`,
-            `$(-2, -1] \\cup [1, 2)$`,
-            `$(-2, -1) \\cup [1, 2)$`,
-            `কোনোটিই নয়`
+            `$1\\text{ s}$`,
+            `$2\\text{ s}$`,
+            `$3\\text{ s}$`,
+            `$4\\text{ s}$`
         ],
         correct: 1
     },
     {
         id: 19,
-        question: `$\\frac{x}{x-4} > \\frac{1}{3}$ ($x \\neq 4$), $x \\in \\mathbb{R}$ অসমীকরণটির সমাধান সেট হবে –`,
+        question: `নিউটনের প্রথম সূত্রকে বলা হয় —`,
         image: null,
         options: [
-            `$(-\\infty, -4) \\cup (2, \\infty)$`,
-            `$(-\\infty, -2] \\cup [4, \\infty)$`,
-            `$(-\\infty, -2) \\cup (4, \\infty)$`,
-            `কোনোটিই নয়`
+            `বলের সূত্র`,
+            `ত্বরণের সূত্র`,
+            `জড়তার সূত্র`,
+            `ভরবেগের সূত্র`
         ],
         correct: 2
     },
     {
         id: 20,
-        question: `$\\frac{x+3}{x-1} \\le 1$ ($x \\neq 1$), $x \\in \\mathbb{R}$ অসমীকরণটির সমাধান সেট হবে –`,
-        image: null,
-        options: [
-            `$[-7, 1)$`,
-            `$[-7, 1]$`,
-            `$(-7, -1)$`,
-            `$[-1, 7)$`
-        ],
-        correct: 0
-    },
-    {
-        id: 21,
-        question: `একটি ত্রিভুজের বাহু তিনটির দৈর্ঘ্য $x$ সেমি, $(2x+1)$ সেমি এবং $(2x-2)$ সেমি। যদি ত্রিভুজটির পরিসীমা কম করে $54$ সেমি হয়, তবে $x$-এর ক্ষুদ্রতম মান কত সেমি?`,
-        image: null,
-        options: [
-            `$10$`,
-            `$13$`,
-            `$11$`,
-            `$12$`
-        ],
-        correct: 2
-    },
-    {
-        id: 22,
-        question: `$x = 2 + 3i$ এবং $y = 2 - 3i$ হলে $\\frac{x^2 + xy + y^2}{x^2 - xy + y^2} = ?$`,
-        image: null,
-        options: [
-            `$\\frac{4}{23}$`,
-            `$-\\frac{4}{7}$`,
-            `$\\frac{3}{23}$`,
-            `$-\\frac{3}{23}$`
-        ],
-        correct: 3
-    },
-    {
-        id: 23,
-        question: `$z_1 = 1 + i\\sqrt{3}$ এবং $z_2 = \\sqrt{3} - i$ হলে $\\arg\\left(\\frac{z_1}{z_2}\\right) \\equiv$`,
-        image: null,
-        options: [
-            `$\\arg(z_1) + \\arg(z_2)$`,
-            `$\\arg(z_1) - \\arg(z_2)$`,
-            `$\\arg(z_1) + \\arg(z_2) + 2\\pi$`,
-            `$\\arg(z_1) + \\arg(z_2) - 2\\pi$`
-        ],
-        correct: 1
-    },
-    {
-        id: 24,
-        question: `$x\\sqrt{2} = 1 + \\sqrt{-1}$ হলে $x^6 + x^4 + x^2 + 2 = $`,
+        question: `$m$ ভরের একটি বস্তুকে $v$ বেগে উপরে ছোড়া হলো। সর্বোচ্চ উচ্চতায় বস্তুর ওপর ক্রিয়াশীল বল কত?`,
         image: null,
         options: [
             `$0$`,
-            `$1$`,
-            `$i$`,
-            `$-1$`
-        ],
-        correct: 1
-    },
-    {
-        id: 25,
-        question: `$(1 + i)^{-2} - (1 - i)^{-2} = ?$`,
-        image: null,
-        options: [
-            `$-2$`,
-            `$i$`,
-            `$-4(1+i)$`,
-            `$0$`
-        ],
-        correct: 1
-    },
-    {
-        id: 26,
-        question: `$\\frac{2}{1 + \\cos\\theta + i\\sin\\theta}$-এর মডিউলাস হবে –`,
-        image: null,
-        options: [
-            `$\\cos\\frac{\\theta}{2}$`,
-            `$\\sec\\frac{\\theta}{2}$`,
-            `$\\sin\\frac{\\theta}{2}$`,
-            `$\\csc\\frac{\\theta}{2}$`
-        ],
-        correct: 1
-    },
-    {
-        id: 27,
-        question: `$\\omega$, $1$-এর কাল্পনিক ঘনমূল হলে $(3 + \\omega + 3\\omega^2)^4$-এর মান –`,
-        image: null,
-        options: [
-            `$16$`,
-            `$160$`,
-            `$16\\omega^2$`,
-            `কোনোটিই নয়`
-        ],
-        correct: 2
-    },
-    {
-        id: 28,
-        question: `যদি $\\arg(z-a) = \\frac{\\pi}{4}$ হয় যেখানে $a$ একটি বাস্তব সংখ্যা, তাহলে $z$ অবস্থিত হবে –`,
-        image: null,
-        options: [
-            `একটি সরলরেখার ওপর`,
-            `অধিবৃত্তের ওপর`,
-            `একটি বৃত্তের ওপর`,
-            `এদের কোনোটিই নয়`
-        ],
-        correct: 0
-    },
-    {
-        id: 29,
-        question: `জটিল তলে $z$, $iz$ ও $(z + iz)$ জটিল সংখ্যা তিনটি দ্বারা উৎপন্ন ত্রিভুজের ক্ষেত্রফল =`,
-        image: null,
-        options: [
-            `$\\frac{1}{2}|z+iz|$`,
-            `$\\frac{1}{2}|z+iz|^2$`,
-            `$\\frac{1}{2}|z|$`,
-            `$\\frac{1}{2}|z|^2$`
-        ],
-        correct: 3
-    },
-    {
-        id: 30,
-        question: `$|z| + z = 2 + i$ ($z$ একটি জটিল সংখ্যা) হলে, $z = $`,
-        image: null,
-        options: [
-            `$i$`,
-            `$\\frac{3}{4} + i$`,
-            `$4 + i$`,
-            `$\\frac{1}{3} + i$`
-        ],
-        correct: 1
-    },
-    {
-        id: 31,
-        question: `$x, y$ বাস্তব এবং $(x + 3i)$ ও $(-2 + iy)$ জটিল সংখ্যা দুটি পরস্পর অনুবন্ধী হলে $x$ ও $y$-এর মান –`,
-        image: null,
-        options: [
-            `$2, 3$`,
-            `$-2, 3$`,
-            `$2, -3$`,
-            `$-2, -3$`
-        ],
-        correct: 1
-    },
-    {
-        id: 32,
-        question: `যদি $\\arg(z-1) = \\arg(z+3i)$ সমীকরণকে $z = x + iy$ সিদ্ধ করে তবে কোনটি সত্য?`,
-        image: null,
-        options: [
-            `$2(x-1) = y+3$`,
-            `$3(y-1) = x$`,
-            `$3(x-1) = y$`,
-            `$x = 5y$`
-        ],
-        correct: 2
-    },
-    {
-        id: 33,
-        question: `$\\left(\\frac{1-i}{1+i}\\right)^n = 1$ হলে $n$-এর ক্ষুদ্রতম পূর্ণমান –`,
-        image: null,
-        options: [
-            `$1$`,
-            `$2$`,
-            `$3$`,
-            `$4$`
-        ],
-        correct: 3
-    },
-    {
-        id: 34,
-        question: `$z_1, z_2, z_3$ জটিল সংখ্যাগুলি এমন যে $|z_1| = |z_2| = |z_3| = \\left|\\frac{1}{z_1} + \\frac{1}{z_2} + \\frac{1}{z_3}\\right| = 1$, তাহলে $|z_1 + z_2 + z_3| = ?$`,
-        image: null,
-        options: [
-            `$0$`,
-            `$1$`,
-            `$2$`,
-            `$3$`
+            `$mg$`,
+            `$mv$`,
+            `$mv^2$`
         ],
         correct: 1
     }
 ];
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -452,36 +294,6 @@ const nextBtn = document.getElementById('nextBtn');
 const submitBtn = document.getElementById('submitBtn');
 const securityWarning = document.getElementById('securityWarning');
 const warningMessage = document.getElementById('warningMessage');
-
-// =============================================
-// DETECT SPLIT SCREEN & POP-UP
-// =============================================
-function detectSplitScreenOrPopup() {
-    // Check window size vs screen size (for split screen)
-    const screenWidth = window.screen.width;
-    const screenHeight = window.screen.height;
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    
-    // If window is significantly smaller than screen (split screen)
-    if (windowWidth < screenWidth * 0.85 || windowHeight < screenHeight * 0.85) {
-        return true;
-    }
-    
-    // Check if window is in a popup (small window)
-    if (windowWidth < 600 || windowHeight < 400) {
-        return true;
-    }
-    
-    // Check for multiple screens using window.screen.availWidth/Height
-    if (window.screen.availWidth && window.screen.availHeight) {
-        if (windowWidth < window.screen.availWidth * 0.85 || windowHeight < window.screen.availHeight * 0.85) {
-            return true;
-        }
-    }
-    
-    return false;
-}
 
 // =============================================
 // QUESTION NAVIGATOR FUNCTIONS
@@ -531,7 +343,7 @@ function updateNavigator() {
 }
 
 // =============================================
-// CLEAR SELECTION
+// CLEAR SELECTION - ভুল উত্তর দাগ Remove
 // =============================================
 function clearSelection(questionIndex) {
     if (isExamSubmitted || isSubmitting) return;
@@ -576,38 +388,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (statusElem && statusElem.textContent === 'taken') {
         alert('⚠️ You have already taken this exam!');
         window.location.href = '/student_dashboard';
-        return;
-    }
-    
-    // =============================================
-    // SPLIT SCREEN & POP-UP DETECTION ON LOAD
-    // =============================================
-    if (detectSplitScreenOrPopup()) {
-        alert('⚠️ Split screen or pop-up window detected!\n\nPlease close all split screens and pop-ups, then refresh the page to start the exam.');
-        // Disable all buttons and show message
-        document.querySelectorAll('button').forEach(btn => btn.disabled = true);
-        document.getElementById('questionContainer').innerHTML = `
-            <div class="split-screen-warning">
-                <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f56565;"></i>
-                <h2 style="color: #f56565; margin-top: 15px;">⚠️ Split Screen or Pop-up Detected!</h2>
-                <p style="color: #718096; max-width: 500px; margin: 10px auto;">
-                    Please close all split screens and pop-up windows, then refresh the page to start the exam.
-                </p>
-                <button onclick="location.reload()" style="
-                    background: #4facfe;
-                    color: #fff;
-                    border: none;
-                    padding: 12px 30px;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    margin-top: 15px;
-                ">
-                    <i class="fas fa-sync-alt"></i> Refresh Page
-                </button>
-            </div>
-        `;
         return;
     }
     
@@ -720,15 +500,6 @@ function showSecurityWarning(message) {
 // START EXAM
 // =============================================
 function startExam() {
-    // =============================================
-    // SPLIT SCREEN & POP-UP DETECTION
-    // =============================================
-    if (detectSplitScreenOrPopup()) {
-        alert('⚠️ Split screen or pop-up window detected!\n\nPlease close all split screens and pop-ups, then refresh the page to start the exam.');
-        // Prevent exam from starting
-        return;
-    }
-    
     timeLeft = examDuration * 60;
     updateTimerDisplay();
     
@@ -899,13 +670,14 @@ function submitExam() {
 }
 
 // =============================================
-// REVIEW TOGGLE
+// REVIEW TOGGLE - MathJax রেন্ডার সহ
 // =============================================
 function toggleReview() {
     const reviewSection = document.getElementById('reviewSection');
     if (reviewSection) {
         if (reviewSection.style.display === 'none' || reviewSection.style.display === '') {
             reviewSection.style.display = 'block';
+            // MathJax রেন্ডার
             if (window.MathJax && MathJax.typesetPromise) {
                 MathJax.typesetPromise([reviewSection]).catch(function(err) {
                     console.log('MathJax error:', err);
@@ -918,9 +690,10 @@ function toggleReview() {
 }
 
 // =============================================
-// SHOW RESULT
+// SHOW RESULT (আপডেটেড - MathJax + Clear Selection সহ)
 // =============================================
 function showResult(correct, wrong, skipped, total, percentage, grade, reason = '') {
+    // Review section - প্রতিটি প্রশ্নের জন্য Clear Selection বাটন সহ
     let reviewItems = '';
     for (let i = 0; i < questions.length; i++) {
         const q = questions[i];
@@ -997,7 +770,7 @@ function showResult(correct, wrong, skipped, total, percentage, grade, reason = 
                 </div>
                 <div class="score-details">
                     <span class="score-grade">Grade: <strong>${grade}</strong></span>
-                    <span class="score-message">${percentage >= 80 ? '🌟 Excellent!' : percentage >= 60 ? '👏 Good Job!' : '📚 Keep Practicing!'}</span>
+                    <span class="score-message">${percentage >= 80 ? '🌟 Excellent!' : percentage >= 60 ? '👍 Good Job!' : '📚 Keep Practicing!'}</span>
                 </div>
             </div>
             
@@ -1027,6 +800,7 @@ function showResult(correct, wrong, skipped, total, percentage, grade, reason = 
     resultDiv.innerHTML = resultHTML;
     document.querySelector('.exam-container').appendChild(resultDiv.firstElementChild);
     
+    // MathJax রেন্ডার
     if (window.MathJax && MathJax.typesetPromise) {
         MathJax.typesetPromise([resultDiv]).catch(function(err) {
             console.log('MathJax error:', err);
@@ -1090,4 +864,4 @@ window.forceLogout = forceLogout;
 window.goToQuestion = goToQuestion;
 window.updateNavigator = updateNavigator;
 window.clearSelection = clearSelection;
-window.detectSplitScreenOrPopup = detectSplitScreenOrPopup;
+
