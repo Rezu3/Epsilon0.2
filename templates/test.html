@@ -195,5 +195,82 @@
             }
         }
     </script>
+
+<!-- ============================================= -->
+<!-- 🔥 POP-UP / SPLIT SCREEN DETECTION - EXAM PAGE -->
+<!-- ============================================= -->
+<script>
+(function() {
+    'use strict';
+
+    // Check function
+    function checkEnvironment() {
+        const isPiPActive = document.pictureInPictureElement !== null;
+        const hasPopups = window.opener !== null || window.parent !== window;
+        const isSplitScreen = window.outerWidth < window.screen.availWidth || 
+                               window.outerHeight < window.screen.availHeight;
+        const isSplitScreenMobile = window.screen.width < window.screen.availWidth || 
+                                    window.screen.height < window.screen.availHeight;
+        const isNotFullscreen = !document.fullscreenElement && 
+                                !document.mozFullScreenElement && 
+                                !document.webkitFullscreenElement;
+        const isWindowFocused = document.hasFocus();
+
+        if (isPiPActive || hasPopups || isSplitScreen || isSplitScreenMobile || (isNotFullscreen && !isWindowFocused)) {
+            alert('⚠️ Please close all pop-ups, split screens, and PiP mode before starting the exam!');
+            window.location.href = '/student_dashboard';
+            return true;
+        }
+        return false;
+    }
+
+    // Run on load
+    window.addEventListener('load', function() {
+        if (checkEnvironment()) return;
+
+        // If no issue, try to force fullscreen
+        if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement) {
+            try {
+                document.documentElement.requestFullscreen();
+            } catch(e) {}
+        }
+    });
+
+    // Continuous monitoring (every 2 seconds)
+    setInterval(function() {
+        if (checkEnvironment()) {
+            // Stop further checks if redirected
+            clearInterval(this);
+        }
+    }, 2000);
+
+    // Tab switch detection
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            alert('⚠️ Tab switch detected! Exam will be closed.');
+            window.location.href = '/student_dashboard';
+        }
+    });
+
+    // Disable right-click
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        alert('Right-click is disabled during exam!');
+    });
+
+    // Disable keyboard shortcuts (Ctrl+C, Ctrl+V, etc.)
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && ['c', 'v', 'u', 's', 'p'].includes(e.key.toLowerCase())) {
+            e.preventDefault();
+            alert('Keyboard shortcuts are disabled during exam!');
+        }
+        if (e.key === 'F12' || e.key === 'F5') {
+            e.preventDefault();
+            alert('This key is disabled during exam!');
+        }
+    });
+
+})();
+</script>
 </body>
 </html>
