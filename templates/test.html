@@ -272,33 +272,28 @@
 
 })();
 </script>
-<script>
-// =============================================
-// 🛡️ SCREEN SHARE DETECTION + BLACK SCREEN ONLY
-// =============================================
 
-(function screenShareBlocker() {
-    
-    console.log('🛡️ Screen Share Blocker Active');
-    
-    // =============================================
-    // 1. SCREEN SHARE DETECTION - Window Size Change
-    // =============================================
-    let lastWidth = window.innerWidth;
-    let lastHeight = window.innerHeight;
-    let screenShareCount = 0;
+<!-- ============================================= -->
+<!-- 🛡️ ENHANCED EXAM SECURITY & SCREEN SHARE BLOCKER -->
+<!-- ============================================= -->
+<script>
+(function examSecuritySystem() {
+    'use strict';
+
     let isBlackScreen = false;
-    const WARNING_THRESHOLD = 2; // ২ বার Detect হলে Black Screen
-    
+    let warningCount = 0;
+    const MAX_WARNINGS = 2;
+
+    console.log('🛡️ Exam Security System Initialized');
+
     // =============================================
-    // 2. BLACK SCREEN FUNCTION - শুধু Page Black করবে
+    // ১. ব্ল্যাক স্ক্রিন অ্যাক্টিভেশন ফাংশন
     // =============================================
-    function activateBlackScreen(reason) {
-        if (isBlackScreen) return; // ইতিমধ্যে Black Screen থাকলে
-        
+    function triggerSecurityViolation(reason) {
+        if (isBlackScreen) return;
         isBlackScreen = true;
-        
-        // পুরো Page Black করে দেওয়া
+
+        // ব্ল্যাক স্ক্রিন ওভারলে তৈরি
         const overlay = document.createElement('div');
         overlay.id = 'blackScreenOverlay';
         overlay.style.cssText = `
@@ -307,7 +302,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: #000000;
+            background: #0d1117;
             z-index: 999999;
             display: flex;
             flex-direction: column;
@@ -315,179 +310,115 @@
             justify-content: center;
             color: #ffffff;
             font-family: 'Poppins', sans-serif;
-            animation: fadeIn 0.5s ease;
+            text-align: center;
         `;
-        
+
         overlay.innerHTML = `
-            <div style="text-align: center; padding: 40px;">
-                <div style="font-size: 80px; margin-bottom: 20px;">🚫</div>
-                <h1 style="font-size: 32px; color: #ff6b6b; margin-bottom: 15px;">⚠️ SCREEN SHARE DETECTED!</h1>
-                <p style="font-size: 18px; color: #cccccc; max-width: 500px; line-height: 1.6;">
-                    Screen sharing is strictly prohibited during the exam.
-                </p>
-                <p style="font-size: 16px; color: #ff6b6b; margin-top: 10px;">
-                    Reason: ${reason}
-                </p>
-                <p style="font-size: 14px; color: #888888; margin-top: 20px;">
-                    ⏳ Exam will be auto-submitted by the system...
-                </p>
+            <div style="background: #161b22; padding: 40px; border-radius: 16px; border: 1px solid #f85149; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+                <div style="font-size: 60px; color: #f85149; margin-bottom: 10px;">🚫</div>
+                <h2 style="color: #f85149; font-size: 24px; margin-bottom: 10px;">Security Violation Detected!</h2>
+                <p style="color: #8b949e; font-size: 15px; margin-bottom: 20px;">${reason}</p>
+                <div style="background: rgba(248, 81, 73, 0.1); color: #ff7b72; padding: 10px; border-radius: 8px; font-size: 13px;">
+                    ⚠️ Your exam session has been locked.
+                </div>
             </div>
         `;
-        
-        // Animation যোগ করা
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeIn {
-                from { opacity: 0; transform: scale(0.9); }
-                to { opacity: 1; transform: scale(1); }
-            }
-        `;
-        document.head.appendChild(style);
-        
+
         document.body.appendChild(overlay);
-        
-        // Exam Content Blur করে দেওয়া
-        const examContainer = document.querySelector('.exam-container');
+
+        // পরীক্ষার কন্টেন্ট লক করা
+        const examContainer = document.getElementById('examContainer');
         if (examContainer) {
-            examContainer.style.filter = 'blur(10px)';
-            examContainer.style.opacity = '0.3';
+            examContainer.style.filter = 'blur(15px)';
             examContainer.style.pointerEvents = 'none';
         }
-        
-        // সব Question Option ডিজেবল করে দেওয়া
-        document.querySelectorAll('.option input, .option').forEach(function(el) {
-            el.style.pointerEvents = 'none';
-            el.style.opacity = '0.5';
-        });
-        
-        // Submit Button ডিজেবল
-        const submitBtn = document.getElementById('submitBtn');
-        if (submitBtn) {
-            submitBtn.style.pointerEvents = 'none';
-            submitBtn.style.opacity = '0.5';
+
+        // অটোমেটিক সাবমিট কল (যদি আপনার সাবমিট ফাংশন থাকে)
+        if (typeof submitExam === 'function') {
+            setTimeout(() => {
+                submitExam();
+            }, 3000);
         }
     }
-    
+
     // =============================================
-    // 3. SCREEN SHARE MONITORING
+    // ২. ওয়ার্নিং টোস্ট (Warning Toast)
     // =============================================
-    function checkScreenShare() {
-        const currentWidth = window.innerWidth;
-        const currentHeight = window.innerHeight;
-        const screenWidth = window.screen.width;
-        const screenHeight = window.screen.height;
-        
-        // Window Size পরিবর্তন হয়েছে কিনা চেক
-        const widthChanged = Math.abs(currentWidth - lastWidth) > 50;
-        const heightChanged = Math.abs(currentHeight - lastHeight) > 50;
-        
-        // Screen Resolution এর সাথে তুলনা
-        const isSmallerThanScreen = currentWidth < screenWidth * 0.85 || 
-                                    currentHeight < screenHeight * 0.85;
-        
-        // Screen Share Detection Logic
-        if ((widthChanged || heightChanged) && isSmallerThanScreen) {
-            screenShareCount++;
-            console.log(`⚠️ Screen Share Detection #${screenShareCount}`);
-            
-            if (screenShareCount >= WARNING_THRESHOLD) {
-                // Black Screen Activate
-                activateBlackScreen('Multiple screen share detections');
-            } else {
-                // প্রথম Warning
-                showWarningToast('⚠️ Screen share detected! This is your first warning.');
-            }
-        } else {
-            // কয়েক সেকেন্ড পর Detection Reset
-            setTimeout(function() {
-                if (screenShareCount < WARNING_THRESHOLD) {
-                    screenShareCount = 0;
-                }
-            }, 10000);
+    function showWarning(msg) {
+        warningCount++;
+        if (warningCount >= MAX_WARNINGS) {
+            triggerSecurityViolation('Multiple security warnings triggered (Tab switch or Fullscreen exit).');
+            return;
         }
-        
-        lastWidth = currentWidth;
-        lastHeight = currentHeight;
-    }
-    
-    // =============================================
-    // 4. WARNING TOAST
-    // =============================================
-    function showWarningToast(message) {
-        // পুরানো Toast Remove
-        const oldToast = document.querySelector('.screen-share-toast');
-        if (oldToast) oldToast.remove();
-        
+
         const toast = document.createElement('div');
-        toast.className = 'screen-share-toast';
         toast.style.cssText = `
             position: fixed;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: #ff6b6b;
+            background: #d97706;
             color: white;
-            padding: 15px 30px;
-            border-radius: 10px;
+            padding: 12px 24px;
+            border-radius: 8px;
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 14px;
             z-index: 99999;
-            box-shadow: 0 8px 30px rgba(255, 107, 107, 0.4);
-            animation: slideDown 0.5s ease;
-            max-width: 90%;
-            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         `;
-        toast.textContent = message;
+        toast.textContent = `⚠️ Warning (${warningCount}/${MAX_WARNINGS}): ${msg}`;
         document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.style.animation = 'slideUp 0.5s ease';
-            setTimeout(() => toast.remove(), 500);
-        }, 3000);
+
+        setTimeout(() => toast.remove(), 4000);
     }
+
+    // =============================================
+    // ৩. স্ক্রিন চেকিং এবং ফুলস্ক্রিন মনিটর
+    // =============================================
     
-    // =============================================
-    // 5. TAB SWITCH DETECTION - এটাও Black Screen করবে
-    // =============================================
+    // ফুলস্ক্রিন ছেড়ে দিলে বা অন্য উইন্ডোতে গেলে ওয়ার্নিং
+    document.addEventListener('fullscreenchange', function() {
+        if (!document.fullscreenElement) {
+            showWarning('Exiting fullscreen mode is restricted during exam!');
+        }
+    });
+
+    // ট্যাব পরিবর্তন সনাক্তকরণ
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            activateBlackScreen('Tab switch detected');
+            triggerSecurityViolation('Tab switching or minimizing browser is strictly prohibited!');
         }
     });
-    
-    // =============================================
-    // 6. WINDOW FOCUS LOSS
-    // =============================================
-    document.addEventListener('blur', function() {
-        activateBlackScreen('Window focus lost');
+
+    // স্ক্রিন রি-সাইজিং পর্যবেক্ষণ (অতিরিক্ত স্প্লিট স্ক্রিন চেক)
+    window.addEventListener('resize', function() {
+        if (window.outerWidth < screen.availWidth * 0.9 || window.outerHeight < screen.availHeight * 0.9) {
+            showWarning('Please keep the browser window maximized.');
+        }
     });
-    
-    // =============================================
-    // 7. ANIMATION STYLES
-    // =============================================
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    // মাউস দিয়ে উইন্ডোর বাইরে যাওয়া প্রতিরোধ
+    document.addEventListener('mouseleave', function() {
+        console.log('Mouse left the exam window area.');
+    });
+
+    // Developer Tools & Shortcut Block
+    document.addEventListener('keydown', function(e) {
+        if (
+            e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+            (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'p'))
+        ) {
+            e.preventDefault();
+            showWarning('Developer tools and shortcuts are disabled!');
         }
-        @keyframes slideUp {
-            from { opacity: 1; transform: translateX(-50%) translateY(0); }
-            to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-        }
-    `;
-    document.head.appendChild(style);
-    
-    // =============================================
-    // 8. START MONITORING - প্রতি 2 সেকেন্ড পরে
-    // =============================================
-    setInterval(checkScreenShare, 2000);
-    
-    console.log('✅ Screen Share Blocker Activated Successfully!');
-    
+    });
+
 })();
-    </script>
+</script>
+
+
 
 </body>
 </html>
