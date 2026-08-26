@@ -272,153 +272,65 @@
 
 })();
 </script>
-
 <!-- ============================================= -->
-<!-- 🛡️ ENHANCED EXAM SECURITY & SCREEN SHARE BLOCKER -->
+<!-- 🛡️ ANTI-AI OCR & VISION PROTECTION SCRIPT -->
 <!-- ============================================= -->
 <script>
-(function examSecuritySystem() {
+(function antiAIPass() {
     'use strict';
 
-    let isBlackScreen = false;
-    let warningCount = 0;
-    const MAX_WARNINGS = 2;
+    // ১. ব্যাকগ্রাউন্ডে ডায়নামিক নয়েজ ওয়াটারমার্ক (AI Vision Blur)
+    function applyNoiseOverlay() {
+        const questionContainer = document.getElementById('questionContainer');
+        if (!questionContainer) return;
 
-    console.log('🛡️ Exam Security System Initialized');
+        const canvas = document.createElement('canvas');
+        canvas.width = 80;
+        canvas.height = 80;
+        const ctx = canvas.getContext('2d');
 
-    // =============================================
-    // ১. ব্ল্যাক স্ক্রিন অ্যাক্টিভেশন ফাংশন
-    // =============================================
-    function triggerSecurityViolation(reason) {
-        if (isBlackScreen) return;
-        isBlackScreen = true;
-
-        // ব্ল্যাক স্ক্রিন ওভারলে তৈরি
-        const overlay = document.createElement('div');
-        overlay.id = 'blackScreenOverlay';
-        overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #0d1117;
-            z-index: 999999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            font-family: 'Poppins', sans-serif;
-            text-align: center;
-        `;
-
-        overlay.innerHTML = `
-            <div style="background: #161b22; padding: 40px; border-radius: 16px; border: 1px solid #f85149; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
-                <div style="font-size: 60px; color: #f85149; margin-bottom: 10px;">🚫</div>
-                <h2 style="color: #f85149; font-size: 24px; margin-bottom: 10px;">Security Violation Detected!</h2>
-                <p style="color: #8b949e; font-size: 15px; margin-bottom: 20px;">${reason}</p>
-                <div style="background: rgba(248, 81, 73, 0.1); color: #ff7b72; padding: 10px; border-radius: 8px; font-size: 13px;">
-                    ⚠️ Your exam session has been locked.
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(overlay);
-
-        // পরীক্ষার কন্টেন্ট লক করা
-        const examContainer = document.getElementById('examContainer');
-        if (examContainer) {
-            examContainer.style.filter = 'blur(15px)';
-            examContainer.style.pointerEvents = 'none';
+        // হালকা র্যান্ডম ডট তৈরি যা AI OCR-কে কনফিউজ করবে
+        for (let i = 0; i < 35; i++) {
+            ctx.fillStyle = `rgba(0, 0, 0, ${Math.random() * 0.07})`;
+            ctx.fillRect(Math.random() * 80, Math.random() * 80, 2, 2);
         }
 
-        // অটোমেটিক সাবমিট কল (যদি আপনার সাবমিট ফাংশন থাকে)
-        if (typeof submitExam === 'function') {
-            setTimeout(() => {
-                submitExam();
-            }, 3000);
-        }
+        questionContainer.style.backgroundImage = `url(${canvas.toDataURL()})`;
     }
 
-    // =============================================
-    // ২. ওয়ার্নিং টোস্ট (Warning Toast)
-    // =============================================
-    function showWarning(msg) {
-        warningCount++;
-        if (warningCount >= MAX_WARNINGS) {
-            triggerSecurityViolation('Multiple security warnings triggered (Tab switch or Fullscreen exit).');
-            return;
-        }
-
-        const toast = document.createElement('div');
-        toast.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #d97706;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 14px;
-            z-index: 99999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        `;
-        toast.textContent = `⚠️ Warning (${warningCount}/${MAX_WARNINGS}): ${msg}`;
-        document.body.appendChild(toast);
-
-        setTimeout(() => toast.remove(), 4000);
+    // ২. অক্ষরের অতি সূক্ষ্ম ঘূর্ণন (Micro-Rotation for Bounding Box Bypass)
+    function applyMicroTransform() {
+        const targets = document.querySelectorAll('.question-container p, .option, .mathjax span');
+        
+        targets.forEach(el => {
+            const randomRotate = (Math.random() * 0.8 - 0.4).toFixed(2); // -0.4deg থেকে +0.4deg
+            const randomSkew = (Math.random() * 0.4 - 0.2).toFixed(2);
+            
+            el.style.display = 'inline-block';
+            el.style.transform = `rotate(${randomRotate}deg) skewX(${randomSkew}deg)`;
+        });
     }
 
-    // =============================================
-    // ৩. স্ক্রিন চেকিং এবং ফুলস্ক্রিন মনিটর
-    // =============================================
-    
-    // ফুলস্ক্রিন ছেড়ে দিলে বা অন্য উইন্ডোতে গেলে ওয়ার্নিং
-    document.addEventListener('fullscreenchange', function() {
-        if (!document.fullscreenElement) {
-            showWarning('Exiting fullscreen mode is restricted during exam!');
-        }
+    // ৩. প্রশ্ন পরিবর্তন বা নতুন প্রশ্ন লোড হলে ফাংশন দুটি চালু করা
+    function initializeProtection() {
+        applyNoiseOverlay();
+        applyMicroTransform();
+    }
+
+    // প্রথমবার পেজ লোড হলে এবং প্রতি ১.৫ সেকেন্ড পরপর চেক করে স্ক্রিন আপডেট রাখা
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(initializeProtection, 800);
     });
 
-    // ট্যাব পরিবর্তন সনাক্তকরণ
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            triggerSecurityViolation('Tab switching or minimizing browser is strictly prohibited!');
-        }
-    });
-
-    // স্ক্রিন রি-সাইজিং পর্যবেক্ষণ (অতিরিক্ত স্প্লিট স্ক্রিন চেক)
-    window.addEventListener('resize', function() {
-        if (window.outerWidth < screen.availWidth * 0.9 || window.outerHeight < screen.availHeight * 0.9) {
-            showWarning('Please keep the browser window maximized.');
-        }
-    });
-
-    // মাউস দিয়ে উইন্ডোর বাইরে যাওয়া প্রতিরোধ
-    document.addEventListener('mouseleave', function() {
-        console.log('Mouse left the exam window area.');
-    });
-
-    // Developer Tools & Shortcut Block
-    document.addEventListener('keydown', function(e) {
-        if (
-            e.key === 'F12' || 
-            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
-            (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'p'))
-        ) {
-            e.preventDefault();
-            showWarning('Developer tools and shortcuts are disabled!');
+    // ডাইনামিক প্রশ্ন নেভিগেশন (Next/Prev ক্লিকে পুনঃপ্রয়োগ)
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.nav-btn') || e.target.closest('.q-btn')) {
+            setTimeout(initializeProtection, 400);
         }
     });
 
 })();
 </script>
-
-
 
 </body>
 </html>
