@@ -1,9 +1,12 @@
+// static/sw.js
+
 const CACHE_NAME = 'epsilon-v2';
 const urlsToCache = [
   '/',
   '/static/css/login.css',
   '/static/css/rank.css',
-  '/static/manifest.json'
+  '/static/manifest.json',
+  '/static/firebase-messaging-sw.js'  // নতুন যোগ করুন
 ];
 
 self.addEventListener('install', event => {
@@ -34,13 +37,11 @@ self.addEventListener('fetch', event => {
   );
 });
 
-
-
 // =============================================
-// PUSH NOTIFICATION HANDLER
+// FCM PUSH NOTIFICATION HANDLER
 // =============================================
 
-// Push event - Receive notification
+// Push event - FCM থেকে Notification Receive
 self.addEventListener('push', function(event) {
     console.log('📬 Push Received:', event);
     
@@ -66,7 +67,6 @@ self.addEventListener('push', function(event) {
         icon: data.icon || '/static/icon-192.png',
         badge: data.badge || '/static/icon-192.png',
         vibrate: [200, 100, 200],
-        sound: '/static/notification.mp3',
         data: {
             url: data.url || '/student_dashboard',
             noticeId: data.notice_id || null,
@@ -94,17 +94,10 @@ self.addEventListener('push', function(event) {
 // Notification click event
 self.addEventListener('notificationclick', function(event) {
     console.log('🔔 Notification clicked:', event);
-    
     event.notification.close();
     
     const urlToOpen = event.notification.data?.url || '/student_dashboard';
     const noticeId = event.notification.data?.noticeId || null;
-    
-    // If noticeId exists, mark as read
-    if (noticeId) {
-        // You can send a request to mark as read here
-        // But for simplicity, we'll just open the app
-    }
     
     event.waitUntil(
         clients.matchAll({
@@ -112,14 +105,12 @@ self.addEventListener('notificationclick', function(event) {
             includeUncontrolled: true
         })
         .then(function(windowClients) {
-            // Check if there's already a window/tab open
             for (let i = 0; i < windowClients.length; i++) {
                 const client = windowClients[i];
                 if (client.url === urlToOpen && 'focus' in client) {
                     return client.focus();
                 }
             }
-            // If not, open a new window
             if (clients.openWindow) {
                 return clients.openWindow(urlToOpen);
             }
