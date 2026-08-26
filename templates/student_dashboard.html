@@ -265,13 +265,13 @@
         <div class="my-exams-section" id="myExamsSection" style="display: none;">
             <div class="section-header">
                 <h2><i class="fas fa-pencil-alt"></i> Online Test</h2>
-                <span class="total-count">{{ my_exams|length }} Tests</span>
+                <span class="total-count" id="examTotalCount">{{ my_exams|length }} Tests</span>
             </div>
             
-            <div class="exams-list">
+            <div class="exams-list" id="examsList">
                 {% if my_exams %}
                     {% for exam in my_exams %}
-                    <div class="exam-item" id="exam-item-{{ exam.id }}">
+                    <div class="exam-item" id="exam-item-{{ exam.id }}" data-exam-id="{{ exam.id }}" data-exam-date="{{ exam.exam_date }}" data-exam-time="{{ exam.exam_time }}">
                         <div class="exam-icon">
                             <i class="fas fa-globe" style="color: #4facfe;"></i>
                         </div>
@@ -280,6 +280,7 @@
                             <p><strong>Subject:</strong> {{ exam.subject }} | <strong>Teacher:</strong> {{ exam.teacher_name }}</p>
                             <p><strong>Date:</strong> {{ exam.exam_date }} | <strong>Time:</strong> {{ exam.exam_time }} | <strong>Duration:</strong> {{ exam.duration }} mins</p>
                             <p><strong>Full Marks:</strong> {{ exam.full_marks }} | <strong>Class:</strong> {{ exam.class }}</p>
+                            <input type="hidden" class="exam-status" value="{{ exam.status }}">
                         </div>
                         <div class="exam-actions" id="exam-actions-{{ exam.id }}">
                             <div class="exam-timer" id="exam-timer-{{ exam.id }}">
