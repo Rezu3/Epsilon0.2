@@ -6,6 +6,18 @@ from datetime import datetime
 # ===== QUIZ BLUEPRINT IMPORT =====
 from quiz import quiz_bp
 
+# =============================================
+# FIREBASE ADMIN SDK - FCM PUSH NOTIFICATION
+# =============================================
+
+import firebase_admin
+from firebase_admin import credentials, messaging
+
+cred = credentials.Certificate("the-epsilon-firebase-adminsdk-fbsvc-624dabb8f4.json")
+firebase_admin.initialize_app(cred)
+
+# ... বাকি কোড গুলো ...
+
 app = Flask(__name__)
 app.secret_key = "tution_management_secret_key_2026"
 
@@ -718,7 +730,6 @@ def exam():
     else:
         return render_template('exam.html', exams=exams, teachers=teachers, all_students=all_students, user_type='student')
 
-
 @app.route("/add_exam", methods=["POST"])
 def add_exam():
     if 'user_type' not in session:
@@ -751,55 +762,7 @@ def add_exam():
     cursor = conn.cursor()
     
     try:
-        # =============================================
-        # STEP 1: Auto Submit All Pending Exams for this Class
-        # =============================================
-        auto_submit_count = 0
-        
-        if exam_type == 'online' and exam_class:
-            # Get all students in this class
-            cursor.execute('SELECT id FROM students WHERE class = ?', (exam_class,))
-            students = cursor.fetchall()
-            
-            for student in students:
-                student_id = student['id']
-                
-                # Get all pending online exams for this student in this class
-                cursor.execute('''
-                    SELECT e.id, e.exam_name, e.subject, e.full_marks
-                    FROM exams e
-                    WHERE e.exam_type = 'online' 
-                    AND e.class = ? 
-                    AND e.status = 'Upcoming'
-                    AND NOT EXISTS (
-                        SELECT 1 FROM results r 
-                        WHERE r.exam_id = e.id AND r.student_id = ?
-                    )
-                ''', (exam_class, student_id))
-                
-                pending_exams = cursor.fetchall()
-                
-                # Auto submit each pending exam with 0 marks
-                for pending in pending_exams:
-                    # Check if student already has result for this exam
-                    cursor.execute('''
-                        SELECT id FROM results 
-                        WHERE exam_id = ? AND student_id = ?
-                    ''', (pending['id'], student_id))
-                    
-                    existing = cursor.fetchone()
-                    
-                    if not existing:
-                        cursor.execute('''
-                            INSERT INTO results (exam_id, student_id, marks, grade)
-                            VALUES (?, ?, 0, 'F')
-                        ''', (pending['id'], student_id))
-                        auto_submit_count += 1
-                        print(f"✅ Auto-submitted exam {pending['exam_name']} for student {student_id} (0 marks)")
-        
-        # =============================================
-        # STEP 2: Add New Exam
-        # =============================================
+        # Offline exam এ empty string কে None করে দিচ্ছি
         if exam_type == 'offline':
             exam_time = None
             duration = None
@@ -810,74 +773,16 @@ def add_exam():
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (exam_name, teacher_name, subject, full_marks, exam_date, exam_type, exam_time, duration, exam_class, 'Upcoming'))
         
-        new_exam_id = cursor.lastrowid
         conn.commit()
-        
-        # =============================================
-        # STEP 3: Send Push Notification for New Exam (Optional)
-        # =============================================
-        if exam_type == 'online' and exam_class:
-            try:
-                from firebase_admin import messaging
-                
-                # Get all students in this class
-                cursor.execute('SELECT id, name FROM students WHERE class = ?', (exam_class,))
-                students = cursor.fetchall()
-                
-                notification_count = 0
-                
-                for student in students:
-                    # Get push subscription
-                    cursor.execute('''
-                        SELECT endpoint FROM push_subscriptions 
-                        WHERE student_id = ? AND auth_key = 'fcm'
-                    ''', (student['id'],))
-                    
-                    subscription = cursor.fetchone()
-                    
-                    if subscription and subscription['endpoint']:
-                        try:
-                            msg = messaging.Message(
-                                notification=messaging.Notification(
-                                    title=f"📚 New Exam: {exam_name}",
-                                    body=f"Subject: {subject} | Date: {exam_date}",
-                                ),
-                                data={
-                                    'exam_id': str(new_exam_id),
-                                    'url': '/student_dashboard'
-                                },
-                                token=subscription['endpoint']
-                            )
-                            
-                            response = messaging.send(msg)
-                            notification_count += 1
-                            print(f"✅ Notification sent to student {student['id']}")
-                            
-                        except Exception as e:
-                            print(f"⚠️ Notification error for student {student['id']}: {e}")
-                
-                print(f"📬 Notifications sent: {notification_count}")
-                
-            except Exception as e:
-                print(f"⚠️ FCM Notification error: {e}")
-        
-        # =============================================
-        # STEP 4: Flash Message
-        # =============================================
-        if auto_submit_count > 0:
-            flash(f'✅ Exam created! {auto_submit_count} pending exam(s) auto-submitted with 0 marks.', 'success')
-        else:
-            flash('✅ Exam created successfully!', 'success')
+        flash('Exam created successfully!', 'success')
         
     except Exception as e:
-        conn.rollback()
-        flash('❌ Error creating exam: ' + str(e), 'error')
+        flash('Error creating exam: ' + str(e), 'error')
         print(f"❌ Error: {e}")
     finally:
         conn.close()
     
     return redirect(url_for('exam'))
-
 
 @app.route("/delete_exam/<int:exam_id>", methods=["POST"])
 def delete_exam(exam_id):
@@ -889,9 +794,6 @@ def delete_exam(exam_id):
     cursor = conn.cursor()
     
     try:
-        # First delete related results
-        cursor.execute('DELETE FROM results WHERE exam_id = ?', (exam_id,))
-        # Then delete exam
         cursor.execute('DELETE FROM exams WHERE id = ?', (exam_id,))
         conn.commit()
         flash('Exam deleted successfully!', 'success')
@@ -901,6 +803,7 @@ def delete_exam(exam_id):
         conn.close()
     
     return redirect(url_for('exam'))
+
 
 
 # =============================================
@@ -921,7 +824,6 @@ def get_exam_data(exam_id):
         return jsonify(dict(exam))
     else:
         return jsonify({'error': 'Exam not found'}), 404
-
 
 # =============================================
 # 🔥 EDIT EXAM
@@ -981,7 +883,9 @@ def edit_exam(exam_id):
         conn.close()
     
     return redirect(url_for('exam'))
- 
+# ------------------------
+# Result Routes
+# ------------------------
 # ------------------------
 # Result Routes
 # ------------------------
@@ -1800,6 +1704,12 @@ def change_password_teacher():
 
 
 
+
+
+ 
+
+
+
 # =============================================
 # NOTICE SYSTEM - BACKEND ROUTES
 # =============================================
@@ -1888,52 +1798,14 @@ def get_target_students(cursor, target, target_class, target_subject):
         return cursor.fetchall()
     
     elif target == 'subject' and target_subject:
-        # For subject, get all students (filter will be applied in app)
-        # You can modify this to filter by subject if you have subject-wise students
         cursor.execute('SELECT id, name, class, phone FROM students')
         return cursor.fetchall()
     
     return []
 
 
-def send_push_notifications(students, title, message, notice_id):
-    """Send push notifications to all students"""
-    
-    push_count = 0
-    
-    for student in students:
-        try:
-            # Get push subscription for this student
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            
-            cursor.execute('''
-                SELECT endpoint, auth_key, p256dh_key 
-                FROM push_subscriptions 
-                WHERE student_id = ?
-            ''', (student['id'],))
-            
-            subscription = cursor.fetchone()
-            conn.close()
-            
-            if subscription:
-                # Send push notification using web-push
-                # For now, we'll just log it
-                print(f"📬 Push to student {student['id']}: {title}")
-                push_count += 1
-                
-                # TODO: Implement actual web-push sending
-                # You need to install web-push library:
-                # pip install pywebpush
-                
-        except Exception as e:
-            print(f"⚠️ Error sending push to student {student['id']}: {e}")
-    
-    return push_count
-
-
 # Get Student Notices
-@app.route("/get_student_notices")
+@app.route("/get_student_notices", methods=["GET"])
 def get_student_notices():
     """Get all notices for a student"""
     
@@ -2046,15 +1918,22 @@ def mark_notice_read():
         conn.close()
         print(f"❌ Error marking notice as read: {e}")
         return jsonify({'success': False, 'message': 'Error marking notice as read'}), 500
+# =============================================
+# FCM TOKEN SAVE ROUTE
+# =============================================
 
-
-# Get Unread Notice Count (for badge)
-@app.route("/get_unread_notice_count")
-def get_unread_notice_count():
-    """Get unread notice count for student"""
+@app.route("/save_fcm_token", methods=["POST"])
+def save_fcm_token():
+    """Save student's FCM token"""
     
     if 'user_type' not in session or session['user_type'] != 'student':
-        return jsonify({'success': False, 'count': 0})
+        return jsonify({'success': False, 'message': 'Please login as student first!'}), 401
+    
+    data = request.get_json()
+    fcm_token = data.get('fcm_token')
+    
+    if not fcm_token:
+        return jsonify({'success': False, 'message': 'FCM token required!'})
     
     student_id = session['user_id']
     
@@ -2062,107 +1941,76 @@ def get_unread_notice_count():
     cursor = conn.cursor()
     
     try:
-        # Get student's class
-        cursor.execute('SELECT class FROM students WHERE id = ?', (student_id,))
-        student = cursor.fetchone()
-        
-        if not student:
-            conn.close()
-            return jsonify({'success': False, 'count': 0})
-        
-        student_class = student['class']
-        
-        # Get unread count
         cursor.execute('''
-            SELECT COUNT(*) as count 
-            FROM notices n
-            LEFT JOIN student_notices sn ON n.id = sn.notice_id AND sn.student_id = ?
-            WHERE 
-                (n.is_global = 1 OR n.target_class = ? OR n.target_class IS NULL)
-                AND (sn.is_read = 0 OR sn.is_read IS NULL)
-        ''', (student_id, student_class))
-        
-        count = cursor.fetchone()['count']
-        conn.close()
-        
-        return jsonify({'success': True, 'count': count})
-        
-    except Exception as e:
-        conn.close()
-        return jsonify({'success': False, 'count': 0})
-
-
-# Get All Notices (for Admin/Teacher view)
-@app.route("/get_all_notices")
-def get_all_notices():
-    """Get all notices (for admin/teacher)"""
-    
-    if 'user_type' not in session:
-        return jsonify({'success': False, 'message': 'Please login first!'}), 401
-    
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    try:
-        cursor.execute('''
-            SELECT 
-                n.*,
-                COUNT(sn.id) as total_read,
-                (SELECT COUNT(*) FROM student_notices WHERE notice_id = n.id) as total_sent
-            FROM notices n
-            LEFT JOIN student_notices sn ON n.id = sn.notice_id AND sn.is_read = 1
-            GROUP BY n.id
-            ORDER BY n.created_at DESC
-        ''')
-        
-        notices = cursor.fetchall()
-        conn.close()
-        
-        return jsonify({
-            'success': True,
-            'notices': [dict(notice) for notice in notices]
-        })
-        
-    except Exception as e:
-        conn.close()
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-# Delete Notice (for Admin/Teacher)
-@app.route("/delete_notice/<int:notice_id>", methods=["POST"])
-def delete_notice(notice_id):
-    """Delete a notice"""
-    
-    if 'user_type' not in session:
-        return jsonify({'success': False, 'message': 'Please login first!'}), 401
-    
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    try:
-        # Delete from student_notices first (foreign key)
-        cursor.execute('DELETE FROM student_notices WHERE notice_id = ?', (notice_id,))
-        
-        # Delete notice
-        cursor.execute('DELETE FROM notices WHERE id = ?', (notice_id,))
+            INSERT INTO push_subscriptions (student_id, endpoint, auth_key, p256dh_key)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(student_id, endpoint) DO UPDATE SET 
+                updated_at = CURRENT_TIMESTAMP
+        ''', (student_id, fcm_token, 'fcm', 'fcm'))
         
         conn.commit()
         conn.close()
         
-        return jsonify({'success': True, 'message': 'Notice deleted successfully!'})
+        return jsonify({'success': True, 'message': 'FCM token saved!'})
         
     except Exception as e:
         conn.rollback()
         conn.close()
+        print(f"❌ Error saving FCM token: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500
 
 
+# =============================================
+# SEND FCM PUSH NOTIFICATIONS
+# =============================================
 
-
+def send_push_notifications(students, title, message, notice_id):
+    """Send FCM push notifications to students"""
+    
+    push_count = 0
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    for student in students:
+        try:
+            # Get student's FCM token
+            cursor.execute('''
+                SELECT endpoint FROM push_subscriptions 
+                WHERE student_id = ? AND auth_key = 'fcm'
+            ''', (student['id'],))
+            
+            subscription = cursor.fetchone()
+            
+            if subscription and subscription['endpoint']:
+                fcm_token = subscription['endpoint']
+                
+                # Create FCM message
+                msg = messaging.Message(
+                    notification=messaging.Notification(
+                        title=title,
+                        body=message,
+                    ),
+                    data={
+                        'notice_id': str(notice_id),
+                        'url': '/student_dashboard'
+                    },
+                    token=fcm_token
+                )
+                
+                # Send message
+                response = messaging.send(msg)
+                print(f"✅ FCM sent to student {student['id']}: {response}")
+                push_count += 1
+                
+        except Exception as e:
+            print(f"⚠️ FCM error for student {student['id']}: {e}")
+    
+    conn.close()
+    return push_count
 
 
 # =============================================
-# PUSH SUBSCRIPTION ROUTE
+# SAVE PUSH SUBSCRIPTION ROUTE
 # =============================================
 
 @app.route("/save_push_subscription", methods=["POST"])
@@ -2216,6 +2064,8 @@ def save_push_subscription():
         print(f"❌ Error saving push subscription: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500
 
+
+ 
 # ------------------------
 # Logout
 # ------------------------
