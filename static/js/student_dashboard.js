@@ -509,10 +509,20 @@ function startOnlineExam(examId) {
         return;
     }
     
-    // =============================================
+// =============================================
     // সব ঠিক থাকলে confirm দিয়ে start করবে
     // =============================================
-    if (confirm('📝 Are you ready to start the test?')) {
+    const confirmMessage = 
+        "⚠️ পরীক্ষার জরুরি নিয়মাবলী:\n" +
+        "1. Back ❌\n" +
+        "2. Tab/Page Change ❌\n" +
+        "3. Refresh ❌\n" +
+        "4. Phone Off ❌\n" +
+        "5. Pop-up Use❌\n" +
+        "6. Split Screen Use❌\n\n" +
+        "আপনি কি পরীক্ষা শুরু করতে প্রস্তুত?";
+
+    if (confirm(confirmMessage)) {
         window.location.href = '/online_test/' + examId;
     }
 }
