@@ -718,6 +718,7 @@ def exam():
     else:
         return render_template('exam.html', exams=exams, teachers=teachers, all_students=all_students, user_type='student')
 
+
 @app.route("/add_exam", methods=["POST"])
 def add_exam():
     if 'user_type' not in session:
@@ -750,7 +751,55 @@ def add_exam():
     cursor = conn.cursor()
     
     try:
-        # Offline exam এ empty string কে None করে দিচ্ছি
+        # =============================================
+        # STEP 1: Auto Submit All Pending Exams for this Class
+        # =============================================
+        auto_submit_count = 0
+        
+        if exam_type == 'online' and exam_class:
+            # Get all students in this class
+            cursor.execute('SELECT id FROM students WHERE class = ?', (exam_class,))
+            students = cursor.fetchall()
+            
+            for student in students:
+                student_id = student['id']
+                
+                # Get all pending online exams for this student in this class
+                cursor.execute('''
+                    SELECT e.id, e.exam_name, e.subject, e.full_marks
+                    FROM exams e
+                    WHERE e.exam_type = 'online' 
+                    AND e.class = ? 
+                    AND e.status = 'Upcoming'
+                    AND NOT EXISTS (
+                        SELECT 1 FROM results r 
+                        WHERE r.exam_id = e.id AND r.student_id = ?
+                    )
+                ''', (exam_class, student_id))
+                
+                pending_exams = cursor.fetchall()
+                
+                # Auto submit each pending exam with 0 marks
+                for pending in pending_exams:
+                    # Check if student already has result for this exam
+                    cursor.execute('''
+                        SELECT id FROM results 
+                        WHERE exam_id = ? AND student_id = ?
+                    ''', (pending['id'], student_id))
+                    
+                    existing = cursor.fetchone()
+                    
+                    if not existing:
+                        cursor.execute('''
+                            INSERT INTO results (exam_id, student_id, marks, grade)
+                            VALUES (?, ?, 0, 'F')
+                        ''', (pending['id'], student_id))
+                        auto_submit_count += 1
+                        print(f"✅ Auto-submitted exam {pending['exam_name']} for student {student_id} (0 marks)")
+        
+        # =============================================
+        # STEP 2: Add New Exam
+        # =============================================
         if exam_type == 'offline':
             exam_time = None
             duration = None
@@ -761,16 +810,74 @@ def add_exam():
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (exam_name, teacher_name, subject, full_marks, exam_date, exam_type, exam_time, duration, exam_class, 'Upcoming'))
         
+        new_exam_id = cursor.lastrowid
         conn.commit()
-        flash('Exam created successfully!', 'success')
+        
+        # =============================================
+        # STEP 3: Send Push Notification for New Exam (Optional)
+        # =============================================
+        if exam_type == 'online' and exam_class:
+            try:
+                from firebase_admin import messaging
+                
+                # Get all students in this class
+                cursor.execute('SELECT id, name FROM students WHERE class = ?', (exam_class,))
+                students = cursor.fetchall()
+                
+                notification_count = 0
+                
+                for student in students:
+                    # Get push subscription
+                    cursor.execute('''
+                        SELECT endpoint FROM push_subscriptions 
+                        WHERE student_id = ? AND auth_key = 'fcm'
+                    ''', (student['id'],))
+                    
+                    subscription = cursor.fetchone()
+                    
+                    if subscription and subscription['endpoint']:
+                        try:
+                            msg = messaging.Message(
+                                notification=messaging.Notification(
+                                    title=f"📚 New Exam: {exam_name}",
+                                    body=f"Subject: {subject} | Date: {exam_date}",
+                                ),
+                                data={
+                                    'exam_id': str(new_exam_id),
+                                    'url': '/student_dashboard'
+                                },
+                                token=subscription['endpoint']
+                            )
+                            
+                            response = messaging.send(msg)
+                            notification_count += 1
+                            print(f"✅ Notification sent to student {student['id']}")
+                            
+                        except Exception as e:
+                            print(f"⚠️ Notification error for student {student['id']}: {e}")
+                
+                print(f"📬 Notifications sent: {notification_count}")
+                
+            except Exception as e:
+                print(f"⚠️ FCM Notification error: {e}")
+        
+        # =============================================
+        # STEP 4: Flash Message
+        # =============================================
+        if auto_submit_count > 0:
+            flash(f'✅ Exam created! {auto_submit_count} pending exam(s) auto-submitted with 0 marks.', 'success')
+        else:
+            flash('✅ Exam created successfully!', 'success')
         
     except Exception as e:
-        flash('Error creating exam: ' + str(e), 'error')
+        conn.rollback()
+        flash('❌ Error creating exam: ' + str(e), 'error')
         print(f"❌ Error: {e}")
     finally:
         conn.close()
     
     return redirect(url_for('exam'))
+
 
 @app.route("/delete_exam/<int:exam_id>", methods=["POST"])
 def delete_exam(exam_id):
@@ -782,6 +889,9 @@ def delete_exam(exam_id):
     cursor = conn.cursor()
     
     try:
+        # First delete related results
+        cursor.execute('DELETE FROM results WHERE exam_id = ?', (exam_id,))
+        # Then delete exam
         cursor.execute('DELETE FROM exams WHERE id = ?', (exam_id,))
         conn.commit()
         flash('Exam deleted successfully!', 'success')
@@ -791,7 +901,6 @@ def delete_exam(exam_id):
         conn.close()
     
     return redirect(url_for('exam'))
-
 
 
 # =============================================
@@ -812,6 +921,7 @@ def get_exam_data(exam_id):
         return jsonify(dict(exam))
     else:
         return jsonify({'error': 'Exam not found'}), 404
+
 
 # =============================================
 # 🔥 EDIT EXAM
@@ -871,9 +981,7 @@ def edit_exam(exam_id):
         conn.close()
     
     return redirect(url_for('exam'))
-# ------------------------
-# Result Routes
-# ------------------------
+ 
 # ------------------------
 # Result Routes
 # ------------------------
