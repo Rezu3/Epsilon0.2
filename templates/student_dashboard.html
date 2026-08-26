@@ -448,6 +448,199 @@
         </div>
     </div>
 
+    <!-- ============================================= -->
+    <!-- FIREBASE SDK - FCM PUSH NOTIFICATION -->
+    <!-- ============================================= -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+
+    <script>
+        // =============================================
+        // FIREBASE CONFIGURATION
+        // =============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDiL1Cg5FCy1etilDkrvykQCYrqNnzlT4A",
+            authDomain: "the-epsilon.firebaseapp.com",
+            projectId: "the-epsilon",
+            storageBucket: "the-epsilon.firebasestorage.app",
+            messagingSenderId: "414449833997",
+            appId: "1:414449833997:web:1f41b0c9a74aebad25dd44",
+            measurementId: "G-72MGV14V7V"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        // =============================================
+        // VAPID PUBLIC KEY (Firebase Console থেকে)
+        // =============================================
+        const VAPID_KEY = "BPA-ndECwSaPPKg0d0kzoT40o__LIUYe9ePNT49g_u3yDNJfyINE_lybI7AHnt6KzKRW13rZz4wYyohUfYdQRfc";
+
+        // =============================================
+        // REGISTER FIREBASE SERVICE WORKER
+        // =============================================
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/firebase-messaging-sw.js')
+                .then(function(registration) {
+                    console.log('✅ Firebase SW registered:', registration);
+                })
+                .catch(function(error) {
+                    console.log('❌ Firebase SW registration failed:', error);
+                });
+        }
+
+        // =============================================
+        // REQUEST NOTIFICATION PERMISSION
+        // =============================================
+        function requestNotificationPermission() {
+            Notification.requestPermission().then((permission) => {
+                if (permission === 'granted') {
+                    console.log('✅ Notification Permission Granted!');
+                    
+                    // Get FCM Token
+                    messaging.getToken({ vapidKey: VAPID_KEY })
+                        .then((currentToken) => {
+                            if (currentToken) {
+                                console.log('✅ FCM Token:', currentToken);
+                                saveFCMToken(currentToken);
+                            } else {
+                                console.log('❌ No registration token available.');
+                            }
+                        })
+                        .catch((err) => {
+                            console.log('❌ Error getting token:', err);
+                        });
+                    
+                    document.getElementById('notificationPermissionSection').style.display = 'none';
+                } else {
+                    console.log('❌ Notification Permission Denied');
+                }
+            });
+        }
+
+        // =============================================
+        // SAVE FCM TOKEN TO SERVER
+        // =============================================
+        function saveFCMToken(token) {
+            fetch('/save_fcm_token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ fcm_token: token })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ FCM Token saved to server');
+                } else {
+                    console.log('❌ Failed to save FCM token:', data.message);
+                }
+            })
+            .catch(error => {
+                console.log('❌ Error saving FCM token:', error);
+            });
+        }
+
+        // =============================================
+        // FOREGROUND MESSAGE RECEIVER
+        // =============================================
+        messaging.onMessage((payload) => {
+            console.log('📬 Foreground Message:', payload);
+            
+            // Show toast notification
+            showNotificationToast(
+                payload.notification?.title || '📢 The Epsilon',
+                payload.notification?.body || 'আপনার জন্য নতুন নোটিফিকেশন!'
+            );
+        });
+
+        // =============================================
+        // TOAST NOTIFICATION (Foreground)
+        // =============================================
+        function showNotificationToast(title, body) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                font-family: 'Poppins', sans-serif;
+                z-index: 9999;
+                box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+                max-width: 350px;
+                animation: slideInRight 0.5s ease-out;
+                cursor: pointer;
+            `;
+            toast.innerHTML = `
+                <div style="font-weight: 600; font-size: 16px;">${title}</div>
+                <div style="font-size: 14px; opacity: 0.9; margin-top: 4px;">${body}</div>
+            `;
+            toast.onclick = function() {
+                window.location.href = '/student_dashboard#notices';
+            };
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.5s ease-in';
+                setTimeout(() => toast.remove(), 500);
+            }, 5000);
+        }
+
+        // =============================================
+        // DISMISS NOTIFICATION PERMISSION
+        // =============================================
+        function dismissNotificationPermission() {
+            document.getElementById('notificationPermissionSection').style.display = 'none';
+        }
+
+        // =============================================
+        // CHECK PERMISSION ON PAGE LOAD
+        // =============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                if (Notification.permission === 'default') {
+                    document.getElementById('notificationPermissionSection').style.display = 'block';
+                } else if (Notification.permission === 'granted') {
+                    // Already granted, get token
+                    messaging.getToken({ vapidKey: VAPID_KEY })
+                        .then((token) => {
+                            if (token) {
+                                saveFCMToken(token);
+                            }
+                        });
+                }
+            }, 3000);
+        });
+
+        // =============================================
+        // CSS ANIMATIONS
+        // =============================================
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // =============================================
+        // MAKE FUNCTIONS GLOBALLY AVAILABLE
+        // =============================================
+        window.requestNotificationPermission = requestNotificationPermission;
+        window.dismissNotificationPermission = dismissNotificationPermission;
+        window.saveFCMToken = saveFCMToken;
+    </script>
+
     <script src="{{ url_for('static', filename='js/student_dashboard.js') }}"></script>
 </body>
 </html>
