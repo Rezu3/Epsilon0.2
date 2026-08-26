@@ -889,12 +889,7 @@ body {
     .answered-count-badge { font-size: 11px; padding: 3px 10px; }
 }
 
- /* AI Vision OCR Bypass Styling */
-.question-container p, .option {
-    -webkit-text-stroke: 0.25px #111111; /* অক্ষরের বর্ডার একটু ঝাপসা করা */
-    filter: blur(0.25px); /* মানুষের চোখ মানিয়ে নেবে, কিন্তু AI-এর বন্ডিং বক্স ফেল করবে */
-    user-select: none;
-}
+
 
 
 
