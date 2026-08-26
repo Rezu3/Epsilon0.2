@@ -23,9 +23,9 @@ const questions = [
         ],
         correct: 1
     },
-    {
+     {
         id: 3,
-        question: `যদি $z = x - iy$ এবং $z^{\\frac{1}{3}} = p + iq$ হয়, তবে $\\frac{x}{p} + \\frac{y}{q}$-এর মান হবে –`,
+        question: `যদি $z = x - iy$ এবং $z^{\\frac{1}{3}} = p + iq$ হয়, তবে $\\frac{\\frac{x}{p} + \\frac{y}{q}}{p^2+q^2}$-এর মান হবে –`,
         image: null,
         options: [
             `$2$`,
@@ -33,7 +33,7 @@ const questions = [
             `$1$`,
             `$-2$`
         ],
-        correct: 0
+        correct: 3
     },
     {
         id: 4,
