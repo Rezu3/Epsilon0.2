@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 500);
 
-    // Start all timers
+    // Start timers after 1 second
     setTimeout(function() {
         initializeTimers();
     }, 1000);
@@ -100,6 +100,14 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
         checkNotificationPermission();
     }, 3000);
+
+    // Load latest exam when Online Test section is visible
+    setTimeout(function() {
+        const myExamsSection = document.getElementById('myExamsSection');
+        if (myExamsSection && myExamsSection.style.display !== 'none') {
+            loadLatestExam();
+        }
+    }, 2000);
 });
 
 // =============================================
@@ -154,12 +162,15 @@ function startTimer(examId) {
     
     let examDate = null;
     let examTime = null;
+    let duration = 0;
     
     const dateMatch = text.match(/Date:\s*([\d-]+)/);
     const timeMatch = text.match(/Time:\s*([\d:]+)/);
+    const durationMatch = text.match(/Duration:\s*(\d+)/);
     
     if (dateMatch) examDate = dateMatch[1];
     if (timeMatch) examTime = timeMatch[1];
+    if (durationMatch) duration = parseInt(durationMatch[1]);
     
     if (!examDate || !examTime) {
         timerText.textContent = '⏰ No date set';
@@ -170,15 +181,55 @@ function startTimer(examId) {
     const now = new Date();
     let diffSeconds = Math.floor((targetDate - now) / 1000);
     
+    // If exam time has passed
     if (diffSeconds <= 0) {
+        // Check if exam is expired (including duration)
+        const totalSeconds = diffSeconds + (duration * 60);
+        
+        if (totalSeconds <= 0) {
+            timerText.textContent = '⏰ Time Up!';
+            timerText.className = 'time-up';
+            if (startBtn) {
+                startBtn.style.display = 'none';
+            }
+            autoSubmitExam(examId);
+            return;
+        }
+        
+        // Exam started, show remaining time
         timerText.textContent = '✅ Test Started';
         timerText.className = 'time-up';
+        
+        let remainingSeconds = (duration * 60) + diffSeconds;
+        
+        const timerInterval = setInterval(function() {
+            remainingSeconds--;
+            
+            if (remainingSeconds <= 0) {
+                clearInterval(timerInterval);
+                timerText.textContent = '⏰ Time Up!';
+                timerText.className = 'time-up';
+                if (startBtn) {
+                    startBtn.style.display = 'none';
+                }
+                autoSubmitExam(examId);
+                return;
+            }
+            
+            const mins = Math.floor(remainingSeconds / 60);
+            const secs = remainingSeconds % 60;
+            timerText.textContent = `${mins}m ${secs.toString().padStart(2, '0')}s`;
+            timerText.className = 'time-remaining';
+            
+        }, 1000);
+        
         if (startBtn) {
             startBtn.style.display = 'inline-flex';
         }
         return;
     }
     
+    // Exam not started yet - show countdown
     const timerInterval = setInterval(function() {
         diffSeconds--;
         
@@ -212,10 +263,80 @@ function startTimer(examId) {
 }
 
 // =============================================
-// NAVIGATION FUNCTIONS - EACH SHOWS ONLY ONE SECTION
+// AUTO SUBMIT EXAM
 // =============================================
 
-// Helper: Hide all sections
+function autoSubmitExam(examId) {
+    console.log('⏰ Auto submitting exam:', examId);
+    
+    fetch('/auto_submit_exam', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            exam_id: examId,
+            marks: 0,
+            grade: 'F'
+        })
+    })
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+        if (data.success) {
+            console.log('✅ Exam auto-submitted:', examId);
+            
+            const examItem = document.getElementById('exam-item-' + examId);
+            if (examItem) {
+                examItem.style.display = 'none';
+            }
+            
+            showToast('⏰ Exam time expired! Auto-submitted with 0 marks.', 'warning');
+            
+            setTimeout(function() {
+                location.reload();
+            }, 2000);
+        }
+    })
+    .catch(function(error) {
+        console.log('❌ Error auto-submitting exam:', error);
+    });
+}
+
+// =============================================
+// TOAST NOTIFICATION
+// =============================================
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 16px 24px;
+        border-radius: 12px;
+        color: white;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        z-index: 9999;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        animation: slideInRight 0.5s ease-out;
+        max-width: 350px;
+        background: ${type === 'warning' ? '#ed8936' : '#48bb78'};
+    `;
+    
+    toast.innerHTML = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(function() {
+        toast.style.animation = 'slideOutRight 0.5s ease-in';
+        setTimeout(function() { toast.remove(); }, 500);
+    }, 4000);
+}
+
+// =============================================
+// NAVIGATION FUNCTIONS
+// =============================================
+
 function hideAllSections() {
     const sections = [
         'noticesSection',
@@ -232,7 +353,6 @@ function hideAllSections() {
     });
 }
 
-// Helper: Close sidebar on mobile
 function closeSidebarOnMobile() {
     const sidebar = document.getElementById('sidebar');
     if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('open')) {
@@ -251,7 +371,7 @@ function showNotices() {
         noticesSection.scrollIntoView({ behavior: 'smooth' });
         noticesSection.style.transition = 'all 0.3s ease';
         noticesSection.style.boxShadow = '0 0 0 3px #f093fb';
-        setTimeout(() => {
+        setTimeout(function() {
             noticesSection.style.boxShadow = 'none';
         }, 2000);
         loadNotices();
@@ -269,14 +389,14 @@ function showClassNotes() {
         classNotesSection.scrollIntoView({ behavior: 'smooth' });
         classNotesSection.style.transition = 'all 0.3s ease';
         classNotesSection.style.boxShadow = '0 0 0 3px #4facfe';
-        setTimeout(() => {
+        setTimeout(function() {
             classNotesSection.style.boxShadow = 'none';
         }, 2000);
     }
     closeSidebarOnMobile();
 }
 
-// 3. Show My Exams
+// 3. Show My Exams - Load Latest Exam Only
 function showMyExams() {
     hideAllSections();
     
@@ -286,10 +406,12 @@ function showMyExams() {
         myExamsSection.scrollIntoView({ behavior: 'smooth' });
         myExamsSection.style.transition = 'all 0.3s ease';
         myExamsSection.style.boxShadow = '0 0 0 3px #4facfe';
-        setTimeout(() => {
+        setTimeout(function() {
             myExamsSection.style.boxShadow = 'none';
         }, 2000);
-        setTimeout(initializeTimers, 500);
+        
+        // Load only the latest exam
+        loadLatestExam();
     }
     closeSidebarOnMobile();
 }
@@ -304,7 +426,7 @@ function showResults() {
         resultsSection.scrollIntoView({ behavior: 'smooth' });
         resultsSection.style.transition = 'all 0.3s ease';
         resultsSection.style.boxShadow = '0 0 0 3px #4facfe';
-        setTimeout(() => {
+        setTimeout(function() {
             resultsSection.style.boxShadow = 'none';
         }, 2000);
     }
@@ -321,7 +443,7 @@ function showRank() {
         rankSection.scrollIntoView({ behavior: 'smooth' });
         rankSection.style.transition = 'all 0.3s ease';
         rankSection.style.boxShadow = '0 0 0 3px #f6ad55';
-        setTimeout(() => {
+        setTimeout(function() {
             rankSection.style.boxShadow = 'none';
         }, 2000);
     }
@@ -338,7 +460,7 @@ function showWhatsApp() {
         whatsappSection.scrollIntoView({ behavior: 'smooth' });
         whatsappSection.style.transition = 'all 0.3s ease';
         whatsappSection.style.boxShadow = '0 0 0 3px #25D366';
-        setTimeout(() => {
+        setTimeout(function() {
             whatsappSection.style.boxShadow = 'none';
         }, 2000);
     }
@@ -349,6 +471,93 @@ function showWhatsApp() {
 function showQuiz() {
     window.open('/quiz', '_blank');
     closeSidebarOnMobile();
+}
+
+// =============================================
+// ONLINE TEST - LOAD LATEST EXAM ONLY
+// =============================================
+
+function loadLatestExam() {
+    const examsList = document.getElementById('examsList');
+    const examCount = document.getElementById('examCount');
+    
+    if (!examsList) return;
+    
+    examsList.innerHTML = `
+        <div class="loading-exams">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading latest exam...</p>
+        </div>
+    `;
+    
+    fetch('/get_latest_exam')
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+            if (data.success && data.exam) {
+                const exam = data.exam;
+                
+                if (examCount) {
+                    examCount.textContent = '1 Test';
+                }
+                
+                let examHTML = `
+                    <div class="exam-item" id="exam-item-${exam.id}">
+                        <div class="exam-icon">
+                            <i class="fas fa-globe" style="color: #4facfe;"></i>
+                        </div>
+                        <div class="exam-info">
+                            <h4>${escapeHtml(exam.exam_name)}</h4>
+                            <p><strong>Subject:</strong> ${escapeHtml(exam.subject)} | <strong>Teacher:</strong> ${escapeHtml(exam.teacher_name)}</p>
+                            <p><strong>Date:</strong> ${exam.exam_date} | <strong>Time:</strong> ${exam.exam_time} | <strong>Duration:</strong> ${exam.duration} mins</p>
+                            <p><strong>Full Marks:</strong> ${exam.full_marks} | <strong>Class:</strong> ${exam.class}</p>
+                        </div>
+                        <div class="exam-actions" id="exam-actions-${exam.id}">
+                            <div class="exam-timer" id="exam-timer-${exam.id}">
+                                <div class="timer-display" id="timer-display-${exam.id}">
+                                    <i class="fas fa-clock"></i>
+                                    <span id="timer-text-${exam.id}">Loading...</span>
+                                </div>
+                                <button class="start-exam-btn" id="start-btn-${exam.id}" style="display: none;" onclick="startOnlineExam('${exam.id}')">
+                                    <i class="fas fa-play"></i> Start Test
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                examsList.innerHTML = examHTML;
+                
+                setTimeout(function() {
+                    startTimer(exam.id);
+                }, 500);
+                
+            } else {
+                if (examCount) {
+                    examCount.textContent = '0 Tests';
+                }
+                examsList.innerHTML = `
+                    <div class="empty-state" id="noExamMessage">
+                        <i class="fas fa-pencil-alt"></i>
+                        <h3>No Tests Available</h3>
+                        <p>Your teacher will schedule tests soon</p>
+                        <p style="font-size: 13px; color: #a0aec0; margin-top: 5px;">
+                            <i class="fas fa-info-circle"></i> 
+                            Your Class: <strong>${data.class || 'N/A'}</strong>
+                        </p>
+                    </div>
+                `;
+            }
+        })
+        .catch(function(error) {
+            console.error('Error loading exam:', error);
+            examsList.innerHTML = `
+                <div class="empty-state error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Error Loading Exam</h3>
+                    <p>Please refresh the page</p>
+                </div>
+            `;
+        });
 }
 
 // =============================================
@@ -408,13 +617,12 @@ function loadNotices() {
     `;
     
     fetch('/get_student_notices')
-        .then(response => response.json())
-        .then(data => {
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
             if (data.success) {
                 const notices = data.notices || [];
                 const unreadCount = data.unread_count || 0;
                 
-                // Update badges
                 if (noticeBadge) {
                     noticeBadge.textContent = unreadCount;
                     noticeBadge.style.display = unreadCount > 0 ? 'flex' : 'none';
@@ -513,8 +721,8 @@ function markNoticeRead(noticeId) {
         },
         body: JSON.stringify({ notice_id: noticeId })
     })
-    .then(response => response.json())
-    .then(data => {
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
         if (data.success) {
             loadNotices();
         }
@@ -797,3 +1005,6 @@ window.dismissNotificationPermission = dismissNotificationPermission;
 window.checkNotificationPermission = checkNotificationPermission;
 window.subscribeToPush = subscribeToPush;
 window.savePushSubscription = savePushSubscription;
+window.loadLatestExam = loadLatestExam;
+window.showToast = showToast;
+window.autoSubmitExam = autoSubmitExam;
