@@ -272,110 +272,219 @@
 
 })();
  
-
+</script>
  
+<!-- আপনার HTML এর microphone checker সম্পূর্ণ রিপ্লেস করুন -->
+
+<script>
 // =============================================
-// 🎯 শুধু EXAM PAGE এর জন্য মাইক্রোফোন চেকার
+// 🚫 NO PERMISSION - শুধু মেসেজ দেখাবে
 // =============================================
 
 (function examMicrophoneChecker() {
     'use strict';
     
-    console.log('📝 Exam Microphone Checker Active');
-    let warningShown = false;
+    console.log('🔇 Microphone Blocker Active');
     
-    // চেক করুন এটি আসলেই Exam Page কিনা
+    let warningShown = false;
+    let checkCount = 0;
+    
     function isExamPage() {
-        // আপনার exam page চেনার উপায়
         return window.location.pathname.includes('/exam') || 
                document.querySelector('.exam-container') !== null ||
                document.getElementById('examContainer') !== null;
     }
     
-    // মাইক্রোফোন চেক
-    function checkMicrophone() {
-        // শুধু exam page এ কাজ করবে
-        if (!isExamPage()) {
-            console.log('⏭️ Not exam page, skipping check');
-            return;
+    // =============================================
+    // 🚫 PERMISSION ছাড়াই মাইক্রোফোন চেক
+    // =============================================
+    function checkMicrophoneWithoutPermission() {
+        if (!isExamPage()) return;
+        
+        // শুধু মাইক্রোফোন ডিভাইস আছে কিনা চেক করুন (Permission লাগে না)
+        if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+            navigator.mediaDevices.enumerateDevices()
+                .then(function(devices) {
+                    let hasMicrophone = false;
+                    
+                    for (let device of devices) {
+                        if (device.kind === 'audioinput') {
+                            hasMicrophone = true;
+                            console.log('🎤 Microphone device found:', device.label || 'Unknown');
+                            break;
+                        }
+                    }
+                    
+                    if (hasMicrophone) {
+                        // মাইক্রোফোন ডিভাইস আছে - সম্ভবত ON
+                        checkCount++;
+                        console.log(`📊 Check #${checkCount}: Microphone device exists`);
+                        
+                        if (checkCount >= 2) {
+                            showWarning('🎤 Microphone detected! Please turn it off.');
+                        }
+                    } else {
+                        // কোনো মাইক্রোফোন ডিভাইস নেই
+                        checkCount = 0;
+                        hideWarning();
+                    }
+                })
+                .catch(function(error) {
+                    console.log('Device enumeration error:', error);
+                });
         }
         
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            return;
+        // =============================================
+        // 📱 ফোনের জন্য: অডিও সেশন চেক (Permission লাগে না)
+        // =============================================
+        try {
+            // AudioContext ব্যবহার করে চেক (Permission লাগে না)
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            if (audioContext.state === 'running') {
+                // অডিও কন্টেক্সট চলছে - মাইক্রোফোন অন থাকতে পারে
+                console.log('🔊 AudioContext is running');
+                showWarning('🎵 Audio is active! Please check your microphone.');
+            }
+            
+            // অডিও কন্টেক্সট বন্ধ করুন
+            if (audioContext.state === 'running') {
+                audioContext.suspend();
+            }
+        } catch(e) {
+            // AudioContext সাপোর্ট করে না
         }
-        
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(function(stream) {
-                const tracks = stream.getAudioTracks();
-                if (tracks.length > 0 && tracks[0].enabled) {
-                    console.log('🎤 Microphone is ON during exam!');
-                    showWarning();
-                } else {
-                    hideWarning();
-                }
-                stream.getTracks().forEach(t => t.stop());
-            })
-            .catch(function() {
-                hideWarning();
-            });
     }
     
-    // ওয়ার্নিং দেখান
-    function showWarning() {
+    // =============================================
+    // 🚫 PERMISSION চাইবে না - শুধু মেসেজ
+    // =============================================
+    function checkMicrophone() {
+        if (!isExamPage()) return;
+        
+        // Permission চাইবে না - শুধু enumerate devices
+        if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+            navigator.mediaDevices.enumerateDevices()
+                .then(function(devices) {
+                    let micFound = false;
+                    
+                    for (let device of devices) {
+                        if (device.kind === 'audioinput') {
+                            micFound = true;
+                            console.log('🎤 Microphone:', device.label || 'Built-in Mic');
+                            break;
+                        }
+                    }
+                    
+                    if (micFound) {
+                        checkCount++;
+                        if (checkCount >= 3) {
+                            showWarning('⚠️ Microphone is ON! Please mute or turn it off.');
+                        }
+                    } else {
+                        checkCount = 0;
+                        hideWarning();
+                    }
+                })
+                .catch(function() {
+                    // এনামারেট করতে না পারলে
+                });
+        }
+        
+        // 📱 ফোনের জন্য - Permission ছাড়া চেক
+        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            // মাইক্রোফোন ডিভাইস চেক (Permission লাগে না)
+            if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                navigator.mediaDevices.enumerateDevices()
+                    .then(function(devices) {
+                        let micExists = false;
+                        for (let device of devices) {
+                            if (device.kind === 'audioinput') {
+                                micExists = true;
+                                break;
+                            }
+                        }
+                        
+                        if (micExists) {
+                            // ফোনে মাইক্রোফোন আছে - ওয়ার্নিং দেখান
+                            showWarning('📱 Microphone is active! Please turn it off.');
+                        }
+                    });
+            }
+        }
+    }
+    
+    // =============================================
+    // ⚠️ ওয়ার্নিং দেখান (Permission চাইবে না)
+    // =============================================
+    function showWarning(message) {
         if (document.getElementById('examMicWarning')) return;
+        
+        // ৩ বার চেকের পর ওয়ার্নিং দেখাবে
+        if (checkCount < 3) return;
         
         const warning = document.createElement('div');
         warning.id = 'examMicWarning';
+        
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        
         warning.style.cssText = `
             position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #ff6b6b;
+            ${isMobile ? 'top: 10px; left: 10px; right: 10px;' : 'bottom: 100px; left: 50%; transform: translateX(-50%);'}
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
             color: white;
-            padding: 18px 25px;
+            padding: ${isMobile ? '15px' : '18px 25px'};
             border-radius: 15px;
             z-index: 999999;
-            font-family: 'Poppins', sans-serif;
-            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.5);
-            max-width: 90%;
+            font-family: 'Poppins', -apple-system, sans-serif;
+            box-shadow: 0 8px 30px rgba(255, 107, 107, 0.5);
+            max-width: ${isMobile ? '100%' : '90%'};
             text-align: center;
             border: 2px solid rgba(255,255,255,0.2);
-            animation: slideUp 0.5s ease;
+            animation: slideDown 0.4s ease;
         `;
+        
         warning.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 15px; justify-content: center;">
-                <span style="font-size: 30px;">🎤</span>
+            <div style="display: flex; align-items: center; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <span style="font-size: ${isMobile ? '28px' : '32px'};">🎤</span>
                 <div>
-                    <div style="font-weight: 700; font-size: 16px;">
-                        ⚠️ Microphone is ON!
+                    <div style="font-weight: 700; font-size: ${isMobile ? '15px' : '17px'};">
+                        ⛔ Microphone Detected!
                     </div>
-                    <div style="font-size: 13px; opacity: 0.95; margin-top: 4px;">
-                        Please turn off or mute microphone for exam
+                    <div style="font-size: ${isMobile ? '12px' : '14px'}; opacity: 0.95; margin-top: 4px;">
+                        ${isMobile ? '📱 Please turn off your microphone' : 'Please mute or turn off your microphone'}
                     </div>
+                    ${isMobile ? `
+                        <div style="font-size: 11px; opacity: 0.8; margin-top: 6px; background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 20px; display: inline-block;">
+                            ⚡ Check phone settings
+                        </div>
+                    ` : ''}
                 </div>
                 <button onclick="this.parentElement.parentElement.remove()" style="
                     background: rgba(255,255,255,0.2);
                     border: none;
                     color: white;
-                    font-size: 20px;
+                    font-size: ${isMobile ? '20px' : '22px'};
                     cursor: pointer;
-                    padding: 5px 10px;
+                    padding: ${isMobile ? '3px 10px' : '5px 12px'};
                     border-radius: 50%;
                     transition: all 0.3s;
+                    min-width: 34px;
+                    min-height: 34px;
                 ">✕</button>
             </div>
         `;
+        
         document.body.appendChild(warning);
         
         // Animation
-        if (!document.getElementById('examMicStyle')) {
+        if (!document.getElementById('micStyle')) {
             const style = document.createElement('style');
-            style.id = 'examMicStyle';
+            style.id = 'micStyle';
             style.textContent = `
-                @keyframes slideUp {
-                    from { transform: translateX(-50%) translateY(50px); opacity: 0; }
-                    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                @keyframes slideDown {
+                    from { transform: translateY(-100px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
                 }
             `;
             document.head.appendChild(style);
@@ -385,31 +494,38 @@
     function hideWarning() {
         const warning = document.getElementById('examMicWarning');
         if (warning) warning.remove();
+        checkCount = 0;
     }
     
     // =============================================
-    // 🚀 শুরু করুন
+    // 🚀 শুরু করুন - Permission চাইবে না
     // =============================================
     
-    // পেজ লোড হলে চেক
-    setTimeout(checkMicrophone, 2000);
+    // পেজ লোড হলে
+    setTimeout(function() {
+        if (isExamPage()) {
+            console.log('🔇 Exam Microphone Blocker Active');
+            console.log('📋 Checking every 3 seconds (No Permission Required)');
+            
+            // মাইক্রোফোন চেক করা শুরু করুন
+            checkMicrophone();
+            
+            // প্রতি ৩ সেকেন্ডে চেক
+            setInterval(checkMicrophone, 3000);
+        }
+    }, 2000);
     
-    // প্রতি 5 সেকেন্ডে চেক
-    setInterval(checkMicrophone, 5000);
-    
-    // ট্যাব ফোকাস পেলে চেক
+    // ট্যাব ফোকাস পেলে
     document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
+        if (!document.hidden && isExamPage()) {
             setTimeout(checkMicrophone, 500);
         }
     });
     
-    console.log('✅ Exam Microphone Checker Running');
-    console.log('📋 Will check every 5 seconds');
+    console.log('✅ Microphone Blocker Running (No Permission Required)');
     
 })();
 </script>
-
 
  
 
