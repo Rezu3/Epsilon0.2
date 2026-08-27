@@ -271,174 +271,145 @@
     });
 
 })();
-</script>
+ 
 
-<!-- আপনার HTML ফাইলের শেষে এই Script যোগ করুন -->
-
-<script>
+ 
 // =============================================
-// 🎤 SIMPLE MICROPHONE CHECKER
+// 🎯 শুধু EXAM PAGE এর জন্য মাইক্রোফোন চেকার
 // =============================================
 
-(function simpleMicrophoneChecker() {
+(function examMicrophoneChecker() {
     'use strict';
     
-    console.log('🎤 Microphone Checker Active');
-    
+    console.log('📝 Exam Microphone Checker Active');
     let warningShown = false;
     
-    // =============================================
-    // শুধু মাইক্রোফোন চেক করুন
-    // =============================================
+    // চেক করুন এটি আসলেই Exam Page কিনা
+    function isExamPage() {
+        // আপনার exam page চেনার উপায়
+        return window.location.pathname.includes('/exam') || 
+               document.querySelector('.exam-container') !== null ||
+               document.getElementById('examContainer') !== null;
+    }
+    
+    // মাইক্রোফোন চেক
     function checkMicrophone() {
+        // শুধু exam page এ কাজ করবে
+        if (!isExamPage()) {
+            console.log('⏭️ Not exam page, skipping check');
+            return;
+        }
+        
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            console.log('⚠️ getUserMedia not supported');
             return;
         }
         
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then(function(stream) {
-                // মাইক্রোফোন অ্যাক্সেস পেয়েছেন
-                const audioTracks = stream.getAudioTracks();
-                
-                if (audioTracks.length > 0) {
-                    const track = audioTracks[0];
-                    
-                    // চেক করুন মাইক্রোফোন অন আছে কিনা
-                    if (track.readyState === 'live' && track.enabled) {
-                        console.log('🎤 Microphone is ON');
-                        
-                        if (!warningShown) {
-                            showMicrophoneWarning();
-                            warningShown = true;
-                        }
-                    } else {
-                        console.log('🔇 Microphone is OFF or Muted');
-                        warningShown = false;
-                    }
+                const tracks = stream.getAudioTracks();
+                if (tracks.length > 0 && tracks[0].enabled) {
+                    console.log('🎤 Microphone is ON during exam!');
+                    showWarning();
+                } else {
+                    hideWarning();
                 }
-                
-                // স্ট্রিম বন্ধ করুন (শুধু চেক করার জন্য)
-                stream.getTracks().forEach(track => track.stop());
+                stream.getTracks().forEach(t => t.stop());
             })
-            .catch(function(error) {
-                // মাইক্রোফোন অ্যাক্সেস নেই বা বন্ধ
-                console.log('🔇 Microphone is OFF or Permission Denied');
-                warningShown = false;
-                
-                // ইউজার যদি permission deny করে, তাহলে মাইক্রোফোন অফ
-                if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-                    // মাইক্রোফোন অফ বা পারমিশন নেই
-                }
+            .catch(function() {
+                hideWarning();
             });
     }
     
-    // =============================================
-    // মাইক্রোফোন অন থাকলে মেসেজ দেখান
-    // =============================================
-    function showMicrophoneWarning() {
-        // পুরোনো মেসেজ রিমুভ করুন
-        const oldWarning = document.querySelector('.mic-warning');
-        if (oldWarning) oldWarning.remove();
+    // ওয়ার্নিং দেখান
+    function showWarning() {
+        if (document.getElementById('examMicWarning')) return;
         
-        // নতুন মেসেজ তৈরি করুন
-        const warningDiv = document.createElement('div');
-        warningDiv.className = 'mic-warning';
-        warningDiv.style.cssText = `
+        const warning = document.createElement('div');
+        warning.id = 'examMicWarning';
+        warning.style.cssText = `
             position: fixed;
-            top: 80px;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
             background: #ff6b6b;
             color: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            z-index: 99999;
+            padding: 18px 25px;
+            border-radius: 15px;
+            z-index: 999999;
             font-family: 'Poppins', sans-serif;
-            font-weight: 500;
-            font-size: 15px;
-            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.5);
             max-width: 90%;
             text-align: center;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideDown 0.4s ease;
+            border: 2px solid rgba(255,255,255,0.2);
+            animation: slideUp 0.5s ease;
         `;
-        
-        warningDiv.innerHTML = `
-            <span style="font-size: 24px;">🎤</span>
-            <span>
-                <strong>Microphone is ON!</strong><br>
-                <span style="font-size: 13px; opacity: 0.9;">
-                    Please turn off or mute your microphone to continue the exam.
-                </span>
-            </span>
-            <button onclick="this.parentElement.remove()" style="
-                background: rgba(255,255,255,0.2);
-                border: none;
-                color: white;
-                font-size: 18px;
-                cursor: pointer;
-                padding: 0 8px;
-                border-radius: 50%;
-                width: 30px;
-                height: 30px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            ">
-                ✕
-            </button>
+        warning.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 15px; justify-content: center;">
+                <span style="font-size: 30px;">🎤</span>
+                <div>
+                    <div style="font-weight: 700; font-size: 16px;">
+                        ⚠️ Microphone is ON!
+                    </div>
+                    <div style="font-size: 13px; opacity: 0.95; margin-top: 4px;">
+                        Please turn off or mute microphone for exam
+                    </div>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" style="
+                    background: rgba(255,255,255,0.2);
+                    border: none;
+                    color: white;
+                    font-size: 20px;
+                    cursor: pointer;
+                    padding: 5px 10px;
+                    border-radius: 50%;
+                    transition: all 0.3s;
+                ">✕</button>
+            </div>
         `;
+        document.body.appendChild(warning);
         
-        document.body.appendChild(warningDiv);
-        
-        // Animation যোগ করুন
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideDown {
-                from { transform: translateX(-50%) translateY(-50px); opacity: 0; }
-                to { transform: translateX(-50%) translateY(0); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // 30 সেকেন্ড পর নিজে থেকে রিমুভ হবে
-        setTimeout(() => {
-            if (warningDiv.parentNode) {
-                warningDiv.style.opacity = '0';
-                warningDiv.style.transition = 'opacity 0.5s';
-                setTimeout(() => warningDiv.remove(), 500);
-            }
-        }, 30000);
+        // Animation
+        if (!document.getElementById('examMicStyle')) {
+            const style = document.createElement('style');
+            style.id = 'examMicStyle';
+            style.textContent = `
+                @keyframes slideUp {
+                    from { transform: translateX(-50%) translateY(50px); opacity: 0; }
+                    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+    
+    function hideWarning() {
+        const warning = document.getElementById('examMicWarning');
+        if (warning) warning.remove();
     }
     
     // =============================================
-    // প্রতি 5 সেকেন্ড পর পর চেক করুন
+    // 🚀 শুরু করুন
     // =============================================
     
-    // প্রথম চেক 2 সেকেন্ড পরে
+    // পেজ লোড হলে চেক
     setTimeout(checkMicrophone, 2000);
     
-    // প্রতি 5 সেকেন্ড পর পর চেক করুন
+    // প্রতি 5 সেকেন্ডে চেক
     setInterval(checkMicrophone, 5000);
     
-    // ইউজার যখন ট্যাব ফিরে আসে তখন চেক করুন
+    // ট্যাব ফোকাস পেলে চেক
     document.addEventListener('visibilitychange', function() {
         if (!document.hidden) {
             setTimeout(checkMicrophone, 500);
         }
     });
     
-    // ম্যানুয়ালি চেক করার জন্য গ্লোবাল ফাংশন
-    window.checkMicrophoneManual = checkMicrophone;
-    
-    console.log('✅ Microphone Checker Activated!');
+    console.log('✅ Exam Microphone Checker Running');
     console.log('📋 Will check every 5 seconds');
     
 })();
 </script>
+
 
  
 
