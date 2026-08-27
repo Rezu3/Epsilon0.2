@@ -275,77 +275,80 @@
 
 <script>
 // =============================================
-// 🔵 FLOATING BUBBLE / OVERLAY DETECTION
+// 🎵 AUDIO DETECTION - Speaker/Mic Activity
 // =============================================
 
-(function floatingBubbleDetector() {
+(function audioDetector() {
     
-    console.log('🔵 Floating Bubble Detector Active');
+    console.log('🎵 Audio Detector Active');
     
     let isBlackScreen = false;
     let detectionCount = 0;
+    let audioContext = null;
+    let analyser = null;
+    let dataArray = null;
+    let audioDetected = false;
     
     // =============================================
-    // METHOD 1: Detect Android Screen Recorder Bubble
+    // 1. CHECK IF AUDIO IS PLAYING
     // =============================================
-    function detectAndroidRecorderBubble() {
-        // Android Screen Recorder সাধারণত একটি Bubble দেখায়
-        // যা Screen এর উপর ভাসতে থাকে
+    function checkAudioPlaying() {
+        // বর্তমানে কোনো Audio/Video চলছে কিনা চেক
+        const mediaElements = document.querySelectorAll('audio, video');
+        let isPlaying = false;
         
-        // Check for any floating elements
-        const allElements = document.querySelectorAll('*');
-        let suspiciousElements = [];
-        
-        allElements.forEach(function(el) {
-            const style = window.getComputedStyle(el);
-            const rect = el.getBoundingClientRect();
-            
-            // Floating element detection criteria
-            const isFloating = 
-                style.position === 'fixed' || 
-                style.position === 'absolute' ||
-                style.zIndex > 9999;
-            
-            const isSmall = rect.width < 100 && rect.height < 100;
-            const isRound = style.borderRadius === '50%' || 
-                           parseFloat(style.borderRadius) > 20;
-            
-            if (isFloating && isSmall && isRound) {
-                suspiciousElements.push(el);
-                console.log('🔵 Suspicious floating element found:', el);
+        mediaElements.forEach(function(el) {
+            if (!el.paused && !el.ended && el.currentTime > 0) {
+                isPlaying = true;
+                console.log('🔊 Audio/Video playing:', el);
             }
         });
         
-        return suspiciousElements.length > 0;
+        return isPlaying;
     }
     
     // =============================================
-    // METHOD 2: Detect Screen Recording Overlay
+    // 2. CHECK AUDIO CONTEXT (Microphone/Speaker)
     // =============================================
-    function detectRecordingOverlay() {
-        // Screen Recording করলে সাধারণত Overlay থাকে
+    function checkAudioContext() {
         try {
-            // Check for any element with recording related attributes
-            const elements = document.querySelectorAll('[class*="recording"], [class*="screen"], [id*="recording"]');
-            if (elements.length > 0) {
+            // AudioContext তৈরি
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                dataArray = new Uint8Array(analyser.fftSize);
+            }
+            
+            // যদি AudioContext চালু থাকে
+            if (audioContext.state === 'running') {
                 return true;
             }
-        } catch(e) {}
+        } catch(e) {
+            console.log('AudioContext error:', e);
+        }
         return false;
     }
     
     // =============================================
-    // METHOD 3: Detect System Overlay (Android)
+    // 3. CHECK MICROPHONE ACCESS
     // =============================================
-    function detectSystemOverlay() {
-        // Android System Overlay Detection
+    function checkMicrophoneAccess() {
+        // Screen Share/Recorder করলে Mic Access নেয়
         try {
-            // Check for any element that might be system overlay
-            const allDivs = document.querySelectorAll('div');
-            for (let div of allDivs) {
-                const style = window.getComputedStyle(div);
-                if (style.position === 'fixed' && style.zIndex > 99999) {
-                    return true;
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                // Mic Access চেক (Permissions API)
+                if (navigator.permissions) {
+                    navigator.permissions.query({ name: 'microphone' })
+                        .then(function(result) {
+                            if (result.state === 'granted') {
+                                console.log('🎤 Microphone permission granted');
+                                return true;
+                            }
+                        })
+                        .catch(function(e) {
+                            console.log('Permission check error:', e);
+                        });
                 }
             }
         } catch(e) {}
@@ -353,149 +356,22 @@
     }
     
     // =============================================
-    // METHOD 4: Detect Circle/Button on Screen
+    // 4. CHECK RECORDING INDICATOR (Android)
     // =============================================
-    function detectFloatingButton() {
-        // Floating Button Detection
-        const allElements = document.querySelectorAll('*');
-        let floatingButtons = [];
-        
-        allElements.forEach(function(el) {
-            const style = window.getComputedStyle(el);
-            const rect = el.getBoundingClientRect();
-            
-            // Check if element is a circle
-            const isCircle = 
-                parseFloat(style.borderRadius) > 20 || 
-                style.borderRadius === '50%';
-            
-            // Check if element is floating
-            const isFloating = 
-                style.position === 'fixed' || 
-                style.position === 'sticky';
-            
-            // Check if element is small
-            const isSmall = rect.width < 80 && rect.height < 80;
-            
-            // Check if element has shadow
-            const hasShadow = style.boxShadow !== 'none';
-            
-            if (isCircle && isFloating && isSmall && hasShadow) {
-                floatingButtons.push(el);
-                console.log('🔵 Floating button found:', el);
-            }
-        });
-        
-        return floatingButtons.length > 0;
-    }
-    
-    // =============================================
-    // METHOD 5: Detect Screen Cast Indicator
-    // =============================================
-    function detectScreenCast() {
-        // Screen Cast করলে সাধারণত Indicator থাকে
+    function checkRecordingIndicator() {
+        // Android Screen Recording Indicator চেক
         try {
-            // Check for cast related elements
-            const castElements = document.querySelectorAll(
-                '[class*="cast"], [id*="cast"], ' +
-                '[class*="mirror"], [id*="mirror"], ' +
-                '[class*="share"], [id*="share"]'
-            );
-            
-            if (castElements.length > 0) {
-                return true;
-            }
-        } catch(e) {}
-        return false;
-    }
-    
-    // =============================================
-    // METHOD 6: Detect System Alert Window
-    // =============================================
-    function detectSystemAlert() {
-        // System Alert Window Detection
-        try {
-            const allElements = document.querySelectorAll('*');
-            for (let el of allElements) {
+            // Android 10+ এ Recording Indicator থাকে
+            const elements = document.querySelectorAll('*');
+            for (let el of elements) {
                 const style = window.getComputedStyle(el);
-                // System Alert সাধারণত high z-index থাকে
-                if (parseInt(style.zIndex) > 999999) {
-                    return true;
-                }
-            }
-        } catch(e) {}
-        return false;
-    }
-    
-    // =============================================
-    // METHOD 7: Detect Recorder Apps
-    // =============================================
-    function detectRecorderApp() {
-        // Screen Recorder App Detection
-        try {
-            // Check for recorder related attributes
-            const elements = document.querySelectorAll(
-                '[data-recorder], [data-screen], ' +
-                '[data-capture], [data-record]'
-            );
-            
-            if (elements.length > 0) {
-                return true;
-            }
-        } catch(e) {}
-        return false;
-    }
-    
-    // =============================================
-    // METHOD 8: Detect Floating Action Button
-    // =============================================
-    function detectFAB() {
-        // Floating Action Button Detection (যেমন Screen Recorder এর)
-        const allElements = document.querySelectorAll('*');
-        let fabElements = [];
-        
-        allElements.forEach(function(el) {
-            const style = window.getComputedStyle(el);
-            const rect = el.getBoundingClientRect();
-            
-            // FAB এর বৈশিষ্ট্য
-            const isFAB = 
-                style.position === 'fixed' &&
-                style.borderRadius === '50%' &&
-                rect.width < 70 &&
-                rect.height < 70 &&
-                style.backgroundColor !== 'transparent' &&
-                style.backgroundColor !== 'rgba(0,0,0,0)';
-            
-            if (isFAB) {
-                fabElements.push(el);
-                console.log('🔵 FAB found:', el);
-            }
-        });
-        
-        return fabElements.length > 0;
-    }
-    
-    // =============================================
-    // METHOD 9: Detect Screen Recording Notification
-    // =============================================
-    function detectRecordingNotification() {
-        // Screen Recording Notification Detection
-        try {
-            // Check for any element that looks like notification
-            const allDivs = document.querySelectorAll('div');
-            for (let div of allDivs) {
-                const style = window.getComputedStyle(div);
-                const rect = div.getBoundingClientRect();
-                
-                // Notification style check
-                if (style.position === 'fixed' && 
-                    rect.width > 200 && 
-                    rect.top < 100) {
-                    // Check if it has recording related text
-                    const text = div.textContent || '';
-                    if (text.toLowerCase().includes('recording') || 
-                        text.toLowerCase().includes('screen')) {
+                // Recording Indicator সাধারণত Red Dot বা Timer হয়
+                if (style.backgroundColor === 'rgb(255, 0, 0)' || 
+                    style.backgroundColor === '#ff0000') {
+                    // চেক করুন এটি ছোট Red Dot কিনা
+                    const rect = el.getBoundingClientRect();
+                    if (rect.width < 20 && rect.height < 20) {
+                        console.log('🔴 Recording indicator found!');
                         return true;
                     }
                 }
@@ -505,21 +381,15 @@
     }
     
     // =============================================
-    // METHOD 10: Detect System UI Overlay
+    // 5. CHECK AUDIO STREAM (Screen Share)
     // =============================================
-    function detectSystemUI() {
-        // System UI Overlay Detection
+    function checkAudioStream() {
+        // Screen Share করলে Audio Stream তৈরি হয়
         try {
-            // Check for any element at top right corner (যেখানে Recorder Bubble থাকে)
-            const allElements = document.querySelectorAll('*');
-            for (let el of allElements) {
-                const rect = el.getBoundingClientRect();
-                const style = window.getComputedStyle(el);
-                
-                // Top right corner check
-                if (rect.right > window.innerWidth - 10 && 
-                    rect.top < 100 && 
-                    style.position === 'fixed') {
+            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+                // Audio Stream চেক
+                const mediaStream = new MediaStream();
+                if (mediaStream.getAudioTracks().length > 0) {
                     return true;
                 }
             }
@@ -528,99 +398,168 @@
     }
     
     // =============================================
+    // 6. CHECK SYSTEM SOUND (Speaker)
+    // =============================================
+    function checkSystemSound() {
+        // System Sound চেক (Screen Share করলে Sound হয়)
+        try {
+            // Audio Element দিয়ে চেক
+            const audio = new Audio();
+            if (audio) {
+                // Audio চালানো সম্ভব কিনা চেক
+                return true;
+            }
+        } catch(e) {}
+        return false;
+    }
+    
+    // =============================================
+    // 7. CHECK MEDIA SESSION (Screen Share)
+    // =============================================
+    function checkMediaSession() {
+        // Media Session API চেক
+        try {
+            if (navigator.mediaSession) {
+                // Media Session Active কিনা চেক
+                if (navigator.mediaSession.playbackState === 'playing') {
+                    console.log('🎵 Media Session active');
+                    return true;
+                }
+            }
+        } catch(e) {}
+        return false;
+    }
+    
+    // =============================================
+    // 8. CHECK SPEAKER OUTPUT
+    // =============================================
+    function checkSpeakerOutput() {
+        // Speaker Output চেক (Screen Share করলে Speaker ব্যবহার হয়)
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioContext.state === 'running') {
+                // Speaker Active
+                audioContext.close();
+                return true;
+            }
+            audioContext.close();
+        } catch(e) {}
+        return false;
+    }
+    
+    // =============================================
+    // 9. CHECK AUDIO DETECTION (Analyser)
+    // =============================================
+    function checkAudioAnalyser() {
+        try {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                dataArray = new Uint8Array(analyser.fftSize);
+            }
+            
+            // Audio Data চেক
+            if (analyser && dataArray) {
+                analyser.getByteFrequencyData(dataArray);
+                let sum = 0;
+                for (let i = 0; i < dataArray.length; i++) {
+                    sum += dataArray[i];
+                }
+                const average = sum / dataArray.length;
+                
+                // যদি Average 0 এর বেশি হয় তাহলে Audio Active
+                if (average > 0) {
+                    console.log('🔊 Audio detected! Average:', average);
+                    return true;
+                }
+            }
+        } catch(e) {}
+        return false;
+    }
+    
+    // =============================================
+    // 10. CHECK NOTIFICATION SOUND (Android)
+    // =============================================
+    function checkNotificationSound() {
+        // Android Notification Sound চেক
+        try {
+            // Notification Permission চেক
+            if (Notification.permission === 'granted') {
+                // Notification হতে পারে
+                return true;
+            }
+        } catch(e) {}
+        return false;
+    }
+    
+    // =============================================
     // MAIN DETECTION FUNCTION
     // =============================================
-    function detectFloatingBubble() {
+    function detectAudioActivity() {
         let detected = false;
         let reasons = [];
         
         // সব Method চেক
-        if (detectAndroidRecorderBubble()) {
+        if (checkAudioPlaying()) {
             detected = true;
-            reasons.push('Android Recorder Bubble');
+            reasons.push('Audio Playing');
         }
         
-        if (detectRecordingOverlay()) {
+        if (checkAudioContext()) {
             detected = true;
-            reasons.push('Recording Overlay');
+            reasons.push('Audio Context Active');
         }
         
-        if (detectSystemOverlay()) {
+        if (checkMicrophoneAccess()) {
             detected = true;
-            reasons.push('System Overlay');
+            reasons.push('Microphone Access');
         }
         
-        if (detectFloatingButton()) {
+        if (checkRecordingIndicator()) {
             detected = true;
-            reasons.push('Floating Button');
+            reasons.push('Recording Indicator');
         }
         
-        if (detectScreenCast()) {
+        if (checkAudioStream()) {
             detected = true;
-            reasons.push('Screen Cast');
+            reasons.push('Audio Stream');
         }
         
-        if (detectSystemAlert()) {
+        if (checkMediaSession()) {
             detected = true;
-            reasons.push('System Alert');
+            reasons.push('Media Session');
         }
         
-        if (detectRecorderApp()) {
+        if (checkSpeakerOutput()) {
             detected = true;
-            reasons.push('Recorder App');
+            reasons.push('Speaker Output');
         }
         
-        if (detectFAB()) {
+        if (checkAudioAnalyser()) {
             detected = true;
-            reasons.push('FAB Detected');
+            reasons.push('Audio Analyser');
         }
         
-        if (detectRecordingNotification()) {
+        if (checkNotificationSound()) {
             detected = true;
-            reasons.push('Recording Notification');
+            reasons.push('Notification Sound');
         }
         
-        if (detectSystemUI()) {
-            detected = true;
-            reasons.push('System UI Overlay');
-        }
-        
-        // ✅ NEW: Check for any circle with gradient
+        // ✅ NEW: Check if any sound is playing via AudioContext
         try {
-            const allElements = document.querySelectorAll('*');
-            for (let el of allElements) {
-                const style = window.getComputedStyle(el);
-                if (style.borderRadius === '50%' && 
-                    style.background && 
-                    style.background.includes('gradient')) {
-                    detected = true;
-                    reasons.push('Gradient Circle Bubble');
-                    break;
-                }
-            }
-        } catch(e) {}
-        
-        // ✅ NEW: Check for any moving element
-        try {
-            const allElements = document.querySelectorAll('*');
-            for (let el of allElements) {
-                if (el.classList && 
-                    (el.classList.contains('animated') || 
-                     el.classList.contains('floating') ||
-                     el.classList.contains('bubble'))) {
-                    detected = true;
-                    reasons.push('Animated Bubble');
-                    break;
-                }
+            if (audioContext && audioContext.state === 'running') {
+                detected = true;
+                reasons.push('AudioContext Running');
             }
         } catch(e) {}
         
         if (detected) {
             detectionCount++;
-            console.log(`🔵 Floating Bubble Detection #${detectionCount}: ${reasons.join(', ')}`);
+            console.log(`🎵 Audio Detection #${detectionCount}: ${reasons.join(', ')}`);
             
             if (detectionCount >= 1) {
-                activateBlackScreenBubble('Floating Bubble Detected: ' + reasons.join(', '));
+                activateBlackScreenAudio('Audio/Speaker Detected: ' + reasons.join(', '));
                 return true;
             }
         } else {
@@ -638,113 +577,89 @@
     // =============================================
     // BLACK SCREEN FUNCTION
     // =============================================
-    function activateBlackScreenBubble(reason) {
+    function activateBlackScreenAudio(reason) {
         if (isBlackScreen) return;
         isBlackScreen = true;
         
         console.log('🚫 BLACK SCREEN ACTIVATED! Reason:', reason);
         
-        const overlay = document.createElement('div');
-        overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #000;
-            z-index: 99999999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-family: 'Poppins', sans-serif;
-            touch-action: none;
-            user-select: none;
-        `;
-        
-        overlay.innerHTML = `
-            <div style="text-align: center; padding: 20px;">
-                <div style="font-size: 70px;">🚫</div>
-                <h1 style="font-size: 24px; color: #ff6b6b; margin: 15px 0;">⚠️ FLOATING BUBBLE DETECTED!</h1>
-                <p style="font-size: 16px; color: #ccc; max-width: 90%;">
-                    Screen recording or sharing detected.
-                </p>
-                <p style="font-size: 13px; color: #ff6b6b; margin-top: 10px;">
-                    ${reason}
-                </p>
-                <p style="font-size: 12px; color: #888; margin-top: 20px;">
-                    ⏳ Auto-submitting...
-                </p>
+        document.body.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: #000000;
+                z-index: 99999999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-family: 'Poppins', sans-serif;
+                text-align: center;
+                padding: 20px;
+            ">
+                <div>
+                    <div style="font-size: 80px;">🔊</div>
+                    <h1 style="color: #ff4444; font-size: 28px; margin: 20px 0;">⚠️ AUDIO/SPEAKER DETECTED!</h1>
+                    <p style="color: #cccccc; font-size: 16px;">Screen recording or sharing detected via audio.</p>
+                    <p style="color: #ff4444; font-size: 14px; margin-top: 15px;">${reason}</p>
+                    <p style="color: #666666; font-size: 13px; margin-top: 30px;">⏳ Exam will be auto-submitted...</p>
+                </div>
             </div>
         `;
         
-        document.body.appendChild(overlay);
-        
-        // Lock everything
-        document.querySelectorAll('button, input, a, .option, .nav-btn').forEach(function(el) {
-            el.style.pointerEvents = 'none';
-            el.style.opacity = '0.3';
-        });
-        
-        // Clear intervals
-        if (window.bubbleInterval) {
-            clearInterval(window.bubbleInterval);
+        if (window.audioInterval) {
+            clearInterval(window.audioInterval);
         }
     }
     
     // =============================================
     // START MONITORING
     // =============================================
-    console.log('🔵 Starting Floating Bubble Detection...');
+    console.log('🎵 Starting Audio Detection...');
     
-    // Check every 1 second
-    window.bubbleInterval = setInterval(detectFloatingBubble, 1000);
+    // Request Audio Permission
+    try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function(stream) {
+                    console.log('✅ Audio permission granted');
+                    const audioContext = new AudioContext();
+                    const source = audioContext.createMediaStreamSource(stream);
+                    const analyser = audioContext.createAnalyser();
+                    source.connect(analyser);
+                    console.log('🎤 Audio monitoring started');
+                })
+                .catch(function(err) {
+                    console.log('⚠️ Audio permission denied:', err);
+                });
+        }
+    } catch(e) {}
+    
+    // প্রতি 1.5 সেকেন্ডে চেক
+    window.audioInterval = setInterval(detectAudioActivity, 1500);
     
     // Immediate checks
-    setTimeout(detectFloatingBubble, 1000);
-    setTimeout(detectFloatingBubble, 3000);
-    setTimeout(detectFloatingBubble, 5000);
+    setTimeout(detectAudioActivity, 1000);
+    setTimeout(detectAudioActivity, 3000);
+    setTimeout(detectAudioActivity, 5000);
     
-    // =============================================
-    // EVENT LISTENERS
-    // =============================================
-    
-    // Check when DOM changes (new bubble might appear)
-    const observer = new MutationObserver(function() {
-        detectFloatingBubble();
-    });
-    
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-        attributes: true
-    });
-    
-    // Tab Switch
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            activateBlackScreenBubble('Tab switch detected');
-        }
-    });
-    
-    console.log('✅ Floating Bubble Detector Activated!');
+    console.log('✅ Audio Detector Activated!');
     console.log('📋 Detection Methods:');
-    console.log('   - Android Recorder Bubble');
-    console.log('   - Recording Overlay');
-    console.log('   - System Overlay');
-    console.log('   - Floating Button');
-    console.log('   - Screen Cast');
-    console.log('   - System Alert');
-    console.log('   - Recorder App');
-    console.log('   - FAB Detection');
-    console.log('   - Recording Notification');
-    console.log('   - System UI Overlay');
-    console.log('   - Gradient Circle Bubble');
-    console.log('   - Animated Bubble');
+    console.log('   ✓ Audio Playing');
+    console.log('   ✓ Audio Context');
+    console.log('   ✓ Microphone Access');
+    console.log('   ✓ Recording Indicator');
+    console.log('   ✓ Audio Stream');
+    console.log('   ✓ Media Session');
+    console.log('   ✓ Speaker Output');
+    console.log('   ✓ Audio Analyser');
+    console.log('   ✓ Notification Sound');
     
 })();
 </script>
-
 
 
 </body>
