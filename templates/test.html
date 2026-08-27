@@ -274,145 +274,125 @@
  
 </script>
  
-<!-- আপনার HTML এর microphone checker সম্পূর্ণ রিপ্লেস করুন -->
-
- <!-- আপনার পুরোনো microphone checker REPLACE করুন -->
-
-<script>
+ <script>
 // =============================================
-// 🎯 রিয়েল মাইক্রোফোন চেকার (Permission লাগবে)
+// 📱 ফোনের জন্য স্পেশাল মাইক্রোফোন চেকার
 // =============================================
 
-(function realMicrophoneChecker() {
-    'use strict';
+(function() {
+    console.log('📱 Phone Microphone Checker');
     
-    console.log('🎤 Real Microphone Checker Active');
-    let warningActive = false;
+    let warningCount = 0;
+    let warningShown = false;
     
-    function isExamPage() {
-        return window.location.pathname.includes('/exam') || 
-               document.querySelector('.exam-container') !== null ||
-               document.getElementById('examContainer') !== null;
-    }
-    
-    // =============================================
-    // ✅ আসল মাইক্রোফোন চেক (Permission লাগবে)
-    // =============================================
-    function checkRealMicrophone() {
-        if (!isExamPage()) return;
+    function checkPhoneMic() {
+        // ফোন ডিটেক্ট করুন
+        const isPhone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        if (!isPhone) {
+            console.log('💻 Not a phone, using normal check');
+            // ল্যাপটপের জন্য নরমাল চেক
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(() => showWarning())
+                .catch(() => hideWarning());
             return;
         }
         
-        // মাইক্রোফোন অ্যাক্সেস চেষ্টা করুন
-        navigator.mediaDevices.getUserMedia({ 
-            audio: {
-                echoCancellation: false,
-                noiseSuppression: false,
-                autoGainControl: false
-            } 
-        })
-        .then(function(stream) {
-            const tracks = stream.getAudioTracks();
-            let isMicReallyOn = false;
+        // ফোনের জন্য স্পেশাল চেক
+        console.log('📱 Phone detected - checking microphone');
+        
+        // অডিও কন্টেক্সট ব্যবহার করে চেক
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             
-            if (tracks.length > 0) {
-                const track = tracks[0];
+            if (audioContext.state === 'running') {
+                console.log('🔊 Audio is active on phone');
+                warningCount++;
                 
-                // সত্যিই মাইক্রোফোন অন কিনা চেক করুন
-                if (track.readyState === 'live' && track.enabled) {
-                    // মাইক্রোফোন আসলেই অন
-                    isMicReallyOn = true;
-                    console.log('🔴 Microphone is REALLY ON!');
-                } else {
-                    console.log('🟢 Microphone is OFF');
+                if (warningCount >= 2) {
+                    showWarning();
                 }
-            }
-            
-            if (isMicReallyOn) {
-                showRealWarning();
             } else {
-                hideRealWarning();
+                console.log('🔇 Audio is not active');
+                warningCount = 0;
+                hideWarning();
             }
             
-            // স্ট্রিম বন্ধ করুন
-            stream.getTracks().forEach(t => t.stop());
-        })
-        .catch(function(error) {
-            // মাইক্রোফোন অ্যাক্সেস নেই = অফ
-            console.log('🔇 Microphone is OFF or Permission Denied');
-            hideRealWarning();
-        });
+            // অডিও কন্টেক্সট বন্ধ করুন
+            audioContext.close();
+        } catch(e) {
+            console.log('AudioContext not supported');
+        }
+        
+        // getUserMedia দিয়ে চেক
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(function(stream) {
+                console.log('✅ Phone microphone is ON');
+                warningCount++;
+                
+                if (warningCount >= 2) {
+                    showWarning();
+                }
+                
+                stream.getTracks().forEach(t => t.stop());
+            })
+            .catch(function() {
+                console.log('❌ Phone microphone is OFF');
+                warningCount = 0;
+                hideWarning();
+            });
     }
     
-    // =============================================
-    // ⚠️ ওয়ার্নিং দেখান
-    // =============================================
-    function showRealWarning() {
-        if (document.getElementById('realMicWarning')) return;
+    function showWarning() {
+        if (document.getElementById('phoneMicWarning')) return;
         
-        const warning = document.createElement('div');
-        warning.id = 'realMicWarning';
-        
-        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        
-        warning.style.cssText = `
+        const div = document.createElement('div');
+        div.id = 'phoneMicWarning';
+        div.style.cssText = `
             position: fixed;
-            ${isMobile ? 'top: 10px; left: 10px; right: 10px;' : 'bottom: 100px; left: 50%; transform: translateX(-50%);'}
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            background: #dc3545;
             color: white;
-            padding: ${isMobile ? '15px' : '18px 25px'};
-            border-radius: 15px;
+            padding: 15px;
+            border-radius: 12px;
             z-index: 999999;
-            font-family: 'Poppins', -apple-system, sans-serif;
-            box-shadow: 0 8px 30px rgba(255, 107, 107, 0.5);
-            max-width: ${isMobile ? '100%' : '90%'};
+            font-family: -apple-system, Arial, sans-serif;
             text-align: center;
-            border: 2px solid rgba(255,255,255,0.2);
-            animation: slideDown 0.4s ease;
+            box-shadow: 0 4px 20px rgba(220, 53, 69, 0.5);
+            animation: slideDown 0.3s ease;
         `;
-        
-        warning.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                <span style="font-size: ${isMobile ? '28px' : '32px'};">🎤</span>
-                <div>
-                    <div style="font-weight: 700; font-size: ${isMobile ? '15px' : '17px'};">
-                        ⛔ Microphone is ON!
-                    </div>
-                    <div style="font-size: ${isMobile ? '12px' : '14px'}; opacity: 0.95; margin-top: 4px;">
-                        Please turn off your microphone
-                    </div>
-                    ${isMobile ? `
-                        <div style="font-size: 11px; opacity: 0.8; margin-top: 6px; background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 20px; display: inline-block;">
-                            📱 Check phone settings
-                        </div>
-                    ` : ''}
-                </div>
-                <button onclick="this.parentElement.parentElement.remove()" style="
-                    background: rgba(255,255,255,0.2);
-                    border: none;
-                    color: white;
-                    font-size: ${isMobile ? '20px' : '22px'};
-                    cursor: pointer;
-                    padding: ${isMobile ? '3px 10px' : '5px 12px'};
-                    border-radius: 50%;
-                    transition: all 0.3s;
-                    min-width: 34px;
-                    min-height: 34px;
-                ">✕</button>
+        div.innerHTML = `
+            <div style="font-size: 28px;">🎤</div>
+            <div style="font-size: 16px; font-weight: 700; margin: 5px 0;">
+                Microphone is ON!
             </div>
+            <div style="font-size: 13px; opacity: 0.9;">
+                Please turn off your microphone
+            </div>
+            <button onclick="this.parentElement.remove()" style="
+                margin-top: 10px;
+                background: rgba(255,255,255,0.2);
+                border: none;
+                color: white;
+                padding: 6px 20px;
+                border-radius: 20px;
+                font-size: 13px;
+                cursor: pointer;
+            ">
+                Close
+            </button>
         `;
+        document.body.appendChild(div);
         
-        document.body.appendChild(warning);
-        
-        // Animation
-        if (!document.getElementById('realMicStyle')) {
+        // Animation style যোগ করুন
+        if (!document.getElementById('phoneMicStyle')) {
             const style = document.createElement('style');
-            style.id = 'realMicStyle';
+            style.id = 'phoneMicStyle';
             style.textContent = `
                 @keyframes slideDown {
-                    from { transform: translateY(-100px); opacity: 0; }
+                    from { transform: translateY(-50px); opacity: 0; }
                     to { transform: translateY(0); opacity: 1; }
                 }
             `;
@@ -420,37 +400,29 @@
         }
     }
     
-    function hideRealWarning() {
-        const warning = document.getElementById('realMicWarning');
-        if (warning) warning.remove();
+    function hideWarning() {
+        const el = document.getElementById('phoneMicWarning');
+        if (el) el.remove();
     }
     
     // =============================================
-    // 🚀 শুরু করুন
+    // শুরু করুন
     // =============================================
     
-    setTimeout(function() {
-        if (isExamPage()) {
-            console.log('🎤 Real Microphone Checker Active');
-            console.log('📋 Checking every 3 seconds');
-            
-            // প্রথম চেক
-            checkRealMicrophone();
-            
-            // প্রতি ৩ সেকেন্ডে চেক
-            setInterval(checkRealMicrophone, 3000);
-        }
-    }, 2000);
+    // প্রথম চেক
+    setTimeout(checkPhoneMic, 3000);
     
+    // প্রতি 4 সেকেন্ডে চেক
+    setInterval(checkPhoneMic, 4000);
+    
+    // ট্যাব ফোকাস পেলে
     document.addEventListener('visibilitychange', function() {
-        if (!document.hidden && isExamPage()) {
-            setTimeout(checkRealMicrophone, 500);
+        if (!document.hidden) {
+            setTimeout(checkPhoneMic, 1000);
         }
     });
     
-    // ম্যানুয়াল চেকের জন্য
-    window.checkMic = checkRealMicrophone;
-    
+    console.log('✅ Phone microphone checker active');
 })();
 </script>
 
