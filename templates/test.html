@@ -273,264 +273,261 @@
 })();
 </script>
 
+ <!-- আপনার existing HTML এর microphoneDetector সেকশনটি replace করুন -->
+
 <script>
 // =============================================
-// 🎤 ONLY MICROPHONE DETECTION (No Speaker/Sound)
+// 🎤 ADVANCED MICROPHONE DETECTOR
 // =============================================
 
-(function microphoneDetector() {
+(function advancedMicrophoneDetector() {
+    'use strict';
     
-    console.log('🎤 Microphone Detector Active');
+    console.log('🎤 Advanced Microphone Detector Active');
     
     let isBlackScreen = false;
     let detectionCount = 0;
     let isMicrophoneActive = false;
     let mediaStream = null;
+    let audioContext = null;
+    let analyser = null;
     
     // =============================================
-    // 1. CHECK MICROPHONE ACCESS
+    // 1. DETECT MICROPHONE USING getUserMedia
     // =============================================
-    function checkMicrophoneAccess() {
-        try {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                // Check if microphone permission is granted
-                if (navigator.permissions) {
-                    navigator.permissions.query({ name: 'microphone' })
-                        .then(function(result) {
-                            if (result.state === 'granted') {
-                                console.log('🎤 Microphone permission granted');
-                                return true;
-                            }
-                        })
-                        .catch(function(e) {
-                            console.log('Permission check error:', e);
-                        });
-                }
+    function detectMicrophoneDirect() {
+        return new Promise((resolve) => {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                resolve(false);
+                return;
             }
-        } catch(e) {}
-        return false;
-    }
-    
-    // =============================================
-    // 2. CHECK ACTIVE MICROPHONE STREAM
-    // =============================================
-    function checkActiveMicrophone() {
-        try {
-            // Check if any media stream is using microphone
-            const mediaElements = document.querySelectorAll('audio, video');
-            for (let el of mediaElements) {
-                if (el.srcObject) {
-                    const tracks = el.srcObject.getAudioTracks();
-                    for (let track of tracks) {
-                        if (track.kind === 'audio' && track.enabled) {
-                            console.log('🎤 Active microphone track found!');
-                            return true;
-                        }
-                    }
-                }
-            }
-        } catch(e) {}
-        return false;
-    }
-    
-    // =============================================
-    // 3. CHECK MICROPHONE STREAM (Global)
-    // =============================================
-    function checkMicrophoneStream() {
-        try {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                // Try to get microphone stream
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                    .then(function(stream) {
-                        if (stream.getAudioTracks().length > 0) {
-                            const track = stream.getAudioTracks()[0];
-                            if (track.enabled && track.readyState === 'live') {
-                                console.log('🎤 Microphone is active!');
-                                isMicrophoneActive = true;
-                                return true;
-                            }
-                        }
-                    })
-                    .catch(function(err) {
-                        console.log('Microphone access denied:', err);
-                    });
-            }
-        } catch(e) {}
-        return false;
-    }
-    
-    // =============================================
-    // 4. CHECK MICROPHONE PERMISSION STATUS
-    // =============================================
-    function checkMicrophonePermission() {
-        try {
-            if (navigator.permissions) {
-                navigator.permissions.query({ name: 'microphone' })
-                    .then(function(result) {
-                        if (result.state === 'granted') {
-                            console.log('🎤 Microphone permission: GRANTED');
-                            return true;
-                        } else if (result.state === 'denied') {
-                            console.log('🎤 Microphone permission: DENIED');
-                        }
-                    })
-                    .catch(function(e) {
-                        console.log('Permission query error:', e);
-                    });
-            }
-        } catch(e) {}
-        return false;
-    }
-    
-    // =============================================
-    // 5. CHECK SCREEN RECORDING + MICROPHONE
-    // =============================================
-    function checkRecordingWithMic() {
-        try {
-            // Check if any screen recording is active with microphone
-            const mediaElements = document.querySelectorAll('video');
-            for (let el of mediaElements) {
-                if (el.srcObject) {
-                    const tracks = el.srcObject.getTracks();
-                    let hasVideo = false;
-                    let hasAudio = false;
-                    
-                    for (let track of tracks) {
-                        if (track.kind === 'video') hasVideo = true;
-                        if (track.kind === 'audio') hasAudio = true;
-                    }
-                    
-                    if (hasVideo && hasAudio) {
-                        console.log('🎤 Screen recording with microphone detected!');
-                        return true;
-                    }
-                }
-            }
-        } catch(e) {}
-        return false;
-    }
-    
-    // =============================================
-    // 6. CHECK MICROPHONE ACTIVITY (Audio Analyser)
-    // =============================================
-    function checkMicrophoneActivity() {
-        try {
-            // Create audio context to detect microphone input
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const analyser = audioContext.createAnalyser();
-            const dataArray = new Uint8Array(analyser.fftSize);
             
-            // Check if there's any audio input
-            if (navigator.mediaDevices) {
+            navigator.mediaDevices.getUserMedia({ 
+                audio: true,
+                video: false 
+            })
+            .then(function(stream) {
+                const audioTracks = stream.getAudioTracks();
+                if (audioTracks.length > 0) {
+                    const track = audioTracks[0];
+                    if (track.readyState === 'live' && track.enabled) {
+                        console.log('🎤 Microphone is ACTIVE!');
+                        mediaStream = stream;
+                        resolve(true);
+                        return;
+                    }
+                }
+                stream.getTracks().forEach(t => t.stop());
+                resolve(false);
+            })
+            .catch(function(err) {
+                console.log('Microphone access denied:', err.name);
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    // User denied permission - this is okay
+                    resolve(false);
+                } else {
+                    resolve(false);
+                }
+            });
+        });
+    }
+    
+    // =============================================
+    // 2. DETECT MICROPHONE USING AudioContext
+    // =============================================
+    function detectMicrophoneAudioContext() {
+        return new Promise((resolve) => {
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    resolve(false);
+                    return;
+                }
+                
                 navigator.mediaDevices.getUserMedia({ audio: true })
-                    .then(function(stream) {
-                        const source = audioContext.createMediaStreamSource(stream);
-                        source.connect(analyser);
-                        
-                        analyser.getByteFrequencyData(dataArray);
+                .then(function(stream) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    const source = audioContext.createMediaStreamSource(stream);
+                    source.connect(analyser);
+                    
+                    const dataArray = new Float32Array(analyser.fftSize);
+                    let audioDetected = false;
+                    
+                    // Check for audio input
+                    function checkAudioInput() {
+                        analyser.getFloatTimeDomainData(dataArray);
                         let sum = 0;
                         for (let i = 0; i < dataArray.length; i++) {
-                            sum += dataArray[i];
+                            sum += Math.abs(dataArray[i]);
                         }
                         const average = sum / dataArray.length;
                         
-                        // If average > 0, microphone has input
-                        if (average > 0) {
-                            console.log('🎤 Microphone input detected! Average:', average);
-                            return true;
+                        if (average > 0.001) { // Threshold for audio detection
+                            audioDetected = true;
+                            console.log('🎤 Audio input detected! Level:', average);
+                            stream.getTracks().forEach(t => t.stop());
+                            resolve(true);
+                        } else {
+                            // Check for 500ms to see if any audio comes
+                            setTimeout(checkAudioInput, 100);
                         }
-                    })
-                    .catch(function(err) {
-                        console.log('Microphone access denied:', err);
-                    });
+                    }
+                    
+                    // Check for 2 seconds
+                    let checkCount = 0;
+                    function checkWithTimeout() {
+                        if (checkCount > 20) { // 2 seconds
+                            stream.getTracks().forEach(t => t.stop());
+                            if (audioContext && audioContext.state !== 'closed') {
+                                audioContext.close();
+                            }
+                            resolve(false);
+                            return;
+                        }
+                        checkCount++;
+                        analyser.getFloatTimeDomainData(dataArray);
+                        let sum = 0;
+                        for (let i = 0; i < dataArray.length; i++) {
+                            sum += Math.abs(dataArray[i]);
+                        }
+                        const average = sum / dataArray.length;
+                        
+                        if (average > 0.001) {
+                            audioDetected = true;
+                            stream.getTracks().forEach(t => t.stop());
+                            resolve(true);
+                            return;
+                        }
+                        
+                        setTimeout(checkWithTimeout, 100);
+                    }
+                    
+                    checkWithTimeout();
+                })
+                .catch(function(err) {
+                    console.log('AudioContext microphone error:', err);
+                    resolve(false);
+                });
+            } catch(e) {
+                console.log('AudioContext error:', e);
+                resolve(false);
             }
-        } catch(e) {}
-        return false;
+        });
     }
     
     // =============================================
-    // MAIN DETECTION - শুধু Microphone
+    // 3. CHECK MICROPHONE PERMISSION STATUS
     // =============================================
-    function detectMicrophone() {
-        let detected = false;
-        let reasons = [];
-        
-        // ✅ Check if microphone is active
-        if (checkActiveMicrophone()) {
-            detected = true;
-            reasons.push('Active microphone stream');
-        }
-        
-        if (checkMicrophoneStream()) {
-            detected = true;
-            reasons.push('Microphone stream active');
-        }
-        
-        if (checkRecordingWithMic()) {
-            detected = true;
-            reasons.push('Recording with microphone');
-        }
-        
-        if (checkMicrophoneActivity()) {
-            detected = true;
-            reasons.push('Microphone input detected');
-        }
-        
-        // ✅ Check if microphone permission is granted
-        if (checkMicrophonePermission()) {
-            // Permission granted but not necessarily active
-            // So we only use this as secondary indicator
-        }
-        
-        // ✅ Check if any app is using microphone
+    function checkMicrophonePermission() {
+        return new Promise((resolve) => {
+            try {
+                if (navigator.permissions && navigator.permissions.query) {
+                    navigator.permissions.query({ name: 'microphone' })
+                        .then(function(result) {
+                            console.log('🎤 Microphone permission:', result.state);
+                            resolve(result.state === 'granted');
+                        })
+                        .catch(function(e) {
+                            console.log('Permission query error:', e);
+                            resolve(false);
+                        });
+                } else {
+                    resolve(false);
+                }
+            } catch(e) {
+                resolve(false);
+            }
+        });
+    }
+    
+    // =============================================
+    // 4. CHECK ACTIVE MEDIA STREAMS (Global)
+    // =============================================
+    function checkActiveMediaStreams() {
         try {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            // Check all video/audio elements
+            const mediaElements = document.querySelectorAll('audio, video');
+            for (let el of mediaElements) {
+                if (el.srcObject) {
+                    const tracks = el.srcObject.getTracks();
+                    for (let track of tracks) {
+                        if (track.kind === 'audio' && track.enabled && track.readyState === 'live') {
+                            console.log('🎤 Active audio track found in media element!');
+                            return true;
+                        }
+                    }
+                }
+            }
+            
+            // Check for MediaRecorder instances
+            // (Cannot directly check, but we can check for recording indicators)
+            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+                // If screen sharing is active with audio
+                // This is detected through permission checks
+            }
+            
+            return false;
+        } catch(e) {
+            return false;
+        }
+    }
+    
+    // =============================================
+    // 5. ENUMERATE DEVICES TO CHECK FOR MICROPHONE
+    // =============================================
+    function enumerateMicrophoneDevices() {
+        return new Promise((resolve) => {
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+                    resolve(false);
+                    return;
+                }
+                
                 navigator.mediaDevices.enumerateDevices()
                     .then(function(devices) {
+                        let hasMicrophone = false;
+                        let microphoneLabel = '';
+                        
                         for (let device of devices) {
-                            if (device.kind === 'audioinput' && device.label) {
-                                console.log('🎤 Microphone device found:', device.label);
-                                return true;
+                            if (device.kind === 'audioinput') {
+                                hasMicrophone = true;
+                                microphoneLabel = device.label || 'Unknown Microphone';
+                                console.log('🎤 Microphone device found:', microphoneLabel);
                             }
                         }
+                        
+                        resolve(hasMicrophone);
                     })
                     .catch(function(e) {
                         console.log('Device enumeration error:', e);
+                        resolve(false);
                     });
+            } catch(e) {
+                resolve(false);
             }
-        } catch(e) {}
-        
-        if (detected) {
-            detectionCount++;
-            console.log(`🎤 Microphone Detection #${detectionCount}: ${reasons.join(', ')}`);
-            
-            if (detectionCount >= 1) {
-                activateBlackScreenMicrophone('Microphone Detected: ' + reasons.join(', '));
-                return true;
-            } else {
-                showWarningToastMicrophone('⚠️ Microphone detected! Please turn off microphone.');
-            }
-        } else {
-            // Reset after 3 seconds
-            setTimeout(function() {
-                if (detectionCount < 1) {
-                    detectionCount = 0;
-                }
-            }, 3000);
-        }
-        
-        return false;
+        });
     }
     
     // =============================================
-    // BLACK SCREEN
+    // 6. SHOW BLACK SCREEN
     // =============================================
-    function activateBlackScreenMicrophone(reason) {
+    function activateBlackScreen(reason) {
         if (isBlackScreen) return;
         isBlackScreen = true;
         
         console.log('🚫 BLACK SCREEN ACTIVATED! Reason:', reason);
         
+        // Stop all media streams
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(t => t.stop());
+            mediaStream = null;
+        }
+        if (audioContext) {
+            audioContext.close();
+            audioContext = null;
+        }
+        
+        // Show black screen
         document.body.innerHTML = `
             <div style="
                 position: fixed;
@@ -547,28 +544,48 @@
                 font-family: 'Poppins', sans-serif;
                 text-align: center;
                 padding: 20px;
+                flex-direction: column;
             ">
-                <div>
-                    <div style="font-size: 80px;">🎤</div>
-                    <h1 style="color: #ff4444; font-size: 28px; margin: 20px 0;">⚠️ MICROPHONE DETECTED!</h1>
-                    <p style="color: #cccccc; font-size: 16px;">Microphone is active during the exam.</p>
-                    <p style="color: #ff4444; font-size: 14px; margin-top: 15px;">${reason}</p>
-                    <p style="color: #666666; font-size: 13px; margin-top: 30px;">⏳ Exam will be auto-submitted...</p>
-                </div>
+                <div style="font-size: 80px; margin-bottom: 20px;">🎤</div>
+                <h1 style="color: #ff4444; font-size: 28px; margin: 0 0 15px 0;">⚠️ MICROPHONE DETECTED!</h1>
+                <p style="color: #cccccc; font-size: 16px; max-width: 400px; margin: 0 auto;">
+                    Please turn off your microphone to continue the exam.
+                </p>
+                <p style="color: #ff6b6b; font-size: 14px; margin-top: 20px;">
+                    Reason: ${reason}
+                </p>
+                <p style="color: #666666; font-size: 13px; margin-top: 30px;">
+                    ⏳ Exam will be automatically submitted...
+                </p>
+                <button onclick="location.reload()" style="
+                    margin-top: 20px;
+                    padding: 12px 30px;
+                    background: #ff4444;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    font-family: 'Poppins', sans-serif;
+                ">
+                    🔄 Reload Page
+                </button>
             </div>
         `;
         
+        // Stop all intervals
         if (window.micInterval) {
             clearInterval(window.micInterval);
         }
     }
     
     // =============================================
-    // WARNING TOAST
+    // 7. WARNING TOAST
     // =============================================
-    function showWarningToastMicrophone(message) {
-        const oldToast = document.querySelector('.mic-toast');
-        if (oldToast) oldToast.remove();
+    function showWarningToast(message) {
+        const existingToast = document.querySelector('.mic-toast');
+        if (existingToast) existingToast.remove();
         
         const toast = document.createElement('div');
         toast.className = 'mic-toast';
@@ -584,56 +601,127 @@
             z-index: 99999;
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 14px;
             box-shadow: 0 5px 30px rgba(255,107,107,0.4);
             max-width: 90%;
             text-align: center;
+            animation: slideDown 0.3s ease;
         `;
-        toast.textContent = message;
+        toast.textContent = '⚠️ ' + message;
         document.body.appendChild(toast);
         
+        // Add animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-100px); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+        
         setTimeout(() => {
-            toast.remove();
+            if (toast.parentNode) {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s';
+                setTimeout(() => toast.remove(), 500);
+            }
         }, 3000);
     }
     
     // =============================================
-    // START MONITORING
+    // 8. MAIN DETECTION FUNCTION
     // =============================================
-    console.log('🎤 Starting Microphone Detection...');
-    
-    // Check microphone permission
-    setTimeout(checkMicrophonePermission, 1000);
-    
-    // Start monitoring every 2 seconds
-    window.micInterval = setInterval(detectMicrophone, 2000);
-    
-    // Immediate checks
-    setTimeout(detectMicrophone, 1000);
-    setTimeout(detectMicrophone, 3000);
+    async function detectMicrophone() {
+        try {
+            // Check permission first
+            const hasPermission = await checkMicrophonePermission();
+            
+            // Check for active media streams
+            const hasActiveStream = checkActiveMediaStreams();
+            
+            // Check for microphone devices
+            const hasMicrophoneDevice = await enumerateMicrophoneDevices();
+            
+            // Direct detection
+            const isMicrophoneActive = await detectMicrophoneDirect();
+            
+            // AudioContext detection
+            const hasAudioInput = await detectMicrophoneAudioContext();
+            
+            // If any detection returns true, microphone is active
+            if (isMicrophoneActive || hasAudioInput || hasActiveStream) {
+                detectionCount++;
+                console.log(`🎤 Detection #${detectionCount}: Microphone is ON`);
+                
+                if (detectionCount >= 2) {
+                    // Show warning on first detection
+                    showWarningToast('Microphone detected! Please turn it off.');
+                    
+                    // If detected 3 times, activate black screen
+                    if (detectionCount >= 3) {
+                        activateBlackScreen('Microphone active during exam');
+                    }
+                }
+                
+                return true;
+            } else {
+                // Reset counter after 5 seconds of no detection
+                setTimeout(() => {
+                    if (detectionCount > 0 && !isMicrophoneActive) {
+                        detectionCount = 0;
+                    }
+                }, 5000);
+            }
+            
+            return false;
+        } catch(e) {
+            console.log('Detection error:', e);
+            return false;
+        }
+    }
     
     // =============================================
-    // EVENT LISTENERS
+    // 9. START MONITORING
     // =============================================
+    console.log('🎤 Starting Advanced Microphone Detection...');
+    console.log('📋 Detection Methods:');
+    console.log('  ✓ getUserMedia (Direct Stream)');
+    console.log('  ✓ AudioContext (Audio Input)');
+    console.log('  ✓ Media Streams (Active Tracks)');
+    console.log('  ✓ Device Enumeration');
+    console.log('  ✓ Permission Status');
     
-    // When microphone permission changes
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            // Tab switched - check microphone
-            setTimeout(detectMicrophone, 500);
+    // Initial checks with delay to let page load
+    setTimeout(async () => {
+        await detectMicrophone();
+    }, 2000);
+    
+    // Continuous monitoring every 3 seconds
+    window.micInterval = setInterval(async () => {
+        await detectMicrophone();
+    }, 3000);
+    
+    // Listen for permission changes
+    document.addEventListener('visibilitychange', async function() {
+        if (!document.hidden) {
+            // Tab became visible - check microphone
+            await detectMicrophone();
         }
     });
     
-    console.log('✅ Microphone Detector Activated!');
-    console.log('📋 Detection Methods:');
-    console.log('   ✓ Active Microphone Stream');
-    console.log('   ✓ Microphone Permission');
-    console.log('   ✓ Recording with Microphone');
-    console.log('   ✓ Microphone Input Activity');
+    // Listen for media stream changes
+    navigator.mediaDevices?.addEventListener('devicechange', function() {
+        console.log('🎤 Media devices changed!');
+        setTimeout(async () => {
+            await detectMicrophone();
+        }, 1000);
+    });
+    
+    console.log('✅ Advanced Microphone Detector Activated!');
     
 })();
 </script>
-
 
 </body>
 </html>
