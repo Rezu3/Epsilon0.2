@@ -107,7 +107,8 @@ function showSuccessBoard(studentData) {
         </div>
         <button class="save-btn" onclick="saveToWhatsApp()">
             <i class="fab fa-whatsapp"></i> Save My ID & Password
-         
+        </button>
+        <a href="/login" class="go-login-link"></a>
     `;
     
     // কার্ডের ভিতরে যোগ করা
@@ -179,7 +180,7 @@ function toggleConfirmPassword() {
     }
 }
 
-// WhatsApp-এ সেভ করা
+// WhatsApp-এ সেভ করা - আপডেটেড ফাংশন
 function saveToWhatsApp() {
     // localStorage থেকে ডেটা নেওয়া
     const studentData = JSON.parse(localStorage.getItem('studentData'));
@@ -189,8 +190,41 @@ function saveToWhatsApp() {
         return;
     }
     
+    // ফোন নাম্বার থেকে সব অ-সংখ্যা বাদ দেওয়া
+    let phone = studentData.phone.replace(/[^0-9]/g, '');
+    
+    // নাম্বার ফরম্যাট ঠিক করা
+    if (phone.length === 10) {
+        // ভারতীয় নাম্বার (10 ডিজিট) - +91 যোগ করা
+        phone = '91' + phone;
+    } else if (phone.length === 11 && phone.startsWith('0')) {
+        // 0 দিয়ে শুরু নাম্বার - 0 বাদ দিয়ে +91 যোগ
+        phone = '91' + phone.substring(1);
+    } else if (phone.length === 12 && phone.startsWith('91')) {
+        // ইতিমধ্যে 91 দিয়ে শুরু
+        phone = phone;
+    } else if (phone.length === 13 && phone.startsWith('91')) {
+        // ইতিমধ্যে 91 দিয়ে শুরু
+        phone = phone;
+    } else if (phone.length === 11 && phone.startsWith('1')) {
+        // USA নাম্বার
+        phone = phone;
+    } else if (phone.length === 12 && phone.startsWith('62')) {
+        // ইন্দোনেশিয়া নাম্বার
+        phone = phone;
+    } else if (phone.length === 12 && phone.startsWith('880')) {
+        // বাংলাদেশ নাম্বার
+        phone = phone;
+    } else if (phone.length === 11 && phone.startsWith('880')) {
+        // বাংলাদেশ নাম্বার
+        phone = phone;
+    } else {
+        // অন্য যেকোনো নাম্বার - যেমন আছে তেমনই
+        phone = phone;
+    }
+    
     const message = `The Epsilon - Student Registration Successful\n\n👤 Name: ${studentData.name}\n📱 Phone: ${studentData.phone}\n🔒 Password: ${studentData.password}\n\nThank you for registering!`;
-    const phone = studentData.phone.replace(/[^0-9]/g, '');
+    
     const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
 }
