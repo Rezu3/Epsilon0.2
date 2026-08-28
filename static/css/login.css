@@ -15,11 +15,56 @@ body {
     font-family: 'Poppins', sans-serif;
     min-height: 100vh;
     background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 15px;
     overflow-x: hidden;
+}
+
+/* ============================================
+   APP HEADER (Fixed Top Bar)
+   ============================================ */
+
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    z-index: 1002;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+}
+
+.app-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.app-header-logo {
+    font-size: 24px;
+    color: white;
+}
+
+.app-header-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.5px;
+}
+
+.app-header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.app-header-icon {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
 }
 
 /* ============================================
@@ -67,12 +112,16 @@ body {
 }
 
 .sidebar-logo i {
-    font-size: 26px;
-    color: #4facfe;
+    font-size: 24px;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
 }
 
 .sidebar-logo-text {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: white;
 }
@@ -201,30 +250,15 @@ body {
    ============================================ */
 
 .main-content {
-    margin-left: 280px;
+    margin-left: 0;
     min-height: 100vh;
-    width: calc(100% - 280px);
+    width: 100%;
+    padding: 75px 15px 20px;
     transition: margin-left 0.3s ease;
-    padding: 20px;
 }
 
 .mobile-sidebar-toggle {
     display: none;
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    z-index: 1001;
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 45px;
-    height: 45px;
-    font-size: 18px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    align-items: center;
-    justify-content: center;
 }
 
 .sidebar-overlay {
@@ -244,396 +278,21 @@ body {
 }
 
 /* ============================================
-   LOGIN WRAPPER (App-like)
-   ============================================ */
-
-.login-wrapper {
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-    animation: fadeInUp 0.5s ease-out;
-}
-
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.login-container {
-    display: flex;
-    flex-direction: column;
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-}
-
-/* Branding Section */
-.login-brand {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    padding: 30px 20px;
-    text-align: center;
-    position: relative;
-}
-
-.brand-content {
-    position: relative;
-    z-index: 1;
-}
-
-.brand-logo {
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    font-size: 36px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.brand-name {
-    font-size: 24px;
-    font-weight: 800;
-    color: white;
-    margin-bottom: 5px;
-}
-
-.brand-tagline {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.8);
-    letter-spacing: 2px;
-}
-
-/* Login Form Section */
-.login-form-wrapper {
-    padding: 25px 20px;
-    background: white;
-}
-
-.login-form-container {
-    width: 100%;
-}
-
-/* Flash Messages */
-.flash-message {
-    padding: 10px 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-}
-
-.flash-success {
-    background: #d4edda;
-    color: #155724;
-    border-left: 4px solid #28a745;
-}
-
-.flash-error {
-    background: #f8d7da;
-    color: #721c24;
-    border-left: 4px solid #dc3545;
-}
-
-/* 3 OVAL BUTTONS */
-.login-type-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.login-btn-oval {
-    padding: 18px 20px;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 15px;
-    width: 100%;
-    transition: all 0.3s ease;
-}
-
-.admin-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-}
-
-.teacher-btn {
-    background: linear-gradient(135deg, #f093fb, #f5576c);
-    color: white;
-}
-
-.student-btn {
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-    color: white;
-}
-
-.login-btn-oval:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-}
-
-.btn-icon {
-    font-size: 24px;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-label {
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.btn-sub {
-    font-size: 12px;
-    opacity: 0.8;
-    font-weight: 400;
-}
-
-.btn-glow {
-    display: none;
-}
-
-/* Login Form */
-.login-form-container-hidden {
-    display: none;
-}
-
-.form-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.form-header h2 {
-    font-size: 24px;
-    color: #2d3748;
-    margin-bottom: 5px;
-}
-
-.form-header p {
-    color: #718096;
-    font-size: 13px;
-}
-
-.form-group {
-    margin-bottom: 18px;
-}
-
-.form-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: #4a5568;
-    margin-bottom: 6px;
-}
-
-.form-group label i {
-    color: #667eea;
-    margin-right: 5px;
-}
-
-.input-wrapper {
-    position: relative;
-}
-
-.input-wrapper input {
-    width: 100%;
-    padding: 13px 15px 13px 42px;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    font-size: 14px;
-    font-family: 'Poppins', sans-serif;
-    background: #f7fafc;
-    transition: all 0.3s ease;
-}
-
-.input-wrapper input:focus {
-    outline: none;
-    border-color: #667eea;
-    background: white;
-}
-
-.input-icon {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #a0aec0;
-    font-size: 15px;
-}
-
-.toggle-btn {
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: #a0aec0;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.form-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 18px 0 22px;
-}
-
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    color: #4a5568;
-    cursor: pointer;
-}
-
-.checkbox-label input {
-    display: none;
-}
-
-.checkmark {
-    width: 18px;
-    height: 18px;
-    border: 2px solid #cbd5e0;
-    border-radius: 4px;
-    display: inline-block;
-    position: relative;
-}
-
-.checkbox-label input:checked + .checkmark {
-    background: #667eea;
-    border-color: #667eea;
-}
-
-.checkbox-label input:checked + .checkmark::after {
-    content: '✓';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 12px;
-}
-
-.forgot-link {
-    font-size: 13px;
-    color: #667eea;
-    text-decoration: none;
-}
-
-.login-btn {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-family: 'Poppins', sans-serif;
-    transition: all 0.3s ease;
-}
-
-.login-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-}
-
-.btn-shimmer {
-    display: none;
-}
-
-.form-footer {
-    text-align: center;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #e2e8f0;
-}
-
-.form-footer p {
-    font-size: 12px;
-    color: #a0aec0;
-}
-
-/* ============================================
    HOME SECTION (App-like)
    ============================================ */
 
 .home-section {
-    padding: 20px;
-    max-width: 600px;
+    padding: 10px 0;
+    max-width: 500px;
     margin: 0 auto;
-    min-height: 100vh;
+    min-height: calc(100vh - 75px);
 }
 
 .home-section h2 {
-    font-size: 28px;
+    font-size: 24px;
     color: white;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent;
-}
-
-.home-card {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
-.home-card h3 {
     margin-bottom: 15px;
-    color: #2d3748;
-    font-size: 20px;
-}
-
-.home-card h3 i {
-    color: #4facfe;
-}
-
-.home-card ul {
-    list-style: none;
-    padding: 0;
-}
-
-.home-card ul li {
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #4a5568;
-}
-
-.home-card ul li i {
-    color: #4facfe;
+    text-align: center;
 }
 
 /* ============================================
@@ -643,9 +302,9 @@ body {
 .notice-board {
     background: white;
     border-radius: 15px;
-    padding: 20px;
+    padding: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     border: 1px solid #e2e8f0;
     position: relative;
 }
@@ -653,12 +312,14 @@ body {
 .notice-board-header {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f4f8;
 }
 
 .notice-board-header h3 {
-    font-size: 18px;
+    font-size: 16px;
     color: #2d3748;
     flex: 1;
     margin: 0;
@@ -666,23 +327,23 @@ body {
 }
 
 .notice-icon {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     background: linear-gradient(135deg, #f56565, #ed8936);
-    border-radius: 10px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .notice-count {
     background: linear-gradient(135deg, #4facfe, #00f2fe);
     color: white;
-    padding: 5px 12px;
+    padding: 4px 10px;
     border-radius: 15px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
 }
 
@@ -690,10 +351,10 @@ body {
 .notice-ticker-container {
     background: #f7fafc;
     border-radius: 10px;
-    padding: 10px 0;
+    padding: 8px 0;
     overflow: hidden;
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     border: 1px solid #e2e8f0;
 }
 
@@ -705,7 +366,7 @@ body {
     background: linear-gradient(135deg, #f56565, #ed8936);
     color: white;
     padding: 8px 12px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     border-radius: 0 8px 8px 0;
     z-index: 10;
@@ -732,10 +393,10 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: 12px;
     color: #2d3748;
     background: white;
-    padding: 8px 15px;
+    padding: 6px 12px;
     border-radius: 20px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
@@ -753,16 +414,17 @@ body {
 .recent-notices {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     margin-bottom: 15px;
 }
 
 .recent-notice-card {
     background: #f7fafc;
-    border-radius: 12px;
-    padding: 15px;
-    border-left: 4px solid #4facfe;
+    border-radius: 10px;
+    padding: 12px;
+    border-left: 3px solid #4facfe;
     position: relative;
+    transition: all 0.3s ease;
 }
 
 .recent-notice-card:hover {
@@ -773,14 +435,14 @@ body {
     font-size: 14px;
     font-weight: 700;
     color: #2d3748;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 }
 
 .recent-notice-card .notice-message {
-    font-size: 13px;
+    font-size: 12px;
     color: #718096;
     line-height: 1.5;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .recent-notice-card .notice-footer {
@@ -791,7 +453,7 @@ body {
 }
 
 .recent-notice-card .notice-footer i {
-    margin-right: 4px;
+    margin-right: 3px;
 }
 
 /* View All Button */
@@ -808,11 +470,354 @@ body {
     color: white;
     border: none;
     border-radius: 20px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
     box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+.view-all-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+}
+
+/* ============================================
+   HOME CARD (About / Help)
+   ============================================ */
+
+.home-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+.home-card h3 {
+    margin-bottom: 12px;
+    color: #2d3748;
+    font-size: 18px;
+}
+
+.home-card h3 i {
+    color: #4facfe;
+    margin-right: 5px;
+}
+
+.home-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.home-card ul li {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #4a5568;
+}
+
+.home-card ul li i {
+    color: #4facfe;
+}
+
+.home-card .help-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.home-card .help-buttons a,
+.home-card .help-buttons button {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* ============================================
+   LOGIN SECTION (App-like)
+   ============================================ */
+
+.login-wrapper {
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.login-brand {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 25px 20px;
+    text-align: center;
+}
+
+.brand-content {
+    color: white;
+}
+
+.brand-logo {
+    width: 65px;
+    height: 65px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    font-size: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.brand-name {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.brand-tagline {
+    font-size: 12px;
+    opacity: 0.85;
+    letter-spacing: 2px;
+}
+
+.login-form-wrapper {
+    padding: 20px 15px;
+}
+
+.login-form-container {
+    width: 100%;
+}
+
+/* Login Type Buttons */
+.login-type-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.login-btn-oval {
+    padding: 15px 15px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.admin-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.teacher-btn {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: white;
+}
+
+.student-btn {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+}
+
+.login-btn-oval:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.btn-icon {
+    font-size: 20px;
+    width: 35px;
+    height: 35px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-label {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.btn-sub {
+    font-size: 11px;
+    opacity: 0.8;
+    font-weight: 400;
+}
+
+/* Form */
+.form-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-header h2 {
+    font-size: 22px;
+    color: #2d3748;
+    margin-bottom: 5px;
+}
+
+.form-header p {
+    color: #718096;
+    font-size: 13px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 5px;
+}
+
+.form-group label i {
+    color: #667eea;
+    margin-right: 5px;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 12px 15px 12px 40px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    background: #f7fafc;
+    transition: all 0.3s ease;
+}
+
+.input-wrapper input:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a0aec0;
+    font-size: 14px;
+}
+
+.toggle-btn {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #a0aec0;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0 20px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #4a5568;
+    cursor: pointer;
+}
+
+.checkbox-label input {
+    display: none;
+}
+
+.checkmark {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #cbd5e0;
+    border-radius: 4px;
+    display: inline-block;
+    position: relative;
+}
+
+.checkbox-label input:checked + .checkmark {
+    background: #667eea;
+    border-color: #667eea;
+}
+
+.checkbox-label input:checked + .checkmark::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 10px;
+}
+
+.forgot-link {
+    font-size: 12px;
+    color: #667eea;
+    text-decoration: none;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.form-footer {
+    text-align: center;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.form-footer p {
+    font-size: 11px;
+    color: #a0aec0;
 }
 
 /* ============================================
@@ -904,75 +909,6 @@ body {
 }
 
 /* ============================================
-   RESPONSIVE (Mobile)
-   ============================================ */
-
-@media (max-width: 992px) {
-    .sidebar {
-        transform: translateX(-100%);
-    }
-    
-    .sidebar.open {
-        transform: translateX(0);
-    }
-    
-    .mobile-sidebar-toggle {
-        display: flex;
-    }
-    
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-        padding: 15px;
-    }
-    
-    .home-section {
-        padding: 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    body {
-        padding: 10px;
-    }
-    
-    .home-section h2 {
-        font-size: 24px;
-        margin-top: 50px; /* Hamburger button এর জন্য space */
-    }
-    
-    .home-card {
-        padding: 20px;
-    }
-    
-    .home-card h3 {
-        font-size: 18px;
-    }
-    
-    .notice-board {
-        padding: 15px;
-    }
-    
-    .login-btn-oval {
-        padding: 15px 15px;
-    }
-    
-    .btn-icon {
-        font-size: 20px;
-        width: 35px;
-        height: 35px;
-    }
-    
-    .btn-label {
-        font-size: 16px;
-    }
-    
-    .form-footer p {
-        font-size: 11px;
-    }
-}
-
-/* ============================================
    PWA INSTALL MODAL
    ============================================ */
 
@@ -1044,4 +980,99 @@ body {
     color: #a0aec0;
     font-size: 13px;
     cursor: pointer;
+}
+
+/* ============================================
+   RESPONSIVE (Mobile)
+   ============================================ */
+
+@media (max-width: 992px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .mobile-sidebar-toggle {
+        display: flex;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1001;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .main-content {
+        padding: 75px 10px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-section {
+        padding: 5px;
+    }
+    
+    .home-section h2 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+    
+    .notice-board {
+        padding: 12px;
+    }
+    
+    .home-card {
+        padding: 15px;
+    }
+    
+    .login-container {
+        border-radius: 15px;
+    }
+    
+    .login-brand {
+        padding: 20px 15px;
+    }
+    
+    .brand-logo {
+        width: 55px;
+        height: 55px;
+        font-size: 25px;
+    }
+    
+    .brand-name {
+        font-size: 18px;
+    }
+    
+    .login-form-wrapper {
+        padding: 15px;
+    }
+    
+    .login-btn-oval {
+        padding: 12px;
+    }
+    
+    .btn-icon {
+        font-size: 18px;
+        width: 32px;
+        height: 32px;
+    }
+    
+    .btn-label {
+        font-size: 14px;
+    }
+    
+    .form-footer p {
+        font-size: 10px;
+    }
 }
