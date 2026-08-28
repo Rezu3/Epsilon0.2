@@ -551,3 +551,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// =============================================
+// ✅ AUTO SHOW LOGIN SECTION IF FLASH EXISTS
+// =============================================
+document.addEventListener('DOMContentLoaded', function() {
+    const flashMessages = document.querySelectorAll('.flash-message');
+    
+    if (flashMessages.length > 0) {
+        // Home Section Hide করুন
+        const homeSection = document.getElementById('homeSection');
+        if (homeSection) homeSection.style.display = 'none';
+        
+        // Login Section Show করুন
+        const loginSection = document.getElementById('loginSection');
+        if (loginSection) loginSection.style.display = 'flex';
+        
+        // Login Form Show করুন
+        const loginFormContainer = document.getElementById('loginFormContainer');
+        if (loginFormContainer) loginFormContainer.style.display = 'block';
+        
+        // Admin Login Default Select করুন
+        selectLoginType('admin');
+        
+        // Login Form-এ Focus করুন
+        setTimeout(function() {
+            const credentialInput = document.getElementById('credential');
+            if (credentialInput) credentialInput.focus();
+        }, 300);
+    }
+});
