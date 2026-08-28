@@ -276,14 +276,13 @@ body {
 }
 
 /* ============================================
-   MAIN CONTENT (Full Page Center)
+   MAIN CONTENT & LAYOUT FIX
    ============================================ */
 
 .main-content {
-    margin-left: 0;
     min-height: 100vh;
     width: 100%;
-    padding: 75px 15px 20px;
+    padding: 75px 15px 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -296,10 +295,9 @@ body {
 
 .home-section {
     padding: 10px 0;
+    width: 100%;
     max-width: 500px;
     margin: 0 auto;
-    width: 100%;
-    min-height: calc(100vh - 75px);
 }
 
 .home-section h2 {
@@ -450,7 +448,7 @@ body {
     font-size: 11px;
 }
 
-/* Recent Notices - Modern Cards */
+/* Recent Notices */
 .recent-notices {
     display: flex;
     flex-direction: column;
@@ -619,13 +617,13 @@ body {
 }
 
 /* ============================================
-   LOGIN SECTION (App-like)
+   LOGIN SECTION
    ============================================ */
 
 .login-wrapper {
+    max-width: 450px;
+    margin: 0 auto;
     width: 100%;
-    max-width: 500px;
-    margin: 0;
 }
 
 .login-container {
@@ -639,7 +637,7 @@ body {
 
 .login-brand {
     background: linear-gradient(135deg, #667eea, #764ba2);
-    padding: 20px 15px;
+    padding: 25px 20px;
     text-align: center;
 }
 
@@ -648,33 +646,32 @@ body {
 }
 
 .brand-logo {
-    width: 55px;
-    height: 55px;
+    width: 60px;
+    height: 60px;
     background: rgba(255, 255, 255, 0.15);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 8px;
-    font-size: 24px;
+    margin: 0 auto 10px;
+    font-size: 28px;
     border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .brand-name {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 800;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
 }
 
 .brand-tagline {
     font-size: 11px;
     opacity: 0.85;
-    letter-spacing: 2px;
-    margin-bottom: 0;
+    letter-spacing: 1.5px;
 }
 
 .login-form-wrapper {
-    padding: 20px 15px;
+    padding: 25px 20px;
     background: white;
 }
 
@@ -682,7 +679,7 @@ body {
     width: 100%;
 }
 
-/* Login Type Buttons - নতুন ডিজাইন */
+/* Login Type Buttons */
 .login-type-selector {
     display: flex;
     flex-direction: column;
@@ -692,7 +689,7 @@ body {
 }
 
 .login-btn-oval {
-    padding: 18px 20px;
+    padding: 16px 20px;
     border: none;
     border-radius: 50px;
     cursor: pointer;
@@ -727,9 +724,9 @@ body {
 
 /* Button Icon */
 .btn-icon {
-    font-size: 24px;
-    width: 45px;
-    height: 45px;
+    font-size: 22px;
+    width: 42px;
+    height: 42px;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     display: flex;
@@ -738,23 +735,23 @@ body {
     flex-shrink: 0;
 }
 
-/* Button Text - Label + Sub (নিচে নিচে) */
+/* Button Text */
 .btn-content {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 3px;
+    gap: 2px;
 }
 
 .btn-label {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 800;
     line-height: 1.2;
     display: block;
 }
 
 .btn-sub {
-    font-size: 12px;
+    font-size: 11px;
     opacity: 0.85;
     font-weight: 400;
     line-height: 1.2;
@@ -765,21 +762,21 @@ body {
     display: none;
 }
 
-/* Form */
+/* Form Styling */
 .form-header {
     text-align: center;
     margin-bottom: 20px;
 }
 
 .form-header h2 {
-    font-size: 24px;
+    font-size: 22px;
     color: #2d3748;
     margin-bottom: 5px;
 }
 
 .form-header p {
     color: #718096;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .form-group {
@@ -1192,92 +1189,88 @@ body {
 }
 
 /* ============================================
-   RESPONSIVE (Mobile)
+   RESPONSIVE MEDIA QUERIES (Cleaned)
    ============================================ */
 
 @media (max-width: 992px) {
     .sidebar {
         transform: translateX(-100%);
     }
-    
+
     .sidebar.open {
         transform: translateX(0);
-    }
-    
-    .main-content {
-        padding: 75px 10px 10px;
     }
 }
 
 @media (max-width: 480px) {
     .main-content {
-        padding: 65px 10px 10px;
+        padding: 65px 10px 20px;
     }
-    
+
     .home-section {
         padding: 5px;
     }
-    
+
     .home-section h2 {
         font-size: 20px;
         margin-bottom: 10px;
     }
-    
+
     .notice-board {
         padding: 15px;
     }
-    
+
     .home-card {
         padding: 20px;
     }
-    
+
     .login-container {
         border-radius: 18px;
     }
-    
+
     .login-brand {
-        padding: 15px 10px;
+        padding: 18px 12px;
     }
-    
+
     .brand-logo {
         width: 50px;
         height: 50px;
         font-size: 22px;
         margin-bottom: 6px;
     }
-    
+
     .brand-name {
         font-size: 18px;
     }
-    
+
     .brand-tagline {
         font-size: 10px;
         letter-spacing: 1px;
     }
-    
+
     .login-form-wrapper {
         padding: 15px 12px;
     }
-    
+
     .login-btn-oval {
-        padding: 14px;
+        padding: 12px 15px;
         border-radius: 40px;
     }
-    
+
     .btn-icon {
-        font-size: 20px;
-        width: 38px;
-        height: 38px;
+        font-size: 18px;
+        width: 36px;
+        height: 36px;
     }
-    
+
     .btn-label {
-        font-size: 17px;
+        font-size: 16px;
     }
-    
+
     .btn-sub {
         font-size: 10px;
     }
-    
+
     .form-footer p {
         font-size: 11px;
     }
