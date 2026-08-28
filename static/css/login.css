@@ -1309,3 +1309,81 @@ body {
         font-size: 11px;
     }
 }
+
+
+/* ============================================
+   FLASH MESSAGES (Alerts) - FIXED
+   ============================================ */
+
+.flash-message {
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideInRight 0.4s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    line-height: 1.5;
+}
+
+.flash-message i {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+/* Success message */
+.flash-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    border-left: 5px solid #28a745;
+    border: 1px solid #28a745;
+}
+
+/* Error message */
+.flash-error {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+    border-left: 5px solid #dc3545;
+    border: 1px solid #dc3545;
+}
+
+/* Info message */
+.flash-info {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    color: #0c5460;
+    border-left: 5px solid #17a2b8;
+    border: 1px solid #17a2b8;
+}
+
+/* Warning message */
+.flash-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeeba);
+    color: #856404;
+    border-left: 5px solid #ffc107;
+    border: 1px solid #ffc107;
+}
+
+/* Animation */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Auto close animation */
+.flash-message.auto-close {
+    transition: all 0.5s ease;
+}
+
+.flash-message.auto-close.hide {
+    opacity: 0;
+    transform: translateX(100px);
+}
