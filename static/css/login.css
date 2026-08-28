@@ -276,7 +276,7 @@ body {
 }
 
 /* ============================================
-   MAIN CONTENT
+   MAIN CONTENT (Full Page Center)
    ============================================ */
 
 .main-content {
@@ -284,6 +284,10 @@ body {
     min-height: 100vh;
     width: 100%;
     padding: 75px 15px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 /* ============================================
@@ -294,6 +298,7 @@ body {
     padding: 10px 0;
     max-width: 500px;
     margin: 0 auto;
+    width: 100%;
     min-height: calc(100vh - 75px);
 }
 
@@ -616,14 +621,11 @@ body {
 /* ============================================
    LOGIN SECTION (App-like)
    ============================================ */
- /* ============================================
-   LOGIN SECTION (App-like)
-   ============================================ */
 
 .login-wrapper {
-    max-width: 450px;
-    margin: 0 auto;
     width: 100%;
+    max-width: 500px;
+    margin: 0;
 }
 
 .login-container {
@@ -637,7 +639,7 @@ body {
 
 .login-brand {
     background: linear-gradient(135deg, #667eea, #764ba2);
-    padding: 30px 20px;
+    padding: 20px 15px;
     text-align: center;
 }
 
@@ -646,32 +648,33 @@ body {
 }
 
 .brand-logo {
-    width: 70px;
-    height: 70px;
+    width: 55px;
+    height: 55px;
     background: rgba(255, 255, 255, 0.15);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 12px;
-    font-size: 32px;
+    margin: 0 auto 8px;
+    font-size: 24px;
     border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .brand-name {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 800;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
 
 .brand-tagline {
-    font-size: 12px;
+    font-size: 11px;
     opacity: 0.85;
     letter-spacing: 2px;
+    margin-bottom: 0;
 }
 
 .login-form-wrapper {
-    padding: 25px 20px;
+    padding: 20px 15px;
     background: white;
 }
 
@@ -921,60 +924,6 @@ body {
 .form-footer p {
     font-size: 12px;
     color: #a0aec0;
-}
-
-/* ============================================
-   RESPONSIVE (Login Section)
-   ============================================ */
-
-@media (max-width: 480px) {
-    .login-wrapper {
-        padding: 10px;
-    }
-    
-    .login-container {
-        border-radius: 20px;
-    }
-    
-    .login-brand {
-        padding: 25px 15px;
-    }
-    
-    .brand-logo {
-        width: 60px;
-        height: 60px;
-        font-size: 28px;
-    }
-    
-    .brand-name {
-        font-size: 20px;
-    }
-    
-    .login-form-wrapper {
-        padding: 20px 15px;
-    }
-    
-    .login-btn-oval {
-        padding: 15px;
-    }
-    
-    .btn-icon {
-        font-size: 22px;
-        width: 40px;
-        height: 40px;
-    }
-    
-    .btn-label {
-        font-size: 18px;
-    }
-    
-    .btn-sub {
-        font-size: 11px;
-    }
-    
-    .form-footer p {
-        font-size: 11px;
-    }
 }
 
 /* ============================================
@@ -1261,6 +1210,10 @@ body {
 }
 
 @media (max-width: 480px) {
+    .main-content {
+        padding: 65px 10px 10px;
+    }
+    
     .home-section {
         padding: 5px;
     }
@@ -1276,104 +1229,6 @@ body {
     
     .home-card {
         padding: 20px;
-    }
-    
-    .login-container {
-        border-radius: 20px;
-    }
-    
-    .login-brand {
-        padding: 25px 15px;
-    }
-    
-    .brand-logo {
-        width: 60px;
-        height: 60px;
-        font-size: 28px;
-    }
-    
-    .brand-name {
-        font-size: 20px;
-    }
-    
-    .login-form-wrapper {
-        padding: 20px 15px;
-    }
-    
-    .login-btn-oval {
-        padding: 14px;
-    }
-    
-    .btn-icon {
-        font-size: 20px;
-        width: 35px;
-        height: 35px;
-    }
-    
-    .btn-label {
-        font-size: 15px;
-    }
-    
-    .btn-sub {
-        font-size: 10px;
-    }
-    
-    .form-footer p {
-        font-size: 11px;
-    }
-    }
-
-
-/* ============================================
-   FULL PAGE CENTER FIX (Mobile)
-   ============================================ */
-
-.main-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 75px 15px 20px;
-}
-
-.login-wrapper {
-    width: 100%;
-    max-width: 500px;
-    margin: 0;
-}
-
-/* Branding অংশ কমপ্যাক্ট করা */
-.login-brand {
-    padding: 20px 15px;
-}
-
-.brand-logo {
-    width: 55px;
-    height: 55px;
-    font-size: 24px;
-    margin-bottom: 8px;
-}
-
-.brand-name {
-    font-size: 20px;
-    margin-bottom: 3px;
-}
-
-.brand-tagline {
-    font-size: 11px;
-    margin-bottom: 0;
-}
-
-/* Login Form অংশ কমপ্যাক্ট করা */
-.login-form-wrapper {
-    padding: 20px 15px;
-}
-
-/* Mobile-এ আরো ছোট */
-@media (max-width: 480px) {
-    .main-content {
-        padding: 65px 10px 10px;
     }
     
     .login-container {
@@ -1421,5 +1276,9 @@ body {
     
     .btn-sub {
         font-size: 10px;
+    }
+    
+    .form-footer p {
+        font-size: 11px;
     }
 }
