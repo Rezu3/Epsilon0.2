@@ -1,4 +1,4 @@
-/* static/css/login.css */
+ /* static/css/login.css */
 
 * {
     margin: 0;
@@ -27,7 +27,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 60px;
+    height: 65px;
     background: linear-gradient(135deg, #667eea, #764ba2);
     display: flex;
     align-items: center;
@@ -40,16 +40,16 @@ body {
 .app-header-left {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .app-header-logo {
-    font-size: 24px;
+    font-size: 26px;
     color: white;
 }
 
 .app-header-title {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
     color: white;
     letter-spacing: 0.5px;
@@ -58,11 +58,11 @@ body {
 .app-header-right {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 18px;
 }
 
 .app-header-icon {
-    font-size: 20px;
+    font-size: 22px;
     color: rgba(255, 255, 255, 0.9);
     cursor: pointer;
 }
@@ -71,10 +71,10 @@ body {
     background: rgba(255, 255, 255, 0.2);
     border: none;
     color: white;
-    border-radius: 8px;
-    width: 40px;
-    height: 40px;
-    font-size: 16px;
+    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -89,12 +89,12 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 280px;
+    width: 300px;
     height: 100vh;
     background: linear-gradient(180deg, #0f0c29 0%, #1a1a3e 50%, #16213e 100%);
     color: white;
     z-index: 1000;
-    padding: 15px;
+    padding: 20px;
     overflow-y: auto;
     transition: transform 0.3s ease;
     box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
@@ -111,9 +111,9 @@ body {
 }
 
 .sidebar-header {
-    padding-bottom: 15px;
+    padding-bottom: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -122,17 +122,17 @@ body {
 .sidebar-logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .sidebar-logo i {
-    font-size: 24px;
+    font-size: 28px;
     color: #4facfe;
 }
 
 .sidebar-logo-text {
-    font-size: 15px;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 800;
     color: white;
 }
 
@@ -140,25 +140,25 @@ body {
     background: none;
     border: none;
     color: rgba(255, 255, 255, 0.6);
-    font-size: 20px;
+    font-size: 22px;
     cursor: pointer;
 }
 
 .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 
 .sidebar-link {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 15px;
-    border-radius: 10px;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-    font-weight: 500;
+    gap: 15px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
     background: none;
     border: none;
@@ -170,63 +170,66 @@ body {
 
 .sidebar-link:hover,
 .sidebar-link.active {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     color: white;
+    transform: translateX(5px);
 }
 
 .sidebar-link i {
-    width: 20px;
+    width: 24px;
     text-align: center;
-    font-size: 15px;
+    font-size: 18px;
 }
 
 .sidebar-section-title {
-    font-size: 10px;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: rgba(255, 255, 255, 0.4);
-    margin: 15px 12px 8px;
-    font-weight: 600;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 20px 15px 10px;
+    font-weight: 700;
 }
 
 .sidebar-footer {
     margin-top: auto;
-    padding-top: 15px;
+    padding-top: 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .help-box {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    padding: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 15px;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .help-box-title {
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
     color: white;
 }
 
 .help-contact {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px;
-    border-radius: 8px;
-    color: rgba(255, 255, 255, 0.8);
+    gap: 12px;
+    padding: 10px;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .help-contact:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .help-contact i {
-    width: 18px;
+    width: 22px;
     text-align: center;
+    font-size: 18px;
 }
 
 .help-contact.whatsapp i {
@@ -241,17 +244,17 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
-    padding: 10px;
+    padding: 14px;
     background: linear-gradient(135deg, #25D366, #128C7E);
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
     cursor: pointer;
-    margin-top: 8px;
+    margin-top: 10px;
     font-family: 'Poppins', sans-serif;
 }
 
@@ -276,18 +279,14 @@ body {
 }
 
 /* ============================================
-   MAIN CONTENT (Full Page Center)
+   MAIN CONTENT
    ============================================ */
 
 .main-content {
     margin-left: 0;
     min-height: 100vh;
     width: 100%;
-    padding: 75px 15px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    padding: 80px 15px 20px;
 }
 
 /* ============================================
@@ -298,14 +297,13 @@ body {
     padding: 10px 0;
     max-width: 500px;
     margin: 0 auto;
-    width: 100%;
-    min-height: calc(100vh - 75px);
+    min-height: calc(100vh - 80px);
 }
 
 .home-section h2 {
-    font-size: 22px;
+    font-size: 24px;
     color: white;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     text-align: center;
 }
 
@@ -625,7 +623,11 @@ body {
 .login-wrapper {
     width: 100%;
     max-width: 500px;
-    margin: 0;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 80px);
 }
 
 .login-container {
@@ -634,47 +636,65 @@ body {
     background: white;
     border-radius: 25px;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .login-brand {
     background: linear-gradient(135deg, #667eea, #764ba2);
-    padding: 20px 15px;
+    padding: 30px 20px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-brand::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(45deg);
 }
 
 .brand-content {
     color: white;
+    position: relative;
+    z-index: 1;
 }
 
 .brand-logo {
-    width: 55px;
-    height: 55px;
-    background: rgba(255, 255, 255, 0.15);
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 8px;
-    font-size: 24px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    margin: 0 auto 15px;
+    font-size: 36px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .brand-name {
-    font-size: 20px;
+    font-size: 28px;
     font-weight: 800;
-    margin-bottom: 3px;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
 }
 
 .brand-tagline {
-    font-size: 11px;
+    font-size: 12px;
     opacity: 0.85;
-    letter-spacing: 2px;
-    margin-bottom: 0;
+    letter-spacing: 3px;
 }
 
 .login-form-wrapper {
-    padding: 20px 15px;
+    padding: 25px 20px;
     background: white;
 }
 
@@ -682,7 +702,7 @@ body {
     width: 100%;
 }
 
-/* Login Type Buttons - নতুন ডিজাইন */
+/* Login Type Buttons - App Style */
 .login-type-selector {
     display: flex;
     flex-direction: column;
@@ -703,6 +723,7 @@ body {
     width: 100%;
     transition: all 0.3s ease;
     text-align: left;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .admin-btn {
@@ -721,8 +742,8 @@ body {
 }
 
 .login-btn-oval:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
 /* Button Icon */
@@ -730,12 +751,13 @@ body {
     font-size: 24px;
     width: 45px;
     height: 45px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.25);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Button Text - Label + Sub (নিচে নিচে) */
@@ -788,8 +810,8 @@ body {
 
 .form-group label {
     display: block;
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
     color: #4a5568;
     margin-bottom: 6px;
 }
@@ -805,10 +827,10 @@ body {
 
 .input-wrapper input {
     width: 100%;
-    padding: 14px 15px 14px 42px;
+    padding: 15px 15px 15px 45px;
     border: 2px solid #e2e8f0;
     border-radius: 12px;
-    font-size: 14px;
+    font-size: 15px;
     font-family: 'Poppins', sans-serif;
     background: #f7fafc;
     transition: all 0.3s ease;
@@ -818,26 +840,27 @@ body {
     outline: none;
     border-color: #667eea;
     background: white;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
 .input-icon {
     position: absolute;
-    left: 14px;
+    left: 15px;
     top: 50%;
     transform: translateY(-50%);
     color: #a0aec0;
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .toggle-btn {
     position: absolute;
-    right: 14px;
+    right: 15px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
     border: none;
     color: #a0aec0;
-    font-size: 16px;
+    font-size: 18px;
     cursor: pointer;
 }
 
@@ -851,8 +874,8 @@ body {
 .checkbox-label {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 13px;
+    gap: 10px;
+    font-size: 14px;
     color: #4a5568;
     cursor: pointer;
 }
@@ -865,7 +888,7 @@ body {
     width: 18px;
     height: 18px;
     border: 2px solid #cbd5e0;
-    border-radius: 4px;
+    border-radius: 5px;
     display: inline-block;
     position: relative;
 }
@@ -886,20 +909,20 @@ body {
 }
 
 .forgot-link {
-    font-size: 13px;
+    font-size: 14px;
     color: #667eea;
     text-decoration: none;
 }
 
 .login-btn {
     width: 100%;
-    padding: 15px;
+    padding: 16px;
     background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
     border: none;
     border-radius: 12px;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -907,11 +930,12 @@ body {
     gap: 10px;
     font-family: 'Poppins', sans-serif;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .login-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
 }
 
 .form-footer {
@@ -1205,22 +1229,18 @@ body {
     }
     
     .main-content {
-        padding: 75px 10px 10px;
+        padding: 80px 10px 10px;
     }
 }
 
 @media (max-width: 480px) {
-    .main-content {
-        padding: 65px 10px 10px;
-    }
-    
     .home-section {
         padding: 5px;
     }
     
     .home-section h2 {
-        font-size: 20px;
-        margin-bottom: 10px;
+        font-size: 22px;
+        margin-bottom: 15px;
     }
     
     .notice-board {
@@ -1231,51 +1251,58 @@ body {
         padding: 20px;
     }
     
+    .login-wrapper {
+        padding: 10px;
+        min-height: calc(100vh - 80px);
+    }
+    
     .login-container {
-        border-radius: 18px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
     
     .login-brand {
-        padding: 15px 10px;
+        padding: 20px 15px;
     }
     
     .brand-logo {
-        width: 50px;
-        height: 50px;
-        font-size: 22px;
-        margin-bottom: 6px;
+        width: 65px;
+        height: 65px;
+        font-size: 28px;
+        margin-bottom: 10px;
     }
     
     .brand-name {
-        font-size: 18px;
+        font-size: 22px;
     }
     
     .brand-tagline {
-        font-size: 10px;
-        letter-spacing: 1px;
+        font-size: 11px;
+        letter-spacing: 2px;
     }
     
     .login-form-wrapper {
-        padding: 15px 12px;
+        padding: 20px 15px;
     }
     
     .login-btn-oval {
-        padding: 14px;
+        padding: 16px;
         border-radius: 40px;
+        gap: 12px;
     }
     
     .btn-icon {
-        font-size: 20px;
-        width: 38px;
-        height: 38px;
+        font-size: 22px;
+        width: 40px;
+        height: 40px;
     }
     
     .btn-label {
-        font-size: 17px;
+        font-size: 18px;
     }
     
     .btn-sub {
-        font-size: 10px;
+        font-size: 11px;
     }
     
     .form-footer p {
