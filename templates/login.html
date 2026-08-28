@@ -265,34 +265,40 @@
                         {% endwith %}
                         
                         <!-- 3 Oval Buttons -->
-                        <div class="login-type-selector">
-                            <button class="login-btn-oval admin-btn" onclick="selectLoginType('admin')">
-                                <div class="btn-icon">
-                                    <i class="fas fa-user-shield"></i>
-                                </div>
-                                <span class="btn-label">Admin</span>
-                                <span class="btn-sub">Administrator Access</span>
-                                <div class="btn-glow"></div>
-                            </button>
-                            
-                            <button class="login-btn-oval teacher-btn" onclick="selectLoginType('teacher')">
-                                <div class="btn-icon">
-                                    <i class="fas fa-chalkboard-teacher"></i>
-                                </div>
-                                <span class="btn-label">Teacher</span>
-                                <span class="btn-sub">Teacher Access</span>
-                                <div class="btn-glow"></div>
-                            </button>
-                            
-                            <button class="login-btn-oval student-btn" onclick="selectLoginType('student')">
-                                <div class="btn-icon">
-                                    <i class="fas fa-user-graduate"></i>
-                                </div>
-                                <span class="btn-label">Student</span>
-                                <span class="btn-sub">Student Access</span>
-                                <div class="btn-glow"></div>
-                            </button>
-                        </div>
+<div class="login-type-selector">
+    <button class="login-btn-oval admin-btn" onclick="selectLoginType('admin')">
+        <div class="btn-icon">
+            <i class="fas fa-user-shield"></i>
+        </div>
+        <div class="btn-content">
+            <span class="btn-label">Admin</span>
+            <span class="btn-sub">Administrator Access</span>
+        </div>
+        <div class="btn-glow"></div>
+    </button>
+    
+    <button class="login-btn-oval teacher-btn" onclick="selectLoginType('teacher')">
+        <div class="btn-icon">
+            <i class="fas fa-chalkboard-teacher"></i>
+        </div>
+        <div class="btn-content">
+            <span class="btn-label">Teacher</span>
+            <span class="btn-sub">Teacher Access</span>
+        </div>
+        <div class="btn-glow"></div>
+    </button>
+    
+    <button class="login-btn-oval student-btn" onclick="selectLoginType('student')">
+        <div class="btn-icon">
+            <i class="fas fa-user-graduate"></i>
+        </div>
+        <div class="btn-content">
+            <span class="btn-label">Student</span>
+            <span class="btn-sub">Student Access</span>
+        </div>
+        <div class="btn-glow"></div>
+    </button>
+</div>
                         
                         <!-- Login Form - Hidden by default -->
                         <div class="login-form-container-hidden" id="loginFormContainer" style="display: none;">
