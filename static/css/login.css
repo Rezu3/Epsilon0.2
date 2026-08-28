@@ -616,124 +616,171 @@ body {
 /* ============================================
    LOGIN SECTION (App-like)
    ============================================ */
-/* 3 OVAL BUTTONS */
+/* ============================================
+   LOGIN SECTION - FULL SCREEN APP DESIGN
+   ============================================ */
+
+.main-content {
+    margin-left: 0;
+    min-height: 100vh;
+    width: 100%;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-wrapper {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 20px;
+    min-height: calc(100vh - 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Branding Section */
+.login-brand {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.brand-content {
+    color: white;
+}
+
+.brand-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 36px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.brand-name {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.brand-tagline {
+    font-size: 12px;
+    opacity: 0.85;
+    letter-spacing: 2px;
+}
+
+/* Login Form Section */
+.login-form-wrapper {
+    padding: 25px 20px;
+    background: white;
+}
+
+.login-form-container {
+    width: 100%;
+}
+
+/* Login Type Buttons - নতুন ডিজাইন */
 .login-type-selector {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 15px;
     margin-bottom: 25px;
 }
 
 .login-btn-oval {
-    padding: 25px 20px;
+    padding: 18px 20px;
     border: none;
-    border-radius: 100px;
+    border-radius: 50px;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     font-family: 'Poppins', sans-serif;
-    position: relative;
-    overflow: hidden;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 4px;
-    min-height: 110px;
+    gap: 15px;
     width: 100%;
+    transition: all 0.3s ease;
+    text-align: left;
 }
 
 .admin-btn {
     background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
-    grid-column: 1 / 2;
-}
-
-.admin-btn:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
 }
 
 .teacher-btn {
     background: linear-gradient(135deg, #f093fb, #f5576c);
     color: white;
-    grid-column: 2 / 3;
-}
-
-.teacher-btn:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 8px 30px rgba(245, 87, 108, 0.4);
 }
 
 .student-btn {
     background: linear-gradient(135deg, #4facfe, #00f2fe);
     color: white;
-    grid-column: 1 / 3;
-    max-width: 48.5%;
-    margin: 0 auto;
-    min-height: 110px;
 }
 
-.student-btn:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 8px 30px rgba(79, 172, 254, 0.4);
+.login-btn-oval:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
+/* Button Icon */
 .btn-icon {
-    font-size: 28px;
-    margin-bottom: 2px;
+    font-size: 24px;
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Button Text - Label + Sub */
+.btn-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
 }
 
 .btn-label {
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 800;
+    line-height: 1.2;
 }
 
 .btn-sub {
     font-size: 12px;
-    opacity: 0.8;
-    font-weight: 300;
+    opacity: 0.85;
+    font-weight: 400;
+    line-height: 1.2;
 }
 
-.btn-glow {
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-
-.login-btn-oval:hover .btn-glow {
-    opacity: 1;
-}
-
-/* Login Form - Hidden */
-.login-form-container-hidden {
-    animation: slideDown 0.5s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
+/* Form */
 .form-header {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .form-header h2 {
-    font-size: 26px;
-    font-weight: 700;
+    font-size: 24px;
     color: #2d3748;
+    margin-bottom: 5px;
 }
 
 .form-header p {
@@ -741,79 +788,51 @@ body {
     font-size: 14px;
 }
 
-/* Form */
-.login-form .form-group {
-    margin-bottom: 20px;
+.form-group {
+    margin-bottom: 18px;
 }
 
-.login-form label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.form-group label {
+    display: block;
+    font-size: 13px;
     font-weight: 500;
-    color: #2d3748;
+    color: #4a5568;
     margin-bottom: 6px;
-    font-size: 14px;
 }
 
-.login-form label i {
+.form-group label i {
     color: #667eea;
-    width: 18px;
+    margin-right: 5px;
 }
 
 .input-wrapper {
     position: relative;
 }
 
-.input-wrapper .input-icon {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #a0aec0;
-    font-size: 16px;
-    transition: color 0.3s ease;
-    z-index: 1;
-}
-
 .input-wrapper input {
     width: 100%;
-    padding: 14px 16px 14px 45px;
+    padding: 14px 15px 14px 42px;
     border: 2px solid #e2e8f0;
     border-radius: 12px;
     font-size: 14px;
     font-family: 'Poppins', sans-serif;
-    transition: all 0.3s ease;
     background: #f7fafc;
-    position: relative;
-    z-index: 1;
+    transition: all 0.3s ease;
 }
 
 .input-wrapper input:focus {
     outline: none;
     border-color: #667eea;
     background: white;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
-.input-wrapper input:focus ~ .input-icon {
-    color: #667eea;
-}
-
-.input-highlight {
+.input-icon {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-    z-index: 2;
-}
-
-.input-wrapper input:focus ~ .input-highlight {
-    transform: scaleX(1);
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a0aec0;
+    font-size: 15px;
 }
 
 .toggle-btn {
@@ -824,32 +843,27 @@ body {
     background: none;
     border: none;
     color: #a0aec0;
+    font-size: 16px;
     cursor: pointer;
-    font-size: 18px;
-    z-index: 2;
-}
-
-.toggle-btn:hover {
-    color: #667eea;
 }
 
 .form-options {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 22px 0 28px;
+    margin: 18px 0 22px;
 }
 
 .checkbox-label {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     font-size: 13px;
     color: #4a5568;
     cursor: pointer;
 }
 
-.checkbox-label input[type="checkbox"] {
+.checkbox-label input {
     display: none;
 }
 
@@ -860,8 +874,6 @@ body {
     border-radius: 4px;
     display: inline-block;
     position: relative;
-    flex-shrink: 0;
-    transition: all 0.3s ease;
 }
 
 .checkbox-label input:checked + .checkmark {
@@ -883,18 +895,11 @@ body {
     font-size: 13px;
     color: #667eea;
     text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.forgot-link:hover {
-    color: #764ba2;
-    text-decoration: underline;
 }
 
 .login-btn {
     width: 100%;
-    padding: 16px;
+    padding: 15px;
     background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
     border: none;
@@ -902,67 +907,23 @@ body {
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
     font-family: 'Poppins', sans-serif;
-    position: relative;
-    overflow: hidden;
+    transition: all 0.3s ease;
 }
 
 .login-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
-}
-
-.btn-shimmer {
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-    transform: rotate(45deg);
-    animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-    0% { transform: translateX(-100%) rotate(45deg); }
-    100% { transform: translateX(100%) rotate(45deg); }
-}
-
-.register-links {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.register-text {
-    color: #718096;
-    font-size: 14px;
-}
-
-.register-text a {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.register-text a:hover {
-    color: #764ba2;
-    text-decoration: underline;
-}
-
-.student-register {
-    margin-top: 5px;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
 .form-footer {
     text-align: center;
-    margin-top: 25px;
-    padding-top: 20px;
+    margin-top: 20px;
+    padding-top: 15px;
     border-top: 1px solid #e2e8f0;
 }
 
@@ -971,115 +932,63 @@ body {
     color: #a0aec0;
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-    .login-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .login-brand {
-        padding: 35px 30px;
-        min-height: 200px;
-    }
-    
-    .login-form-wrapper {
-        padding: 35px 30px;
-    }
-}
+/* ============================================
+   RESPONSIVE (Mobile)
+   ============================================ */
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
+    .login-wrapper {
+        padding: 10px;
+        min-height: calc(100vh - 60px);
+    }
+    
     .login-container {
         border-radius: 20px;
-    }
-    
-    .login-brand {
-        padding: 25px 20px;
-        min-height: 180px;
-    }
-    
-    .brand-name {
-        font-size: 24px;
-    }
-    
-    .brand-logo {
-        width: 70px;
-        height: 70px;
-        font-size: 32px;
-    }
-    
-    .login-form-wrapper {
-        padding: 25px 20px;
-    }
-    
-    .login-type-selector {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-    
-    .admin-btn {
-        grid-column: 1;
-    }
-    
-    .teacher-btn {
-        grid-column: 1;
-    }
-    
-    .student-btn {
-        grid-column: 1;
         max-width: 100%;
     }
     
+    .login-brand {
+        padding: 25px 15px;
+    }
+    
+    .brand-logo {
+        width: 65px;
+        height: 65px;
+        font-size: 30px;
+        margin-bottom: 10px;
+    }
+    
+    .brand-name {
+        font-size: 22px;
+    }
+    
+    .brand-tagline {
+        font-size: 11px;
+    }
+    
+    .login-form-wrapper {
+        padding: 20px 15px;
+    }
+    
     .login-btn-oval {
-        min-height: 80px;
-        padding: 20px;
-        border-radius: 50px;
+        padding: 16px;
+        gap: 12px;
     }
     
     .btn-icon {
         font-size: 22px;
+        width: 40px;
+        height: 40px;
     }
     
     .btn-label {
-        font-size: 17px;
-    }
-}
-
-@media (max-width: 480px) {
-    .login-container {
-        border-radius: 16px;
-    }
-    
-    .login-brand {
-        padding: 20px 15px;
-        min-height: 160px;
-    }
-    
-    .brand-name {
-        font-size: 20px;
-    }
-    
-    .login-form-wrapper {
-        padding: 20px 15px;
-    }
-    
-    .login-btn-oval {
-        min-height: 70px;
-        padding: 15px;
-        border-radius: 40px;
-    }
-    
-    .btn-icon {
         font-size: 18px;
     }
     
-    .btn-label {
-        font-size: 15px;
-    }
-    
     .btn-sub {
-        font-size: 10px;
+        font-size: 11px;
     }
-}
+    }
 /* ============================================
    ALL NOTICES MODAL (Modern)
    ============================================ */
