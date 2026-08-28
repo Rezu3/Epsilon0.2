@@ -188,7 +188,9 @@ function selectLoginType(type) {
     if (credentialLabel) credentialLabel.textContent = data.label;
     if (credentialInput) {
         credentialInput.placeholder = data.placeholder;
-        credentialInput.name = type === 'admin' ? 'username' : 'phone';
+        
+        // ✅ এই লাইনটি বসান: সব সময় phone পাঠান
+        credentialInput.name = 'phone';
     }
     if (credentialIcon) credentialIcon.className = 'fas ' + data.icon;
     if (inputIcon) inputIcon.className = 'fas input-icon ' + data.icon;
