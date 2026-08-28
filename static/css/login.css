@@ -616,40 +616,21 @@ body {
 /* ============================================
    LOGIN SECTION (App-like)
    ============================================ */
-/* ============================================
-   LOGIN SECTION - FULL SCREEN APP DESIGN
-   ============================================ */
-
-.main-content {
-    margin-left: 0;
-    min-height: 100vh;
-    width: 100%;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-}
 
 .login-wrapper {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: 20px;
-    min-height: calc(100vh - 60px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    max-width: 450px;
+    margin: 0 auto;
 }
 
 .login-container {
-    width: 100%;
-    max-width: 500px;
+    display: flex;
+    flex-direction: column;
     background: white;
     border-radius: 25px;
     overflow: hidden;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
-/* Branding Section */
 .login-brand {
     background: linear-gradient(135deg, #667eea, #764ba2);
     padding: 30px 20px;
@@ -661,20 +642,20 @@ body {
 }
 
 .brand-logo {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     background: rgba(255, 255, 255, 0.15);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 15px;
-    font-size: 36px;
+    margin: 0 auto 12px;
+    font-size: 32px;
     border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .brand-name {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
     margin-bottom: 5px;
 }
@@ -685,7 +666,6 @@ body {
     letter-spacing: 2px;
 }
 
-/* Login Form Section */
 .login-form-wrapper {
     padding: 25px 20px;
     background: white;
@@ -932,63 +912,6 @@ body {
     color: #a0aec0;
 }
 
-/* ============================================
-   RESPONSIVE (Mobile)
-   ============================================ */
-
-@media (max-width: 480px) {
-    .login-wrapper {
-        padding: 10px;
-        min-height: calc(100vh - 60px);
-    }
-    
-    .login-container {
-        border-radius: 20px;
-        max-width: 100%;
-    }
-    
-    .login-brand {
-        padding: 25px 15px;
-    }
-    
-    .brand-logo {
-        width: 65px;
-        height: 65px;
-        font-size: 30px;
-        margin-bottom: 10px;
-    }
-    
-    .brand-name {
-        font-size: 22px;
-    }
-    
-    .brand-tagline {
-        font-size: 11px;
-    }
-    
-    .login-form-wrapper {
-        padding: 20px 15px;
-    }
-    
-    .login-btn-oval {
-        padding: 16px;
-        gap: 12px;
-    }
-    
-    .btn-icon {
-        font-size: 22px;
-        width: 40px;
-        height: 40px;
-    }
-    
-    .btn-label {
-        font-size: 18px;
-    }
-    
-    .btn-sub {
-        font-size: 11px;
-    }
-    }
 /* ============================================
    ALL NOTICES MODAL (Modern)
    ============================================ */
@@ -1333,4 +1256,4 @@ body {
     .form-footer p {
         font-size: 11px;
     }
-}
+    }
