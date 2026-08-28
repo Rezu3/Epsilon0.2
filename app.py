@@ -2108,6 +2108,44 @@ def save_push_subscription():
         print(f"❌ Error saving push subscription: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500
 
+
+# =============================================
+# GET ALL NOTICES (জন্য Login Page Home)
+# =============================================
+@app.route("/get_all_notices_public")
+def get_all_notices_public():
+    """Get all notices for public view (Login Page Home)"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # সব Notice দেখাবে (শুধু সর্বশেষ 10 টি)
+        cursor.execute('''
+            SELECT 
+                n.id,
+                n.teacher_name,
+                n.title,
+                n.message,
+                n.created_at,
+                n.is_global,
+                n.target_class
+            FROM notices n
+            ORDER BY n.created_at DESC
+            LIMIT 10
+        ''')
+        
+        notices = cursor.fetchall()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'notices': [dict(notice) for notice in notices]
+        })
+        
+    except Exception as e:
+        conn.close()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
 # ------------------------
 # Logout
 # ------------------------
