@@ -388,16 +388,17 @@ def student_register():
                           VALUES (?, ?, ?, ?, ?)''',
                           (name, class_name, school, phone, password))
             conn.commit()
-            flash('Student registration successful! Please login.', 'success')
             conn.close()
-            return redirect(url_for('login'))
+            
+            # সফল রেজিস্ট্রেশনের পর registered=success সহ রিডাইরেক্ট
+            return redirect(url_for('student_register', registered='success'))
         except sqlite3.IntegrityError:
             flash('Phone number already registered!', 'error')
             conn.close()
             return render_template('student_register.html')
     
+    # GET request - registered=success থাকলে Success Board দেখাবে
     return render_template('student_register.html')
-
 # ------------------------
 # Admin Dashboard
 # ------------------------
