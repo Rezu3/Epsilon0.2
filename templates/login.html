@@ -40,6 +40,21 @@
         </div>
     </div>
 
+    <!-- App Header (Fixed Top Bar) -->
+    <div class="app-header">
+        <div class="app-header-left">
+            <button class="mobile-sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <i class="fas fa-graduation-cap app-header-logo"></i>
+            <span class="app-header-title">The Epsilon</span>
+        </div>
+        <div class="app-header-right">
+            <i class="fas fa-bell app-header-icon" onclick="showSection('notice')"></i>
+            <i class="fas fa-share-alt app-header-icon" onclick="shareApp()"></i>
+        </div>
+    </div>
+
     <!-- ============================================
          SIDEBAR
          ============================================ -->
@@ -112,123 +127,111 @@
         </div>
     </div>
     
-    <!-- Mobile Sidebar Toggle -->
-    <button class="mobile-sidebar-toggle" onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
-    
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
     
     <!-- Main Content -->
     <div class="main-content">
         
-
-<!-- ============================================
-     HOME SECTION - NOTICE BOARD
-     ============================================ -->
-<div class="home-section" id="homeSection" style="display: block;">
-    <h2><i class="fas fa-home"></i> Welcome to The Epsilon</h2>
-    
-    <!-- Notice Board -->
-    <div class="notice-board" id="noticeBoard">
-        <!-- Notice Board Header -->
-        <div class="notice-board-header">
-            <div class="notice-icon">
-                <i class="fas fa-bullhorn"></i>
+        <!-- ============================================
+             HOME SECTION - NOTICE BOARD
+             ============================================ -->
+        <div class="home-section" id="homeSection" style="display: block;">
+            <h2><i class="fas fa-home"></i> Welcome to The Epsilon</h2>
+            
+            <!-- Notice Board -->
+            <div class="notice-board" id="noticeBoard">
+                <!-- Notice Board Header -->
+                <div class="notice-board-header">
+                    <div class="notice-icon">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <h3>📢 Notice Board</h3>
+                    <span class="notice-count" id="noticeCount">Loading...</span>
+                </div>
+                
+                <!-- Scrolling Notice Ticker -->
+                <div class="notice-ticker-container" id="noticeTickerContainer">
+                    <div class="ticker-label">
+                        <i class="fas fa-bullhorn"></i> Notice
+                    </div>
+                    <div class="notice-ticker" id="noticeTicker">
+                        <div class="ticker-content" id="tickerContent">
+                            <span class="ticker-item">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span class="ticker-message">Loading notices...</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notice List (সর্বশেষ 3 টি) -->
+                <div class="recent-notices" id="recentNotices">
+                    <!-- JavaScript এখানে Recent Notices বসাবে -->
+                </div>
+                
+                <!-- View All Notices Button -->
+                <div class="view-all-notices">
+                    <button class="view-all-btn" type="button" onclick="showAllNotices()">
+                        <i class="fas fa-list"></i> View All Notices
+                    </button>
+                </div>
             </div>
-            <h3>📢 Notice Board</h3>
-            <span class="notice-count" id="noticeCount">Loading...</span>
-        </div>
-        
-        <!-- Scrolling Notice Ticker -->
-        <div class="notice-ticker-container" id="noticeTickerContainer">
-            <div class="ticker-label">
-                <i class="fas fa-bullhorn"></i> Notice
+            
+            <!-- About App -->
+            <div class="home-card">
+                <h3><i class="fas fa-info-circle"></i> About Our Platform</h3>
+                <p style="color: #718096; line-height: 1.8; margin-bottom: 20px;">
+                    The Epsilon is a comprehensive educational platform designed to enhance learning experiences.
+                    Our platform provides:
+                </p>
+                
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Interactive Learning Materials</li>
+                    <li><i class="fas fa-check-circle"></i> Online Examinations</li>
+                    <li><i class="fas fa-check-circle"></i> Real-time Progress Tracking</li>
+                    <li><i class="fas fa-check-circle"></i> Class Notes & Resources</li>
+                    <li><i class="fas fa-check-circle"></i> Teacher-Student Communication</li>
+                    <li><i class="fas fa-check-circle"></i> Performance Analytics</li>
+                    <li><i class="fas fa-check-circle"></i> Secure & Reliable Platform</li>
+                </ul>
             </div>
-            <div class="notice-ticker" id="noticeTicker">
-                <div class="ticker-content" id="tickerContent">
-                    <span class="ticker-item">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <span class="ticker-message">Loading notices...</span>
-                    </span>
+            
+            <!-- Help & Support -->
+            <div class="home-card">
+                <h3><i class="fas fa-headset"></i> Need Help?</h3>
+                <p style="color: #718096; margin-bottom: 20px;">
+                    Our support team is always here to help you!
+                </p>
+                
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <a href="https://wa.me/919749469918" class="share-btn" style="width: auto; padding: 12px 25px;" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                        WhatsApp Us
+                    </a>
+                    
+                    <button class="share-btn" onclick="shareApp()" style="width: auto; padding: 12px 25px; background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                        <i class="fas fa-share-alt"></i>
+                        Share App
+                    </button>
                 </div>
             </div>
         </div>
-        
-        <!-- Notice List (সর্বশেষ 3 টি) -->
-        <div class="recent-notices" id="recentNotices">
-            <!-- JavaScript এখানে Recent Notices বসাবে -->
-        </div>
-        
-        <!-- View All Notices Button -->
-        <div class="view-all-notices">
-            <button class="view-all-btn" type="button" onclick="showAllNotices()">
-                <i class="fas fa-list"></i> View All Notices
-            </button>
-        </div>
-    </div>
-    
-    <!-- About App -->
-    <div class="home-card">
-        <h3><i class="fas fa-info-circle"></i> About Our Platform</h3>
-        <p style="color: #718096; line-height: 1.8; margin-bottom: 20px;">
-            The Epsilon is a comprehensive educational platform designed to enhance learning experiences.
-            Our platform provides:
-        </p>
-        
-        <ul>
-            <li><i class="fas fa-check-circle"></i> Interactive Learning Materials</li>
-            <li><i class="fas fa-check-circle"></i> Online Examinations</li>
-            <li><i class="fas fa-check-circle"></i> Real-time Progress Tracking</li>
-            <li><i class="fas fa-check-circle"></i> Class Notes & Resources</li>
-            <li><i class="fas fa-check-circle"></i> Teacher-Student Communication</li>
-            <li><i class="fas fa-check-circle"></i> Performance Analytics</li>
-            <li><i class="fas fa-check-circle"></i> Secure & Reliable Platform</li>
-        </ul>
-    </div>
-    
-    <!-- Help & Support -->
-    <div class="home-card">
-        <h3><i class="fas fa-headset"></i> Need Help?</h3>
-        <p style="color: #718096; margin-bottom: 20px;">
-            Our support team is always here to help you!
-        </p>
-        
-        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-            <a href="https://wa.me/919749469918" class="share-btn" style="width: auto; padding: 12px 25px;" target="_blank">
-                <i class="fab fa-whatsapp"></i>
-                WhatsApp Us
-            </a>
-            
-            <button class="share-btn" onclick="shareApp()" style="width: auto; padding: 12px 25px; background: linear-gradient(135deg, #4facfe, #00f2fe);">
-                <i class="fas fa-share-alt"></i>
-                Share App
-            </button>
-        </div>
-    </div>
-</div>
 
-<!-- All Notices Modal -->
-<div class="all-notices-modal" id="allNoticesModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2><i class="fas fa-bullhorn"></i> All Notices</h2>
-            <button class="close-modal" type="button" onclick="closeAllNotices()">
-                <i class="fas fa-times"></i>
-            </button>
+        <!-- All Notices Modal -->
+        <div class="all-notices-modal" id="allNoticesModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-bullhorn"></i> All Notices</h2>
+                    <button class="close-modal" type="button" onclick="closeAllNotices()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body" id="allNoticesList">
+                    <!-- JavaScript এখানে সব Notice বসাবে -->
+                </div>
+            </div>
         </div>
-        <div class="modal-body" id="allNoticesList">
-            <!-- JavaScript এখানে সব Notice বসাবে -->
-        </div>
-    </div>
-</div>
-
- 
-     
-         
-        
-         
         
         <!-- ============================================
              LOGIN SECTION
@@ -357,6 +360,7 @@
 
     <!-- SCRIPTS -->
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+    
     <!-- SERVICE WORKER & FORCE INSTALL PROMPT -->
     <script>
         let deferredPrompt;
