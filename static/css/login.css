@@ -616,10 +616,14 @@ body {
 /* ============================================
    LOGIN SECTION (App-like)
    ============================================ */
+ /* ============================================
+   LOGIN SECTION (App-like)
+   ============================================ */
 
 .login-wrapper {
     max-width: 450px;
     margin: 0 auto;
+    width: 100%;
 }
 
 .login-container {
@@ -681,6 +685,7 @@ body {
     flex-direction: column;
     gap: 15px;
     margin-bottom: 25px;
+    width: 100%;
 }
 
 .login-btn-oval {
@@ -730,18 +735,19 @@ body {
     flex-shrink: 0;
 }
 
-/* Button Text - Label + Sub */
+/* Button Text - Label + Sub (নিচে নিচে) */
 .btn-content {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 2px;
+    gap: 3px;
 }
 
 .btn-label {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 800;
     line-height: 1.2;
+    display: block;
 }
 
 .btn-sub {
@@ -749,6 +755,11 @@ body {
     opacity: 0.85;
     font-weight: 400;
     line-height: 1.2;
+    display: block;
+}
+
+.btn-glow {
+    display: none;
 }
 
 /* Form */
@@ -910,6 +921,60 @@ body {
 .form-footer p {
     font-size: 12px;
     color: #a0aec0;
+}
+
+/* ============================================
+   RESPONSIVE (Login Section)
+   ============================================ */
+
+@media (max-width: 480px) {
+    .login-wrapper {
+        padding: 10px;
+    }
+    
+    .login-container {
+        border-radius: 20px;
+    }
+    
+    .login-brand {
+        padding: 25px 15px;
+    }
+    
+    .brand-logo {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+    }
+    
+    .brand-name {
+        font-size: 20px;
+    }
+    
+    .login-form-wrapper {
+        padding: 20px 15px;
+    }
+    
+    .login-btn-oval {
+        padding: 15px;
+    }
+    
+    .btn-icon {
+        font-size: 22px;
+        width: 40px;
+        height: 40px;
+    }
+    
+    .btn-label {
+        font-size: 18px;
+    }
+    
+    .btn-sub {
+        font-size: 11px;
+    }
+    
+    .form-footer p {
+        font-size: 11px;
+    }
 }
 
 /* ============================================
