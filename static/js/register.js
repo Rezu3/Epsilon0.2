@@ -19,10 +19,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 isValid = false;
             }
             
-            // ফোন নম্বর ভ্যালিডেশন
-            const phoneRegex = /^[0-9]{10,15}$/;
+            // ফোন নম্বর ভ্যালিডেশন - শুধু ১০ ডিজিট
+            const phoneRegex = /^[0-9]{10}$/;
             if (!phoneRegex.test(phone.replace(/[^0-9]/g, ''))) {
-                showError(document.getElementById('phone'), 'Please enter a valid phone number (10-15 digits)');
+                showError(document.getElementById('phone'), 'Phone number must be exactly 10 digits');
                 isValid = false;
             }
             
@@ -180,7 +180,7 @@ function toggleConfirmPassword() {
     }
 }
 
-// WhatsApp-এ সেভ করা - আপডেটেড ফাংশন
+// WhatsApp-এ সেভ করা
 function saveToWhatsApp() {
     // localStorage থেকে ডেটা নেওয়া
     const studentData = JSON.parse(localStorage.getItem('studentData'));
@@ -193,34 +193,9 @@ function saveToWhatsApp() {
     // ফোন নাম্বার থেকে সব অ-সংখ্যা বাদ দেওয়া
     let phone = studentData.phone.replace(/[^0-9]/g, '');
     
-    // নাম্বার ফরম্যাট ঠিক করা
+    // ১০ ডিজিটের নাম্বারে +91 যোগ করা
     if (phone.length === 10) {
-        // ভারতীয় নাম্বার (10 ডিজিট) - +91 যোগ করা
         phone = '91' + phone;
-    } else if (phone.length === 11 && phone.startsWith('0')) {
-        // 0 দিয়ে শুরু নাম্বার - 0 বাদ দিয়ে +91 যোগ
-        phone = '91' + phone.substring(1);
-    } else if (phone.length === 12 && phone.startsWith('91')) {
-        // ইতিমধ্যে 91 দিয়ে শুরু
-        phone = phone;
-    } else if (phone.length === 13 && phone.startsWith('91')) {
-        // ইতিমধ্যে 91 দিয়ে শুরু
-        phone = phone;
-    } else if (phone.length === 11 && phone.startsWith('1')) {
-        // USA নাম্বার
-        phone = phone;
-    } else if (phone.length === 12 && phone.startsWith('62')) {
-        // ইন্দোনেশিয়া নাম্বার
-        phone = phone;
-    } else if (phone.length === 12 && phone.startsWith('880')) {
-        // বাংলাদেশ নাম্বার
-        phone = phone;
-    } else if (phone.length === 11 && phone.startsWith('880')) {
-        // বাংলাদেশ নাম্বার
-        phone = phone;
-    } else {
-        // অন্য যেকোনো নাম্বার - যেমন আছে তেমনই
-        phone = phone;
     }
     
     const message = `The Epsilon - Student Registration Successful\n\n👤 Name: ${studentData.name}\n📱 Phone: ${studentData.phone}\n🔒 Password: ${studentData.password}\n\nThank you for registering!`;
