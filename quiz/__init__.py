@@ -428,6 +428,8 @@ def get_subjects(batch_id):
 @login_required
 def get_chapters(batch_id, subject_id):
     student_id = session.get('user_id')
+    user_type = session.get('user_type')
+    is_teacher = user_type in ('teacher', 'admin')
     
     data = load_all_quiz_data()
     subject = data.get('batches', {}).get(batch_id, {}).get('subjects', {}).get(subject_id)
@@ -455,12 +457,14 @@ def get_chapters(batch_id, subject_id):
         progress = progress_dict.get(c_id, {})
         is_completed = progress.get('is_completed', False)
         
+        # ===== Teacher হলে সবসময় unlock থাকবে =====
         is_locked = False
-        if idx > 0 and not is_completed:
-            prev_chapter_id = chapters[idx - 1][0]
-            prev_progress = progress_dict.get(prev_chapter_id, {})
-            if not prev_progress.get('is_completed', False):
-                is_locked = True
+        if not is_teacher:
+            if idx > 0 and not is_completed:
+                prev_chapter_id = chapters[idx - 1][0]
+                prev_progress = progress_dict.get(prev_chapter_id, {})
+                if not prev_progress.get('is_completed', False):
+                    is_locked = True
         
         result.append({
             'id': c_id,
@@ -478,8 +482,36 @@ def get_chapters(batch_id, subject_id):
 @quiz_bp.route('/api/batches/<batch_id>/subjects/<subject_id>/chapters/<chapter_id>/questions', methods=['GET'])
 @login_required
 def get_questions(batch_id, subject_id, chapter_id):
+    user_type = session.get('user_type')
     student_id = session.get('user_id')
+    is_teacher = user_type in ('teacher', 'admin')
     
+    # ===== Teacher হলে সরাসরি access দিবে =====
+    if is_teacher:
+        print(f"👨‍🏫 Teacher access: {session.get('username')}")
+        data = load_all_quiz_data()
+        chapter = (data.get('batches', {})
+                   .get(batch_id, {})
+                   .get('subjects', {})
+                   .get(subject_id, {})
+                   .get('chapters', {})
+                   .get(chapter_id))
+        
+        if not chapter:
+            return jsonify({'error': 'Chapter not found'}), 404
+        
+        raw_questions = chapter.get('questions', [])
+        formatted_questions = []
+        
+        for idx, q in enumerate(raw_questions):
+            q_copy = dict(q)
+            q_copy['id'] = q_copy.get('id', idx + 1)
+            q_copy['chapter_name'] = chapter.get('name', '')
+            formatted_questions.append(q_copy)
+        
+        return jsonify(formatted_questions)
+    
+    # ===== Student হলে lock check করবে =====
     data = load_all_quiz_data()
     chapter = (data.get('batches', {})
                .get(batch_id, {})
