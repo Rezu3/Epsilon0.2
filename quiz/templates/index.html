@@ -17,19 +17,38 @@
     <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
 
-    <!-- MathJax -->
+    <!-- ============================================= -->
+    <!-- MATHJAX CONFIGURATION - সব Math Equation জন্য -->
+    <!-- ============================================= -->
     <script>
-        window.MathJax = {
+        MathJax = {
             tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+                inlineMath: [
+                    ['$', '$'],
+                    ['\\(', '\\)']
+                ],
+                displayMath: [
+                    ['$$', '$$'],
+                    ['\\[', '\\]']
+                ],
+                processEscapes: true,
+                processEnvironments: true,
+                packages: ['base', 'ams', 'noerrors', 'noundefined', 'autoload', 'require', 'physics', 'cancel']
+            },
+            options: {
+                enableMenu: false,
+                ignoreHtmlClass: 'no-mathjax',
+                processHtmlClass: 'mathjax'
             },
             svg: {
                 fontCache: 'global'
+            },
+            loader: {
+                load: ['[tex]/ams', '[tex]/physics', '[tex]/cancel']
             }
         };
     </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
 </head>
 <body>
 
