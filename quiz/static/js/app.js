@@ -394,7 +394,7 @@ function showQuestion(index) {
     const imgContainer = document.getElementById('question-image-container');
     const imgElem = document.getElementById('question-image');
     if (q.image && imgElem) {
-        imgElem.src = `/static/images/${q.image}`;
+        imgElem.src = `quiz/static/images/${q.image}`;
         if (imgContainer) imgContainer.style.display = 'block';
     } else if (imgContainer) {
         imgContainer.style.display = 'none';
