@@ -1,5 +1,6 @@
 /* ==========================================
    COMPLETE STYLE.CSS - QUIZ SYSTEM
+   MOBILE FRIENDLY WITH PROPER BUTTON POSITION
    ========================================== */
 
 /* ==========================================
@@ -27,15 +28,15 @@ body {
    HEADER - TOP BAR
    ========================================== */
 .app-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #667eea 100%);
+    padding: 6px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 100;
-    min-height: 60px;
+    min-height: 44px;
     box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
 }
 
@@ -139,7 +140,7 @@ body {
     max-width: 1000px;
     width: 100%;
     margin: 0 auto;
-    padding: 20px 20px 20px 20px;
+    padding: 16px 20px 16px 20px;
     flex: 1;
 }
 
@@ -152,7 +153,7 @@ body {
     gap: 8px;
     font-size: 0.85rem;
     color: #718096;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     background: #ffffff;
     padding: 12px 20px;
     border-radius: 14px;
@@ -206,9 +207,9 @@ body {
 }
 
 .view-section h2 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 700;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     color: #2d3748;
     display: flex;
     align-items: center;
@@ -217,7 +218,7 @@ body {
 
 .view-section h2 i {
     color: #4facfe;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
 }
 
 /* ==========================================
@@ -308,7 +309,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     background: #ffffff;
     padding: 12px 20px;
     border-radius: 16px;
@@ -352,7 +353,7 @@ body {
 }
 
 .question-text {
-    font-size: 1.1rem;
+    font-size: 1.15rem; /* Slightly larger */
     font-weight: 600;
     color: #2d3748;
     line-height: 1.7;
@@ -381,7 +382,7 @@ body {
 }
 
 /* ==========================================
-   OPTIONS & TELEGRAM POLL STYLE
+   OPTIONS
    ========================================== */
 .options-grid {
     display: grid;
@@ -395,7 +396,7 @@ body {
     padding: 14px 18px;
     border-radius: 14px;
     text-align: left;
-    font-size: 0.95rem;
+    font-size: 1rem; /* Slightly larger */
     font-weight: 500;
     color: #2d3748;
     cursor: pointer;
@@ -534,7 +535,7 @@ body {
 }
 
 /* ==========================================
-   QUIZ FOOTER - BUTTONS
+   QUIZ FOOTER - BUTTONS (NEXT & PREVIOUS)
    ========================================== */
 .quiz-footer {
     display: flex;
@@ -619,7 +620,7 @@ body {
 }
 
 /* ==========================================
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN - MOBILE FIRST
    ========================================== */
 @media (max-width: 768px) {
     .app-header {
@@ -654,24 +655,24 @@ body {
     }
     
     .main-container {
-        padding: 14px 12px 14px 12px;
+        padding: 14px 16px 14px 16px;
     }
     
     .cards-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 12px;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 14px;
     }
     
     .option-btn {
-        padding: 12px 14px;
-        font-size: 0.9rem;
+        padding: 13px 16px;
+        font-size: 0.95rem;
         min-height: 46px;
     }
     
     .nav-btn {
-        padding: 12px 16px;
-        font-size: 0.9rem;
-        min-height: 44px;
+        padding: 12px 18px;
+        font-size: 0.95rem;
+        min-height: 46px;
     }
 }
 
@@ -686,19 +687,38 @@ body {
     
     .cards-grid {
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        gap: 12px;
+    }
+    
+    .card {
+        padding: 16px 12px;
+        font-size: 0.9rem;
+        min-height: 70px;
+    }
+    
+    .card i {
+        font-size: 22px;
+        margin-bottom: 4px;
     }
     
     .option-btn {
-        padding: 10px 12px;
-        font-size: 0.85rem;
-        min-height: 42px;
+        padding: 12px 14px;
+        font-size: 0.92rem;
+        min-height: 44px;
+        gap: 10px;
+    }
+    
+    .option-btn .option-label {
+        width: 26px;
+        height: 26px;
+        font-size: 0.75rem;
     }
     
     .quiz-header {
         padding: 10px 16px;
-        flex-direction: column;
-        text-align: center;
+        flex-direction: row; /* Keep horizontal on mobile */
+        flex-wrap: wrap;
+        gap: 8px;
     }
     
     .quiz-header h3 {
@@ -706,45 +726,187 @@ body {
     }
     
     .quiz-footer {
-        flex-direction: column;
-        gap: 10px;
+        flex-direction: row; /* Keep side by side on mobile */
+        gap: 12px;
+        margin-top: 16px;
     }
     
     .nav-btn {
-        max-width: 100%;
-        width: 100%;
+        max-width: 48%;
+        width: auto;
         justify-content: center;
-        padding: 12px 16px;
-        font-size: 0.9rem;
+        padding: 12px 14px;
+        font-size: 0.92rem;
         min-height: 44px;
+        flex: 1;
     }
     
     .nav-btn.secondary {
         justify-content: center;
-        padding-left: 16px;
+        padding-left: 14px;
     }
     
     .nav-btn.primary {
         justify-content: center;
-        padding-right: 16px;
+        padding-right: 14px;
+    }
+    
+    .quiz-card {
+        padding: 16px 18px;
+        border-radius: 16px;
+        margin-bottom: 14px;
+    }
+    
+    .question-text {
+        font-size: 1.05rem; /* Larger on mobile */
+        padding: 12px 16px;
+        line-height: 1.6;
+        margin-bottom: 16px;
+    }
+    
+    .image-container img {
+        max-height: 200px;
+        padding: 8px;
+    }
+    
+    .view-section h2 {
+        font-size: 1.1rem;
+        margin-bottom: 14px;
+    }
+    
+    .view-section h2 i {
+        font-size: 1.2rem;
+    }
+    
+    .breadcrumb {
+        padding: 10px 16px;
+        min-height: 42px;
+        font-size: 0.8rem;
+        margin-bottom: 14px;
+    }
+    
+    .breadcrumb span[id^="bc-"] {
+        font-size: 0.8rem;
+    }
+    
+    .quiz-progress {
+        font-size: 0.78rem;
+        padding: 3px 14px;
     }
 }
 
 @media (max-width: 400px) {
     .cards-grid {
         grid-template-columns: 1fr;
+        gap: 10px;
     }
     
     .app-header {
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 6px;
         justify-content: center;
-        padding: 8px 12px;
+        padding: 6px 10px;
+        min-height: 48px;
     }
     
     .header-right {
         width: 100%;
         justify-content: center;
+    }
+    
+    .logo-container h1 {
+        font-size: 1rem;
+    }
+    
+    .main-container {
+        padding: 10px 10px 10px 10px;
+    }
+    
+    .quiz-footer {
+        flex-direction: row; /* Keep side by side on very small */
+        gap: 8px;
+    }
+    
+    .nav-btn {
+        max-width: 48%;
+        width: auto;
+        justify-content: center;
+        padding: 10px 12px;
+        font-size: 0.85rem;
+        min-height: 40px;
+        flex: 1;
+    }
+    
+    .nav-btn.secondary {
+        justify-content: center;
+        padding-left: 12px;
+    }
+    
+    .nav-btn.primary {
+        justify-content: center;
+        padding-right: 12px;
+    }
+    
+    .card {
+        padding: 14px 10px;
+        font-size: 0.85rem;
+        min-height: 60px;
+    }
+    
+    .card i {
+        font-size: 20px;
+    }
+    
+    .option-btn {
+        padding: 10px 12px;
+        font-size: 0.88rem;
+        min-height: 40px;
+        gap: 8px;
+        border-radius: 12px;
+    }
+    
+    .option-btn .option-label {
+        width: 24px;
+        height: 24px;
+        font-size: 0.7rem;
+    }
+    
+    .question-text {
+        font-size: 1rem;
+        padding: 10px 14px;
+        line-height: 1.5;
+        border-left-width: 4px;
+        border-radius: 12px;
+    }
+    
+    .quiz-card {
+        padding: 14px 14px;
+        border-radius: 14px;
+        margin-bottom: 12px;
+    }
+    
+    .quiz-header {
+        padding: 8px 14px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    
+    .quiz-header h3 {
+        font-size: 0.9rem;
+    }
+    
+    .quiz-progress {
+        font-size: 0.7rem;
+        padding: 2px 12px;
+    }
+    
+    .option-btn.correct::after,
+    .option-btn.wrong::after {
+        width: 18px;
+        height: 18px;
+        font-size: 9px;
+        right: 10px;
     }
 }
 
