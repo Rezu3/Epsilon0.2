@@ -2155,7 +2155,72 @@ def logout():
     session.clear()
     flash('Logged out successfully!', 'success')
     return redirect(url_for('login'))
+# =============================================
+# SITEMAP GENERATOR
+# =============================================
 
+@app.route("/sitemap.xml")
+def sitemap():
+    """Generate sitemap.xml dynamically"""
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # All pages/URLs from your app
+    pages = []
+    
+    # 1. Static pages (সবসময় থাকে)
+    static_pages = [
+        {'loc': '/', 'priority': '1.0'},           # Login page
+        {'loc': '/student_register', 'priority': '0.9'},
+        {'loc': '/teacher_register', 'priority': '0.9'},
+    ]
+    pages.extend(static_pages)
+    
+    # 2. Dynamic pages (ডেটাবেজ থেকে)
+    
+    # All students
+    cursor.execute('SELECT id, name FROM students ORDER BY id')
+    students = cursor.fetchall()
+    for student in students:
+        pages.append({
+            'loc': f'/student_dashboard_as_teacher/{student["id"]}',
+            'priority': '0.7'
+        })
+    
+    # All exams
+    cursor.execute('SELECT id, exam_name FROM exams ORDER BY id')
+    exams = cursor.fetchall()
+    for exam in exams:
+        pages.append({
+            'loc': f'/online_test/{exam["id"]}',
+            'priority': '0.8'
+        })
+    
+    # All study materials
+    cursor.execute('SELECT id, topic FROM study_materials ORDER BY id')
+    materials = cursor.fetchall()
+    for material in materials:
+        pages.append({
+            'loc': f'/download_material/{material["id"]}',
+            'priority': '0.6'
+        })
+    
+    conn.close()
+    
+    # Generate XML
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    
+    for page in pages:
+        xml += '  <url>\n'
+        xml += f'    <loc>https://epsilon0-2.onrender.com{page["loc"]}</loc>\n'
+        xml += f'    <priority>{page["priority"]}</priority>\n'
+        xml += '  </url>\n'
+    
+    xml += '</urlset>'
+    
+    return app.response_class(xml, mimetype='application/xml')
 
 
 # =============================================
