@@ -1,412 +1,304 @@
 const questions = [
-    {
-        id: 1,
-        question: `নিম্নলিখিত কোনটি সত্য?`,
-        image: null,
-        options: [
-            `$2 + 5i > 1 + 4i$`,
-            `$5 + 3i > 6 + 7i$`,
-            `$5 + 7i > 5 + 3i$`,
-            `এদের কোনটিই নয়`
-        ],
-        correct: 3
-    },
-    {
-        id: 2,
-        question: `$(x, y)$ বাস্তব এবং $x + iy = -i(-2 + 3i)$ হলে, $(x, y)$ হবে –`,
-        image: null,
-        options: [
-            `$(2, -3)$`,
-            `$(3, 2)$`,
-            `$(-2, 3)$`,
-            `$(-3, -2)$`
-        ],
-        correct: 1
-    },
-     {
-        id: 3,
-        question: `যদি $z = x - iy$ এবং $z^{\\frac{1}{3}} = p + iq$ হয়, তবে $\\frac{\\frac{x}{p} + \\frac{y}{q}}{p^2+q^2}$-এর মান হবে –`,
-        image: null,
-        options: [
-            `$2$`,
-            `$-1$`,
-            `$1$`,
-            `$-2$`
-        ],
-        correct: 3
-    },
-    {
-        id: 4,
-        question: `যদি $i^2 = -1$ হয় তবে $\\sum_{n=0}^{225} i^n = $`,
-        image: null,
-        options: [
-            `$0$`,
-            `$1 + i$`,
-            `$-1$`,
-            `$i$`
-        ],
-        correct: 1
-    },
-    {
-        id: 5,
-        question: `যদি $\\frac{1 - i\\alpha}{1 + i\\alpha} = A + iB$ হয়, তবে $A^2 + B^2$-এর মান –`,
-        image: null,
-        options: [
-            `$1$`,
-            `$\\alpha$`,
-            `$\\alpha^2$`,
-            `$-1$`
-        ],
-        correct: 0
-    },
-    {
-        id: 6,
-        question: `যদি $\\frac{z - 2}{z + 2}$ $(z \\neq -2)$ বিশুদ্ধ অবাস্তব সংখ্যা হয়, তবে $|z|$-এর মান –`,
-        image: null,
-        options: [
-            `$4$`,
-            `$3$`,
-            `$2$`,
-            `$1$`
-        ],
-        correct: 2
-    },
-    {
-        id: 7,
-        question: `$k$-এর যে ক্ষুদ্রতম মানের জন্য $x^2 + 5x + k = 0$ সমীকরণটির কাল্পনিক বীজ থাকবে সেটি হলো –`,
-        image: null,
-        options: [
-            `$4$`,
-            `$5$`,
-            `$6$`,
-            `$7$`
-        ],
-        correct: 3
-    },
-    {
-        id: 8,
-        question: `$y^2 - (1 - 2i)y + 1 + 5i = 0$-এর সমাধান হবে –`,
-        image: null,
-        options: [
-            `$(-1 + i), (2 - 3i)$`,
-            `$(-1 + i), (2 + 3i)$`,
-            `$(-1 + i), (-2 + 3i)$`,
-            `$(-1 - i), (-2 - 3i)$`
-        ],
-        correct: 0
-    },
-    {
-        id: 9,
-        question: `$ix^2 - x + 12i = 0$-এর সমাধান হবে –`,
-        image: null,
-        options: [
-            `$4i, -3i$`,
-            `$-4i, 3i$`,
-            `$4i, 3i$`,
-            `$-4i, -3i$`
-        ],
-        correct: 0
-    },
-    {
-        id: 10,
-        question: `$x$ একটি অখণ্ড সংখ্যা হলে $-x^2 + 7x - 6 > 0$ অসমীকরণের সমাধান সেটটি হয় –`,
-        image: null,
-        options: [
-            `\\{2, 4\\}`,
-            `\\{3, 5\\}`,
-            `\\{2, 3, 4, 5\\}`,
-            `\\{4, 5\\}`
-        ],
-        correct: 2
-    },
-    {
-        id: 11,
-        question: `$\\frac{2x+3}{4} + 2 \\le \\frac{1}{4} + \\frac{4x}{3}$, $x \\in \\mathbb{R}$ অসমীকরণটির সমাধান সেট হবে –`,
-        image: null,
-        options: [
-            `$(3, \\infty)$`,
-            `$[3, \\infty)$`,
-            `$[-3, \\infty)$`,
-            `কোনোটিই নয়`
-        ],
-        correct: 1
-    },
-    {
-        id: 12,
-        question: `$\\frac{x+2}{x^2+1} > \\frac{1}{2}$-এর পূর্ণসংখ্যাত সমাধান সংখ্যা হবে –`,
-        image: null,
-        options: [
-            `$3$`,
-            `$2$`,
-            `$4$`,
-            `$0$`
-        ],
-        correct: 0
-    },
-    {
-        id: 13,
-        question: `$5(7x + 5) < 163 + 6(5x + 2)$ এবং $9x - 5 > 2(x + 6)$, $x \\in \\mathbb{R}$ অসমীকরণ দুটির সমাধান সেট –`,
-        image: null,
-        options: [
-            `$(-\\frac{17}{7}, 30)$`,
-            `$(\\frac{17}{7}, -30)$`,
-            `$(\\frac{17}{7}, 30)$`,
-            `$[\\frac{17}{7}, 30]$`
-        ],
-        correct: 2
-    },
-    {
-        id: 14,
-        question: `$\\frac{3}{|x+1|} > 2$ অসমীকরণটির সমাধান সেট –`,
-        image: null,
-        options: [
-            `$[-1, \\frac{7}{3}]$`,
-            `$(-\\frac{5}{2}, -1] \\cup (-1, \\frac{1}{2})$`,
-            `$(-\\frac{5}{2}, -1) \\cup (-1, \\frac{1}{2})$`,
-            `$[-\\frac{3}{2}, \\frac{1}{2}]$`
-        ],
-        correct: 2
-    },
-    {
-        id: 15,
-        question: `$\\frac{|x-1|}{x+2} < 1$ ($x \\neq -2$) অসমীকরণটির সমাধান সেট -`,
-        image: null,
-        options: [
-            `$(-\\infty, -2) \\cup (-\\frac{1}{2}, \\infty)$`,
-            `$(-\\infty, -2] \\cup (-\\frac{1}{2}, \\infty)$`,
-            `$(-\\infty, -2] \\cup [-\\frac{1}{2}, \\infty)$`,
-            `কোনোটিই নয়`
-        ],
-        correct: 0
-    },
-    {
-        id: 16,
-        question: `$|x-2| \\ge |x-4|$ অসমীকরণটির সমাধান সেট –`,
-        image: null,
-        options: [
-            `$[2, \\infty)$`,
-            `$(2, \\infty)$`,
-            `$[3, \\infty)$`,
-            `$(3, \\infty)$`
-        ],
-        correct: 2
-    },
-    {
-        id: 17,
-        question: `$\\frac{|x|+1}{|x|-1} < 0$ অসমীকরণটির সমাধান সেট হবে –`,
-        image: null,
-        options: [
-            `$[-1, 1)$`,
-            `$(-1, 1)$`,
-            `$[-1, 1]$`,
-            `$(-1, 1]$`
-        ],
-        correct: 1
-    },
-    {
-        id: 18,
-        question: `$\\frac{1}{2-|x|} \\ge 1$ ($x \\neq \\pm 2$) অসমীকরণটির সমাধান সেট -`,
-        image: null,
-        options: [
-            `$[-2, -1) \\cup (1, 2]$`,
-            `$(-2, -1] \\cup [1, 2)$`,
-            `$(-2, -1) \\cup [1, 2)$`,
-            `কোনোটিই নয়`
-        ],
-        correct: 1
-    },
-    {
-        id: 19,
-        question: `$\\frac{x}{x-4} > \\frac{1}{3}$ ($x \\neq 4$), $x \\in \\mathbb{R}$ অসমীকরণটির সমাধান সেট হবে –`,
-        image: null,
-        options: [
-            `$(-\\infty, -4) \\cup (2, \\infty)$`,
-            `$(-\\infty, -2] \\cup [4, \\infty)$`,
-            `$(-\\infty, -2) \\cup (4, \\infty)$`,
-            `কোনোটিই নয়`
-        ],
-        correct: 2
-    },
-    {
-        id: 20,
-        question: `$\\frac{x+3}{x-1} \\le 1$ ($x \\neq 1$), $x \\in \\mathbb{R}$ অসমীকরণটির সমাধান সেট হবে –`,
-        image: null,
-        options: [
-            `$[-7, 1)$`,
-            `$[-7, 1]$`,
-            `$(-7, -1)$`,
-            `$[-1, 7)$`
-        ],
-        correct: 0
-    },
-    {
-        id: 21,
-        question: `একটি ত্রিভুজের বাহু তিনটির দৈর্ঘ্য $x$ সেমি, $(2x+1)$ সেমি এবং $(2x-2)$ সেমি। যদি ত্রিভুজটির পরিসীমা কম করে $54$ সেমি হয়, তবে $x$-এর ক্ষুদ্রতম মান কত সেমি?`,
-        image: null,
-        options: [
-            `$10$`,
-            `$13$`,
-            `$11$`,
-            `$12$`
-        ],
-        correct: 2
-    },
-    {
-        id: 22,
-        question: `$x = 2 + 3i$ এবং $y = 2 - 3i$ হলে $\\frac{x^2 + xy + y^2}{x^2 - xy + y^2} = ?$`,
-        image: null,
-        options: [
-            `$\\frac{4}{23}$`,
-            `$-\\frac{4}{7}$`,
-            `$\\frac{3}{23}$`,
-            `$-\\frac{3}{23}$`
-        ],
-        correct: 3
-    },
-    {
-        id: 23,
-        question: `$z_1 = 1 + i\\sqrt{3}$ এবং $z_2 = \\sqrt{3} - i$ হলে $\\arg\\left(\\frac{z_1}{z_2}\\right) \\equiv$`,
-        image: null,
-        options: [
-            `$\\arg(z_1) + \\arg(z_2)$`,
-            `$\\arg(z_1) - \\arg(z_2)$`,
-            `$\\arg(z_1) + \\arg(z_2) + 2\\pi$`,
-            `$\\arg(z_1) + \\arg(z_2) - 2\\pi$`
-        ],
-        correct: 1
-    },
-    {
-        id: 24,
-        question: `$x\\sqrt{2} = 1 + \\sqrt{-1}$ হলে $x^6 + x^4 + x^2 + 2 = $`,
-        image: null,
-        options: [
-            `$0$`,
-            `$1$`,
-            `$i$`,
-            `$-1$`
-        ],
-        correct: 1
-    },
-    {
-        id: 25,
-        question: `$(1 + i)^{-2} - (1 - i)^{-2} = ?$`,
-        image: null,
-        options: [
-            `$-2$`,
-            `$i$`,
-            `$-4(1+i)$`,
-            `$0$`
-        ],
-        correct: 1
-    },
-    {
-        id: 26,
-        question: `$\\frac{2}{1 + \\cos\\theta + i\\sin\\theta}$-এর মডিউলাস হবে –`,
-        image: null,
-        options: [
-            `$\\cos\\frac{\\theta}{2}$`,
-            `$\\sec\\frac{\\theta}{2}$`,
-            `$\\sin\\frac{\\theta}{2}$`,
-            `$\\csc\\frac{\\theta}{2}$`
-        ],
-        correct: 1
-    },
-    {
-        id: 27,
-        question: `$\\omega$, $1$-এর কাল্পনিক ঘনমূল হলে $(3 + \\omega + 3\\omega^2)^4$-এর মান –`,
-        image: null,
-        options: [
-            `$16$`,
-            `$160$`,
-            `$16\\omega^2$`,
-            `কোনোটিই নয়`
-        ],
-        correct: 2
-    },
-    {
-        id: 28,
-        question: `যদি $\\arg(z-a) = \\frac{\\pi}{4}$ হয় যেখানে $a$ একটি বাস্তব সংখ্যা, তাহলে $z$ অবস্থিত হবে –`,
-        image: null,
-        options: [
-            `একটি সরলরেখার ওপর`,
-            `অধিবৃত্তের ওপর`,
-            `একটি বৃত্তের ওপর`,
-            `এদের কোনোটিই নয়`
-        ],
-        correct: 0
-    },
-    {
-        id: 29,
-        question: `জটিল তলে $z$, $iz$ ও $(z + iz)$ জটিল সংখ্যা তিনটি দ্বারা উৎপন্ন ত্রিভুজের ক্ষেত্রফল =`,
-        image: null,
-        options: [
-            `$\\frac{1}{2}|z+iz|$`,
-            `$\\frac{1}{2}|z+iz|^2$`,
-            `$\\frac{1}{2}|z|$`,
-            `$\\frac{1}{2}|z|^2$`
-        ],
-        correct: 3
-    },
-    {
-        id: 30,
-        question: `$|z| + z = 2 + i$ ($z$ একটি জটিল সংখ্যা) হলে, $z = $`,
-        image: null,
-        options: [
-            `$i$`,
-            `$\\frac{3}{4} + i$`,
-            `$4 + i$`,
-            `$\\frac{1}{3} + i$`
-        ],
-        correct: 1
-    },
-    {
-        id: 31,
-        question: `$x, y$ বাস্তব এবং $(x + 3i)$ ও $(-2 + iy)$ জটিল সংখ্যা দুটি পরস্পর অনুবন্ধী হলে $x$ ও $y$-এর মান –`,
-        image: null,
-        options: [
-            `$2, 3$`,
-            `$-2, 3$`,
-            `$2, -3$`,
-            `$-2, -3$`
-        ],
-        correct: 1
-    },
-    {
-        id: 32,
-        question: `যদি $\\arg(z-1) = \\arg(z+3i)$ সমীকরণকে $z = x + iy$ সিদ্ধ করে তবে কোনটি সত্য?`,
-        image: null,
-        options: [
-            `$2(x-1) = y+3$`,
-            `$3(y-1) = x$`,
-            `$3(x-1) = y$`,
-            `$x = 5y$`
-        ],
-        correct: 2
-    },
-    {
-        id: 33,
-        question: `$\\left(\\frac{1-i}{1+i}\\right)^n = 1$ হলে $n$-এর ক্ষুদ্রতম পূর্ণমান –`,
-        image: null,
-        options: [
-            `$1$`,
-            `$2$`,
-            `$3$`,
-            `$4$`
-        ],
-        correct: 3
-    },
-    {
-        id: 34,
-        question: `$z_1, z_2, z_3$ জটিল সংখ্যাগুলি এমন যে $|z_1| = |z_2| = |z_3| = \\left|\\frac{1}{z_1} + \\frac{1}{z_2} + \\frac{1}{z_3}\\right| = 1$, তাহলে $|z_1 + z_2 + z_3| = ?$`,
-        image: null,
-        options: [
-            `$0$`,
-            `$1$`,
-            `$2$`,
-            `$3$`
-        ],
-        correct: 1
-    }
+  {
+    id: 1,
+    question: `$\\lim_{n \\to \\infty} \\frac{1^2 + 2^2 + 3^2 + \\dots + n^2}{n^2}$-এর মান হল -`,
+    image: null,
+    options: [
+      `$\\frac{3}{2}$`,
+      `$\\frac{2}{3}$`,
+      `$\\frac{1}{3}$`,
+      `$\\frac{1}{2}$`
+    ],
+    answer: 2
+  },
+  {
+    id: 2,
+    question: `$\\lim_{x \\to 0} \\frac{e^x + e^{-x} - 2}{x^2}$-এর মান -`,
+    image: null,
+    options: [
+      `$0$`,
+      `$1$`,
+      `$2$`,
+      `অস্তিত্ব নেই`
+    ],
+    answer: 1
+  },
+  {
+    id: 3,
+    question: `$\\lim_{x \\to 2^-} \\{x + (x - [x])^2\\} =$ কত?`,
+    image: null,
+    options: [
+      `$0$`,
+      `$1$`,
+      `$2$`,
+      `$3$`
+    ],
+    answer: 3
+  },
+  {
+    id: 4,
+    question: `$\\lim_{x \\to 0} (1 + 4x)^{\\frac{x+2}{x}}$-এর মান হল -`,
+    image: null,
+    options: [
+      `$e^6$`,
+      `$e^7$`,
+      `$e^8$`,
+      `$e^9$`
+    ],
+    answer: 2
+  },
+  {
+    id: 5,
+    question: `$\\lim_{u \\to -3} \\left[\\frac{1}{u+3} + \\frac{6}{u^2-9}\\right]$-এর মান হবে -`,
+    image: null,
+    options: [
+      `$\\frac{1}{6}$`,
+      `$-\\frac{1}{6}$`,
+      `$\\frac{1}{3}$`,
+      `$-\\frac{1}{3}$`
+    ],
+    answer: 1
+  },
+  {
+    id: 6,
+    question: `$\\lim_{x \\to 0} \\frac{\\sin x^\\circ}{x}$-এর মান -`,
+    image: null,
+    options: [
+      `$\\frac{180}{\\pi}$`,
+      `$\\frac{\\pi}{180}$`,
+      `$1$`,
+      `অস্তিত্ব নেই`
+    ],
+    answer: 1
+  },
+  {
+    id: 7,
+    question: `$\\lim_{x \\to 0} \\frac{\\sqrt{\\cos x} - \\sqrt[3]{\\cos x}}{\\sin^2 x}$-এর মান -`,
+    image: null,
+    options: [
+      `$-\\frac{1}{12}$`,
+      `$\\frac{1}{12}$`,
+      `$\\frac{5}{12}$`,
+      `$-\\frac{5}{12}$`
+    ],
+    answer: 0
+  },
+  {
+    id: 8,
+    question: `$\\lim_{x \\to 2} \\frac{ax^2 - b}{x - 2} = 4$ হলে, $a$ ও $b$-এর মান যথাক্রমে -`,
+    image: null,
+    options: [
+      `$1, 2$`,
+      `$2, 4$`,
+      `$4, 1$`,
+      `$1, 4$`
+    ],
+    answer: 3
+  },
+  {
+    id: 9,
+    question: `$\\lim_{x \\to \\frac{\\pi}{4}} \\frac{1 - \\tan x}{1 - \\sqrt{2}\\sin x}$-এর মান -`,
+    image: null,
+    options: [
+      `$\\sqrt{2}$`,
+      `$\\frac{1}{\\sqrt{2}}$`,
+      `$-\\sqrt{2}$`,
+      `$0$`
+    ],
+    answer: 0
+  },
+  {
+    id: 10,
+    question: `$\\lim_{x \\to 0} \\frac{2^x - 1}{\\sqrt{1+x} - 1}$-এর মান -`,
+    image: null,
+    options: [
+      `$\\log 3$`,
+      `$\\log 2$`,
+      `$2\\log 2$`,
+      `$2\\log 3$`
+    ],
+    answer: 2
+  },
+  {
+    id: 11,
+    question: `যদি $f(1) = 1$, $f'(1) = 2$ হয়, তবে $\\lim_{x \\to 1} \\frac{\\sqrt{f(x)} - 1}{\\sqrt{x} - 1}$-এর মান -`,
+    image: null,
+    options: [
+      `$1$`,
+      `$0$`,
+      `$-1$`,
+      `$2$`
+    ],
+    answer: 3
+  },
+  {
+    id: 12,
+    question: `একটি অপেক্ষক $f(x)$ নিম্নলিখিতরূপে সংজ্ঞাত :- \n$$f(x) = \\begin{cases} px^2 + 1, & \\text{যখন } x > 1 \\\\ x + p, & \\text{যখন } x \\le 1 \\end{cases}$$\n যদি $f(x)$ অপেক্ষকটি $x = 1$ বিন্দুতে অন্তরকলনযোগ্য হয়, তবে $p$-এর মান -`,
+    image: null,
+    options: [
+      `$0$`,
+      `$2$`,
+      `$1$`,
+      `$\\frac{1}{2}$`
+    ],
+    answer: 3
+  },
+  {
+    id: 13,
+    question: `$y = \\cos^2\\frac{x}{2}$ হলে নিচের কোনটি $\\frac{dy}{dx}$-এর মান -`,
+    image: null,
+    options: [
+      `$\\cos x$`,
+      `$\\frac{1}{2}\\cos x$`,
+      `$-\\frac{1}{2}\\sin x$`,
+      `$-\\sin x$`
+    ],
+    answer: 2
+  },
+  {
+    id: 14,
+    question: `$y = 4x^3 - 21x^2 - 24x + 7$-এর স্থির বিন্দুসমূহ হল -`,
+    image: null,
+    options: [
+      `$x = 4, -\\frac{1}{2}$`,
+      `$x = 4, \\frac{1}{2}$`,
+      `$x = 4, 2$`,
+      `$x = \\frac{1}{4}, 2$`
+    ],
+    answer: 0
+  },
+  {
+    id: 15,
+    question: `$2f(x) + 3f(-x) = x^2 - x + 1$ হলে $f'(1)$-এর মান -`,
+    image: null,
+    options: [
+      `$\\frac{3}{5}$`,
+      `$\\frac{4}{5}$`,
+      `$\\frac{7}{5}$`,
+      `$\\frac{2}{5}$`
+    ],
+    answer: 0
+  },
+  {
+    id: 16,
+    question: `যদি $f(x) = \\lambda x^2 + \\mu x + 12$, $f'(4) = 15$ এবং $f'(2) = 11$ হয় তবে $\\lambda + \\mu$-এর মান হবে -`,
+    image: null,
+    options: [
+      `$1$`,
+      `$-1$`,
+      `$8$`,
+      `$-2$`
+    ],
+    answer: 2
+  },
+  {
+    id: 17,
+    question: `$2y^2 = ax^2 + b$ বক্রের $(1, -1)$ বিন্দুতে স্পর্শকের প্রবণতা $-1$, তবে $a, b$-এর মান হবে -`,
+    image: null,
+    options: [
+      `$a = 2, b = 1$`,
+      `$a = 2, b = 0$`,
+      `$a = 0, b = 2$`,
+      `$a = 1, b = 1$`
+    ],
+    answer: 1
+  },
+  {
+    id: 18,
+    question: `একটি সমবাহু ত্রিভুজের প্রতিটি বাহু $8\\text{ সেমি}/\\text{ঘণ্টা}$ হারে বৃদ্ধি পাচ্ছে। যখন বাহুর দৈর্ঘ্য $2\\text{ সেমি}$, তখন এর ক্ষেত্রফলের বৃদ্ধির হার হবে -`,
+    image: null,
+    options: [
+      `$8\\sqrt{3}\\text{ সেমি}^2/\\text{ঘণ্টা}$`,
+      `$4\\sqrt{3}\\text{ সেমি}^2/\\text{ঘণ্টা}$`,
+      `$16\\sqrt{3}\\text{ সেমি}^2/\\text{ঘণ্টা}$`,
+      `এদের কোনটিই নয়`
+    ],
+    answer: 0
+  },
+  {
+    id: 19,
+    question: `$x^2 + 2y = 10$ অধিবৃত্তের ওপর সেই বিন্দুর স্থানাঙ্ক কত যেখানে তার স্পর্শক $2x - 4y = 7$ সরলরেখার ওপর লম্ব।`,
+    image: null,
+    options: [
+      `$(1, 2)$`,
+      `$(2, 1)$`,
+      `$(2, 3)$`,
+      `$(3, 2)$`
+    ],
+    answer: 2
+  },
+  {
+    id: 20,
+    question: `$y = \\frac{1}{2}x^2 - \\frac{1}{2}$ বক্রের উপরিস্ত $P$ বিন্দুতে স্পর্শক $x$-অক্ষের সঙ্গে $45^\\circ$ কোণ করে; তাহলে, নীচের কোনটি $P$ বিন্দুর স্থানাঙ্ক?`,
+    image: null,
+    options: [
+      `$\\left(1, \\frac{1}{2}\\right)$`,
+      `$(1, 0)$`,
+      `$\\left(2, \\frac{3}{2}\\right)$`,
+      `$(-1, 0)$`
+    ],
+    answer: 1
+  },
+  {
+    id: 21,
+    question: `$x^3 + y^3 = 3axy$ বক্রের $\\left(\\frac{3a}{2}, \\frac{3a}{2}\\right)$ বিন্দুতে অঙ্কিত স্পর্শক $x$-অক্ষের ধনাত্মক দিকের সঙ্গে উৎপন্ন করে -`,
+    image: null,
+    options: [
+      `সূক্ষ্মকোণ`,
+      `স্থূলকোণ`,
+      `সমকোণ`,
+      `সরলকোণ`
+    ],
+    answer: 1
+  },
+  {
+    id: 22,
+    question: `$4y = x^2 - 8$ বক্রের যে বিন্দুতে স্পর্শকের প্রবণতা তার কোটির সমান তার স্থানাঙ্ক:-`,
+    image: null,
+    options: [
+      `$(4, 2)$ অথবা $(-2, 1)$`,
+      `$(4, 2)$ অথবা $(-2, -1)$`,
+      `$(4, -2)$ অথবা $(-2, -1)$`,
+      `$(4, 2)$ অথবা $(2, 1)$`
+    ],
+    answer: 1
+  },
+  {
+    id: 23,
+    question: `$\\lim_{x \\to 1} \\frac{x + x^2 + x^3 + \\dots + x^n - n}{x - 1}$-এর মান -`,
+    image: null,
+    options: [
+      `$n$`,
+      `$\\frac{n(n+1)}{2}$`,
+      `$\\frac{n(n-1)}{2}$`,
+      `$\\frac{n+1}{2}$`
+    ],
+    answer: 1
+  },
+  {
+    id: 24,
+    question: `$f(x) = \\frac{|x|}{x}$ হলে, $\\lim_{x \\to 0} f(x)$-এর মান -`,
+    image: null,
+    options: [
+      `$0$`,
+      `$1$`,
+      `$-1$`,
+      `অস্তিত্ব নেই`
+    ],
+    answer: 3
+  },
+  {
+    id: 25,
+    question: `$G(x) = -\\sqrt{25-x^2}$ হলে, $\\lim_{x \\to 1} \\frac{G(x) - G(1)}{x - 1}$-এর মান হবে -`,
+    image: null,
+    options: [
+      `$\\frac{1}{2\\sqrt{6}}$`,
+      `$\\frac{1}{\\sqrt{6}}$`,
+      `$\\frac{1}{\\sqrt{3}}$`,
+      `$\\frac{1}{2}$`
+    ],
+    answer: 0
+  }
 ];
 
 
