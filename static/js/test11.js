@@ -1,4 +1,4 @@
-const questions = [
+Const questions = [
   {
     id: 1,
     question: `$\\lim_{n \\to \\infty} \\frac{1^2 + 2^2 + 3^2 + \\dots + n^2}{n^2}$-এর মান হল -`,
@@ -9,7 +9,7 @@ const questions = [
       `$\\frac{1}{3}$`,
       `$\\frac{1}{2}$`
     ],
-    answer: 2
+    correct: 2
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const questions = [
       `$2$`,
       `অস্তিত্ব নেই`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 3,
@@ -33,7 +33,7 @@ const questions = [
       `$2$`,
       `$3$`
     ],
-    answer: 3
+    correct: 3
   },
   {
     id: 4,
@@ -45,7 +45,7 @@ const questions = [
       `$e^8$`,
       `$e^9$`
     ],
-    answer: 2
+    correct: 2
   },
   {
     id: 5,
@@ -57,7 +57,7 @@ const questions = [
       `$\\frac{1}{3}$`,
       `$-\\frac{1}{3}$`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 6,
@@ -69,7 +69,7 @@ const questions = [
       `$1$`,
       `অস্তিত্ব নেই`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 7,
@@ -81,7 +81,7 @@ const questions = [
       `$\\frac{5}{12}$`,
       `$-\\frac{5}{12}$`
     ],
-    answer: 0
+    correct: 0
   },
   {
     id: 8,
@@ -93,7 +93,7 @@ const questions = [
       `$4, 1$`,
       `$1, 4$`
     ],
-    answer: 3
+    correct: 3
   },
   {
     id: 9,
@@ -105,7 +105,7 @@ const questions = [
       `$-\\sqrt{2}$`,
       `$0$`
     ],
-    answer: 0
+    correct: 0
   },
   {
     id: 10,
@@ -117,7 +117,7 @@ const questions = [
       `$2\\log 2$`,
       `$2\\log 3$`
     ],
-    answer: 2
+    correct: 2
   },
   {
     id: 11,
@@ -129,7 +129,7 @@ const questions = [
       `$-1$`,
       `$2$`
     ],
-    answer: 3
+    correct: 3
   },
   {
     id: 12,
@@ -141,7 +141,7 @@ const questions = [
       `$1$`,
       `$\\frac{1}{2}$`
     ],
-    answer: 3
+    correct: 3
   },
   {
     id: 13,
@@ -153,7 +153,7 @@ const questions = [
       `$-\\frac{1}{2}\\sin x$`,
       `$-\\sin x$`
     ],
-    answer: 2
+    correct: 2
   },
   {
     id: 14,
@@ -165,7 +165,7 @@ const questions = [
       `$x = 4, 2$`,
       `$x = \\frac{1}{4}, 2$`
     ],
-    answer: 0
+    correct: 0
   },
   {
     id: 15,
@@ -177,7 +177,7 @@ const questions = [
       `$\\frac{7}{5}$`,
       `$\\frac{2}{5}$`
     ],
-    answer: 0
+    correct: 0
   },
   {
     id: 16,
@@ -189,7 +189,7 @@ const questions = [
       `$8$`,
       `$-2$`
     ],
-    answer: 2
+    correct: 2
   },
   {
     id: 17,
@@ -201,7 +201,7 @@ const questions = [
       `$a = 0, b = 2$`,
       `$a = 1, b = 1$`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 18,
@@ -213,7 +213,7 @@ const questions = [
       `$16\\sqrt{3}\\text{ সেমি}^2/\\text{ঘণ্টা}$`,
       `এদের কোনটিই নয়`
     ],
-    answer: 0
+    correct: 0
   },
   {
     id: 19,
@@ -225,7 +225,7 @@ const questions = [
       `$(2, 3)$`,
       `$(3, 2)$`
     ],
-    answer: 2
+    correct: 2
   },
   {
     id: 20,
@@ -237,7 +237,7 @@ const questions = [
       `$\\left(2, \\frac{3}{2}\\right)$`,
       `$(-1, 0)$`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 21,
@@ -249,7 +249,7 @@ const questions = [
       `সমকোণ`,
       `সরলকোণ`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 22,
@@ -261,7 +261,7 @@ const questions = [
       `$(4, -2)$ অথবা $(-2, -1)$`,
       `$(4, 2)$ অথবা $(2, 1)$`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 23,
@@ -273,7 +273,7 @@ const questions = [
       `$\\frac{n(n-1)}{2}$`,
       `$\\frac{n+1}{2}$`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 24,
@@ -285,7 +285,7 @@ const questions = [
       `$-1$`,
       `অস্তিত্ব নেই`
     ],
-    answer: 3
+    correct: 3
   },
   {
     id: 25,
@@ -297,7 +297,7 @@ const questions = [
       `$\\frac{1}{\\sqrt{3}}$`,
       `$\\frac{1}{2}$`
     ],
-    answer: 0
+    correct: 0
   }
 ];
 
