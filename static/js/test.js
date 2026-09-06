@@ -9,7 +9,7 @@ const questions = [
       `$H_2$ উৎপাদনের জন্য`,
       `জলের ফটোলাইসিসের জন্য`
     ],
-    answer: 3
+    correct: 3
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const questions = [
       `$CO_2$`,
       `$H_2$`
     ],
-    answer: 2
+    correct: 2
   },
   {
     id: 3,
@@ -33,7 +33,7 @@ const questions = [
       `ক্রেবস চক্র`,
       `ডারউইন প্রভাব`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 4,
@@ -45,7 +45,7 @@ const questions = [
       `$2$ অণু`,
       `$12$ অণু`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 5,
@@ -57,7 +57,7 @@ const questions = [
       `$700\\text{ kcal}$`,
       `$500\\text{ kcal}$`
     ],
-    answer: 0
+    correct: 0
   },
   {
     id: 6,
@@ -69,7 +69,7 @@ const questions = [
       `সায়ানোকোবালামিন`,
       `রিবোফ্লাভিন`
     ],
-    answer: 2
+    correct: 2
   },
   {
     id: 7,
@@ -81,7 +81,7 @@ const questions = [
       `অনুচক্রিকা (Platelets)`,
       `প্লাজমা`
     ],
-    answer: 0
+    correct: 0
   },
   {
     id: 8,
@@ -93,7 +93,7 @@ const questions = [
       `সাইটন`,
       `অ্যাক্সন`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 9,
@@ -105,7 +105,7 @@ const questions = [
       `ADH`,
       `TSH`
     ],
-    answer: 2
+    correct: 2
   },
   {
     id: 10,
@@ -117,7 +117,7 @@ const questions = [
       `সাইটোপ্লাজম ও প্লাস্টিড`,
       `গলগি বডি`
     ],
-    answer: 0
+    correct: 0
   },
   {
     id: 11,
@@ -129,7 +129,7 @@ const questions = [
       `$4.0\\text{ kcal}$`,
       `$9.1\\text{ kcal}$`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 12,
@@ -141,7 +141,7 @@ const questions = [
       `মাইটোকন্ড্রিয়া`,
       `কোষপ্রাচীর`
     ],
-    answer: 2
+    correct: 2
   },
   {
     id: 13,
@@ -153,7 +153,7 @@ const questions = [
       `রাইবোজোম`,
       `কোষপ্রাচীর`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 14,
@@ -165,7 +165,7 @@ const questions = [
       `মাইটোকন্ড্রিয়া`,
       `গলগি বস্তু`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 15,
@@ -177,7 +177,7 @@ const questions = [
       `ইউরাসিল`,
       `সাইটোসিন`
     ],
-    answer: 2
+    correct: 2
   },
   {
     id: 16,
@@ -189,7 +189,7 @@ const questions = [
       `$\\text{Vitamin B}$`,
       `$\\text{Vitamin E}$`
     ],
-    answer: 0
+    correct: 0
   },
   {
     id: 17,
@@ -201,7 +201,7 @@ const questions = [
       `স্ক্লেরেনকাইমা`,
       `কোলেনকাইমা`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 18,
@@ -213,7 +213,7 @@ const questions = [
       `যকৃৎ কোশ`,
       `লোহিত রক্তকণিকা`
     ],
-    answer: 1
+    correct: 1
   },
   {
     id: 19,
@@ -225,7 +225,7 @@ const questions = [
       `পিটুইটারি গ্রন্থি`,
       `অ্যাড্রেনাল গ্রন্থি`
     ],
-    answer: 2
+    correct: 2
   },
   {
     id: 20,
@@ -237,11 +237,9 @@ const questions = [
       `গ্রাসনালীতে`,
       `বৃহদান্ত্রে`
     ],
-    answer: 0
+    correct: 0
   }
 ];
-
-
 
 
 
