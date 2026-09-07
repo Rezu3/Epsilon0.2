@@ -1,4 +1,4 @@
-Const questions = [
+const questions = [
   {
     id: 1,
     question: `$\\lim_{n \\to \\infty} \\frac{1^2 + 2^2 + 3^2 + \\dots + n^2}{n^2}$-এর মান হল -`,
