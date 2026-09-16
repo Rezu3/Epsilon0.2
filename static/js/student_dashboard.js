@@ -531,26 +531,8 @@ function startOnlineExam(examId) {
 // WHATSAPP - SELECT GENDER
 // =============================================
 
-function selectGender(gender) {
-    const maleBtn = document.querySelector('.gender-btn.male');
-    const femaleBtn = document.querySelector('.gender-btn.female');
-    const linkContainer = document.getElementById('whatsappLinkContainer');
-    const link = document.getElementById('whatsappLink');
-    
-    if (!maleBtn || !femaleBtn || !linkContainer || !link) return;
-    
-    maleBtn.classList.remove('selected');
-    femaleBtn.classList.remove('selected');
-    
-    if (gender === 'male') {
-        maleBtn.classList.add('selected');
-        link.href = 'https://chat.whatsapp.com/Kbpkt2u9A3rC2Ggs49u5tC';
-    } else {
-        femaleBtn.classList.add('selected');
-        link.href = 'https://chat.whatsapp.com/LAaHt6NR0lzAqrcDPUlSt8';
-    }
-    
-    linkContainer.style.display = 'block';
+ function openWhatsapp() {
+    window.open('https://whatsapp.com/channel/0029Vb7ToysEAKWKYWbsla3X', '_blank');
     closeSidebarOnMobile();
 }
 
