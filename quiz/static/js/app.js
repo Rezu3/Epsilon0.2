@@ -1,5 +1,6 @@
 // ==========================================
 // QUIZ SYSTEM WITH CHAPTER LOCK SYSTEM
+// + Question Type (MCQ / SAQ / 2,3,4,5 Marks)
 // ==========================================
 
 // ===== CONFIGURATION =====
@@ -16,6 +17,8 @@ let currentSubjectId = null;
 let currentSubjectName = '';
 let currentChapterId = null;
 let currentChapterName = '';
+let currentQuestionType = null;
+let currentQuestionTypeName = '';
 
 let questions = [];
 let currentQuestionIndex = 0;
@@ -42,6 +45,8 @@ async function loadBatches(pushHistory = true) {
     currentSubjectName = '';
     currentChapterId = null;
     currentChapterName = '';
+    currentQuestionType = null;
+    currentQuestionTypeName = '';
 
     if (pushHistory && history.state?.view !== 'batches') {
         history.pushState({ view: 'batches' }, '');
@@ -118,6 +123,8 @@ async function selectBatch(batchId, batchName, pushHistory = true) {
     currentSubjectName = '';
     currentChapterId = null;
     currentChapterName = '';
+    currentQuestionType = null;
+    currentQuestionTypeName = '';
 
     if (pushHistory) {
         history.pushState({ view: 'subjects', batchId, batchName }, '');
@@ -171,6 +178,8 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
     currentSubjectName = subjectName;
     currentChapterId = null;
     currentChapterName = '';
+    currentQuestionType = null;
+    currentQuestionTypeName = '';
 
     if (pushHistory) {
         history.pushState({ 
@@ -202,7 +211,6 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
                 let statusText = '';
                 let statusColor = '';
                 
-                // ===== TEACHER: সব চ্যাপ্টার আনলকড থাকবে =====
                 const isTeacher = USER_TYPE === 'teacher' || USER_TYPE === 'admin';
                 const isLocked = !isTeacher && chapter.is_locked;
                 const isCompleted = chapter.is_completed;
@@ -234,7 +242,6 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
                     </span>
                 `;
                 
-                // ===== TEACHER: সব চ্যাপ্টার ক্লিকযোগ্য হবে =====
                 if (!isLocked || isTeacher) {
                     card.onclick = () => selectChapter(chapter.id, chapter.name);
                 }
@@ -253,54 +260,127 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
 }
 
 // ==========================================
-// 4. SELECT CHAPTER -> LOAD QUIZ
+// 4. SELECT CHAPTER -> LOAD QUESTION TYPES
 // ==========================================
 async function selectChapter(chapterId, chapterName, pushHistory = true) {
     currentChapterId = chapterId;
     currentChapterName = chapterName;
-    
+    currentQuestionType = null;
+    currentQuestionTypeName = '';
+
+    if (pushHistory) {
+        history.pushState({
+            view: 'question-types',
+            batchId: currentBatchId,
+            batchName: currentBatchName,
+            subjectId: currentSubjectId,
+            subjectName: currentSubjectName,
+            chapterId,
+            chapterName
+        }, '');
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${chapterId}/question-types`);
+        
+        if (response.status === 403) {
+            const error = await response.json();
+            const isTeacher = USER_TYPE === 'teacher' || USER_TYPE === 'admin';
+            if (!isTeacher) {
+                showError(error.error || 'This chapter is locked! Complete previous chapter first.');
+                return;
+            }
+        }
+        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const types = await response.json();
+        const grid = document.getElementById('question-types-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        if (types && types.length > 0) {
+            types.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                const isTeacher = USER_TYPE === 'teacher' || USER_TYPE === 'admin';
+                const isLocked = !isTeacher && t.is_locked;
+                const isCompleted = t.is_completed;
+
+                let statusIcon = isCompleted ? '✅' : isLocked ? '🔒' : '📝';
+                let statusText = isCompleted ? 'Completed' : isLocked ? 'Locked' : 'Open';
+                let statusColor = isCompleted ? '#28a745' : isLocked ? '#e53e3e' : '#4facfe';
+
+                let iconClass = 'play-circle';
+                if (t.type === 'mcq') iconClass = 'check-square';
+                else if (t.type === 'saq') iconClass = 'pen';
+                else if (t.type && t.type.startsWith('marks_')) iconClass = 'file-alt';
+
+                card.innerHTML = `
+                    <i class="fas fa-${iconClass}" 
+                       style="color:${statusColor};"></i>
+                    ${t.name}
+                    <span style="font-size:0.7rem;color:${statusColor};display:block;margin-top:4px;">
+                        ${statusIcon} ${statusText}
+                    </span>
+                `;
+
+                if (isLocked) {
+                    card.style.opacity = '0.6';
+                    card.style.cursor = 'not-allowed';
+                } else {
+                    card.onclick = () => selectQuestionType(t.type, t.name);
+                }
+                grid.appendChild(card);
+            });
+        } else {
+            grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #718096;"><h3>No Question Types Found</h3></div>`;
+        }
+        showView('question-types-view');
+        updateBreadcrumb();
+    } catch (error) {
+        console.error('❌ Error loading question types:', error);
+        showError('Failed to load question types.');
+    }
+}
+
+// ==========================================
+// 5. SELECT QUESTION TYPE -> LOAD QUESTIONS
+// ==========================================
+async function selectQuestionType(type, typeName, pushHistory = true) {
+    currentQuestionType = type;
+    currentQuestionTypeName = typeName;
+
     questions = [];
     currentQuestionIndex = 0;
     userAnswers = {};
     isSubmitting = false;
 
     if (pushHistory) {
-        history.pushState({ 
-            view: 'quiz', 
-            batchId: currentBatchId, 
-            batchName: currentBatchName, 
-            subjectId: currentSubjectId, 
+        history.pushState({
+            view: 'quiz',
+            batchId: currentBatchId,
+            batchName: currentBatchName,
+            subjectId: currentSubjectId,
             subjectName: currentSubjectName,
-            chapterId,
-            chapterName 
+            chapterId: currentChapterId,
+            chapterName: currentChapterName,
+            questionType: type,
+            questionTypeName: typeName
         }, '');
     }
 
     try {
-        const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${chapterId}/questions`);
+        const isTeacher = USER_TYPE === 'teacher' || USER_TYPE === 'admin';
+        const forceParam = isTeacher ? '?force=true' : '';
+        const url = `${API_BASE}/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${currentChapterId}/questions/${type}${forceParam}`;
         
-        // ===== TEACHER: 403 এরর হলেও কোয়েস্ট দেখাবে =====
+        const response = await fetch(url);
+        
         if (response.status === 403) {
             const error = await response.json();
-            const isTeacher = USER_TYPE === 'teacher' || USER_TYPE === 'admin';
-            
-            if (isTeacher) {
-                // Teacher হলে Lock এড়িয়ে যান
-                showError('⚠️ This chapter is locked for students, but as Teacher you can view it.');
-                // Try to get questions anyway
-                const retryResponse = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${chapterId}/questions?force=true`);
-                if (retryResponse.ok) {
-                    questions = await retryResponse.json();
-                    if (questions.length > 0) {
-                        restoreQuizLayout();
-                        showQuestion(0);
-                        showView('quiz-view');
-                        updateBreadcrumb();
-                        return;
-                    }
-                }
-            } else {
-                showError(error.error || 'This chapter is locked! Complete previous chapter first.');
+            if (!isTeacher) {
+                showError(error.error || 'This section is locked!');
                 return;
             }
         }
@@ -310,12 +390,17 @@ async function selectChapter(chapterId, chapterName, pushHistory = true) {
         questions = await response.json();
 
         if (questions.length > 0) {
-            restoreQuizLayout();
-            showQuestion(0);
+            if (type === 'mcq') {
+                restoreQuizLayout();
+                showQuestion(0);
+            } else {
+                restoreWrittenLayout();
+                showWrittenQuestion(0);
+            }
             showView('quiz-view');
             updateBreadcrumb();
         } else {
-            alert('❌ No questions found in this chapter!');
+            alert('❌ No questions found in this section!');
         }
     } catch (error) {
         console.error('❌ Error loading questions:', error);
@@ -329,6 +414,7 @@ async function selectChapter(chapterId, chapterName, pushHistory = true) {
 function showBatchesView() { loadBatches(true); }
 function showSubjectsView() { if (currentBatchId) selectBatch(currentBatchId, currentBatchName, true); }
 function showChaptersView() { if (currentSubjectId) selectSubject(currentSubjectId, currentSubjectName, true); }
+function showQuestionTypesView() { if (currentChapterId) selectChapter(currentChapterId, currentChapterName, true); }
 
 function updateBreadcrumb() {
     const bc = document.getElementById('breadcrumb');
@@ -343,7 +429,10 @@ function updateBreadcrumb() {
         html += ` <span class="separator">›</span> <span onclick="showChaptersView()" style="cursor:pointer;">${currentSubjectName}</span>`;
     }
     if (currentChapterId) {
-        html += ` <span class="separator">›</span> <span style="font-weight:bold;">${currentChapterName}</span>`;
+        html += ` <span class="separator">›</span> <span onclick="showQuestionTypesView()" style="cursor:pointer;">${currentChapterName}</span>`;
+    }
+    if (currentQuestionType) {
+        html += ` <span class="separator">›</span> <span style="font-weight:bold;">${currentQuestionTypeName}</span>`;
     }
 
     bc.innerHTML = html;
@@ -357,7 +446,7 @@ function showView(viewId) {
 }
 
 // ==========================================
-// QUIZ UI
+// QUIZ UI (MCQ)
 // ==========================================
 function restoreQuizLayout() {
     const quizCard = document.getElementById('quiz-card');
@@ -378,7 +467,97 @@ function restoreQuizLayout() {
 }
 
 // ==========================================
-// FIXED: showQuestion function - "Answer First" বাদ
+// WRITTEN QUESTION LAYOUT (SAQ / 2,3,4,5 Marks)
+// ==========================================
+function restoreWrittenLayout() {
+    const quizCard = document.getElementById('quiz-card');
+    const footer = document.getElementById('quizFooter');
+    if (footer) {
+        footer.style.display = 'flex';
+        footer.style.visibility = 'visible';
+        footer.style.opacity = '1';
+    }
+    quizCard.innerHTML = `
+        <div id="written-question-container"></div>
+    `;
+}
+
+function showWrittenQuestion(index) {
+    if (!questions || questions.length === 0) return;
+    const q = questions[index];
+    if (!q) return;
+
+    const progressElem = document.getElementById('quiz-progress');
+    if (progressElem) progressElem.innerText = `Question ${index + 1} / ${questions.length}`;
+
+    const container = document.getElementById('written-question-container');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="written-q-block">
+            <div class="question-text" id="written-q-text-${index}">
+                ${index + 1}. ${q.question || q.text || ''}
+            </div>
+            <button class="view-answer-btn" onclick="toggleAnswer(${index})">
+                <i class="fas fa-eye"></i> View Answer
+            </button>
+            <div class="written-answer" id="written-answer-${index}" style="display:none;">
+                <strong>Answer:</strong><br>${q.answer || ''}
+            </div>
+        </div>
+    `;
+
+    if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise([container]).catch(() => {});
+    }
+
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const isLast = index === questions.length - 1;
+
+    if (prevBtn) {
+        if (index === 0) {
+            prevBtn.disabled = true;
+            prevBtn.style.display = 'none';
+        } else {
+            prevBtn.disabled = false;
+            prevBtn.style.display = 'flex';
+            prevBtn.style.opacity = '1';
+        }
+    }
+
+    if (nextBtn) {
+        nextBtn.disabled = false;
+        nextBtn.style.display = 'flex';
+        nextBtn.style.visibility = 'visible';
+        nextBtn.style.opacity = '1';
+        if (isLast) {
+            nextBtn.innerHTML = '✅ Done';
+            nextBtn.onclick = () => showQuestionTypesView();
+            nextBtn.style.background = '#28a745';
+        } else {
+            nextBtn.innerHTML = 'Next →';
+            nextBtn.onclick = nextQuestion;
+            nextBtn.style.background = '#4facfe';
+        }
+    }
+}
+
+function toggleAnswer(index) {
+    const ans = document.getElementById(`written-answer-${index}`);
+    if (!ans) return;
+    const btn = ans.previousElementSibling;
+    if (ans.style.display === 'none') {
+        ans.style.display = 'block';
+        if (btn) btn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Answer';
+    } else {
+        ans.style.display = 'none';
+        if (btn) btn.innerHTML = '<i class="fas fa-eye"></i> View Answer';
+    }
+}
+
+// ==========================================
+// MCQ QUESTION RENDER
 // ==========================================
 function showQuestion(index) {
     if (!questions || questions.length === 0) return;
@@ -423,11 +602,9 @@ function showQuestion(index) {
         });
     }
 
-    // ===== Button Management =====
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     
-    // Previous button
     if (prevBtn) {
         if (index === 0) {
             prevBtn.disabled = true;
@@ -439,59 +616,48 @@ function showQuestion(index) {
         }
     }
     
-    // ===== FIXED: Next button - সবসময় Next থাকবে, "Answer First" বাদ =====
     if (nextBtn) {
         nextBtn.disabled = false;
         nextBtn.style.display = 'flex';
         nextBtn.style.opacity = '1';
         nextBtn.style.visibility = 'visible';
         
-        // সব প্রশ্নের উত্তর দেওয়া হয়েছে কিনা চেক করুন
         const answeredCount = Object.keys(userAnswers).length;
         const totalQuestions = questions.length;
         const allAnswered = answeredCount === totalQuestions;
-        
-        // শেষ প্রশ্ন কিনা চেক করুন
         const isLastQuestion = index === totalQuestions - 1;
         
         if (isLastQuestion && allAnswered) {
-            // শেষ প্রশ্ন + সব উত্তর দেওয়া হয়েছে = Submit
             nextBtn.innerHTML = '📤 Submit';
             nextBtn.onclick = submitQuiz;
             nextBtn.style.background = '#28a745';
         } else {
-            // সব ক্ষেত্রেই Next দেখাবে
             nextBtn.innerHTML = 'Next →';
             nextBtn.onclick = nextQuestion;
             nextBtn.style.background = '#4facfe';
         }
     }
 
-    // Re-render MathJax
     if (window.MathJax && window.MathJax.typesetPromise) {
         window.MathJax.typesetPromise([qTextElem, optionsGrid]).catch(() => {});
     }
 }
 
 // ==========================================
-// FIXED: handleAnswer function - ভুল উত্তর দিলেও Submit আসবে
+// MCQ ANSWER HANDLER
 // ==========================================
 function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
-    // উত্তর সেভ করুন (ভুল হলেও সেভ হবে)
     userAnswers[questionIndex] = selectedIndex;
 
     if (selectedIndex === correctAnswer) {
         triggerCelebration();
     }
 
-    // প্রশ্ন দেখান (উত্তর সহ)
     showQuestion(questionIndex);
 
-    // ===== সব প্রশ্নের উত্তর দেওয়া হয়েছে কিনা চেক করুন =====
     const totalQuestions = questions.length;
     const answeredCount = Object.keys(userAnswers).length;
     
-    // ভুল উত্তর দিলেও Submit বাটন আসবে
     if (answeredCount === totalQuestions) {
         const nextBtn = document.getElementById('next-btn');
         if (nextBtn) {
@@ -507,10 +673,9 @@ function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
 }
 
 // ==========================================
-// SUBMIT QUIZ
+// SUBMIT QUIZ (MCQ)
 // ==========================================
 async function submitQuiz() {
-    // Prevent double submit
     if (isSubmitting) return;
     isSubmitting = true;
     
@@ -526,7 +691,6 @@ async function submitQuiz() {
     const nextBtn = document.getElementById('next-btn');
     const prevBtn = document.getElementById('prev-btn');
     
-    // Disable buttons during submission
     if (nextBtn) {
         nextBtn.disabled = true;
         nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
@@ -543,6 +707,7 @@ async function submitQuiz() {
                 batch_id: currentBatchId,
                 subject_id: currentSubjectId,
                 chapter_id: currentChapterId,
+                question_type: currentQuestionType || 'mcq',
                 score: correct,
                 total: total,
                 percentage: percentage
@@ -552,7 +717,6 @@ async function submitQuiz() {
         const result = await response.json();
         
         if (result.success) {
-            // Chapter completed successfully
             triggerCelebration();
             
             const quizCard = document.getElementById('quiz-card');
@@ -585,31 +749,29 @@ async function submitQuiz() {
                         📊 Result saved to database
                     </p>
                     ${nextChapterHTML}
-                    <button onclick="showChaptersView()" class="nav-btn secondary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
-                        <i class="fas fa-arrow-left"></i> Back to Chapters
+                    <button onclick="showQuestionTypesView()" class="nav-btn secondary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+                        <i class="fas fa-arrow-left"></i> Back to Question Types
                     </button>
                 </div>
             `;
             if (footer) footer.style.display = 'none';
             
         } else {
-            // Not passed - show retry option
             const quizCard = document.getElementById('quiz-card');
             
             if (result.already_completed) {
                 quizCard.innerHTML = `
                     <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
                         <div style="font-size: 60px; margin-bottom: 10px;">⚠️</div>
-                        <h2 style="color: #e53e3e; margin-bottom: 10px;">This chapter is already completed!</h2>
-                        <button onclick="showChaptersView()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
-                            <i class="fas fa-arrow-left"></i> Back to Chapters
+                        <h2 style="color: #e53e3e; margin-bottom: 10px;">This section is already completed!</h2>
+                        <button onclick="showQuestionTypesView()" class="nav-btn primary" style="margin-top:10px;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+                            <i class="fas fa-arrow-left"></i> Back to Question Types
                         </button>
                     </div>
                 `;
                 const footer = document.getElementById('quizFooter');
                 if (footer) footer.style.display = 'none';
             } else {
-                // ===== RETRY BUTTON =====
                 quizCard.innerHTML = `
                     <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
                         <div style="font-size: 60px; margin-bottom: 10px;">😅</div>
@@ -629,14 +791,12 @@ async function submitQuiz() {
             }
         }
         
-        // Reset submitting flag
         isSubmitting = false;
         
     } catch (error) {
         console.error('❌ Error submitting quiz:', error);
         showError('Failed to submit. Please try again.');
         
-        // Reset buttons on error
         const nextBtn = document.getElementById('next-btn');
         const prevBtn = document.getElementById('prev-btn');
         if (nextBtn) {
@@ -655,18 +815,13 @@ async function submitQuiz() {
 // RESET QUIZ
 // ==========================================
 function resetQuiz() {
-    // Reset all state
     userAnswers = {};
     currentQuestionIndex = 0;
     isSubmitting = false;
     
-    // Restore quiz layout
     restoreQuizLayout();
-    
-    // Show first question
     showQuestion(0);
     
-    // Ensure footer and buttons are properly reset
     const footer = document.getElementById('quizFooter');
     if (footer) {
         footer.style.display = 'flex';
@@ -674,7 +829,6 @@ function resetQuiz() {
         footer.style.opacity = '1';
     }
     
-    // Reset Previous button (hidden for first question)
     const prevBtn = document.getElementById('prev-btn');
     if (prevBtn) {
         prevBtn.disabled = true;
@@ -682,7 +836,6 @@ function resetQuiz() {
         prevBtn.style.opacity = '1';
     }
     
-    // Reset Next button
     const nextBtn = document.getElementById('next-btn');
     if (nextBtn) {
         nextBtn.disabled = false;
@@ -694,13 +847,11 @@ function resetQuiz() {
         nextBtn.style.background = '#4facfe';
     }
     
-    // Reset progress
     const progressElem = document.getElementById('quiz-progress');
     if (progressElem) {
         progressElem.innerText = `Question 1 / ${questions.length}`;
     }
     
-    // Re-render MathJax
     if (window.MathJax && window.MathJax.typesetPromise) {
         const qTextElem = document.getElementById('question-text');
         const optionsGrid = document.getElementById('options-container');
@@ -709,7 +860,6 @@ function resetQuiz() {
         }
     }
     
-    // Scroll to top of quiz
     const quizView = document.getElementById('quiz-view');
     if (quizView) {
         quizView.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -724,14 +874,22 @@ function resetQuiz() {
 function nextQuestion() {
     if (currentQuestionIndex < questions.length - 1) {
         currentQuestionIndex++;
-        showQuestion(currentQuestionIndex);
+        if (currentQuestionType === 'mcq') {
+            showQuestion(currentQuestionIndex);
+        } else {
+            showWrittenQuestion(currentQuestionIndex);
+        }
     }
 }
 
 function prevQuestion() {
     if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
-        showQuestion(currentQuestionIndex);
+        if (currentQuestionType === 'mcq') {
+            showQuestion(currentQuestionIndex);
+        } else {
+            showWrittenQuestion(currentQuestionIndex);
+        }
     }
 }
 
@@ -784,14 +942,18 @@ document.addEventListener('keydown', function(e) {
     const quizView = document.getElementById('quiz-view');
     if (!quizView || !quizView.classList.contains('active')) return;
 
-    if (e.key >= '1' && e.key <= '4') {
-        const optionIndex = parseInt(e.key) - 1;
-        const btns = document.querySelectorAll('#options-container .option-btn');
-        if (btns[optionIndex] && !btns[optionIndex].classList.contains('disabled')) {
-            btns[optionIndex].click();
+    if (currentQuestionType === 'mcq') {
+        if (e.key >= '1' && e.key <= '4') {
+            const optionIndex = parseInt(e.key) - 1;
+            const btns = document.querySelectorAll('#options-container .option-btn');
+            if (btns[optionIndex] && !btns[optionIndex].classList.contains('disabled')) {
+                btns[optionIndex].click();
+            }
+            e.preventDefault();
         }
-        e.preventDefault();
-    } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
+    }
+
+    if (e.key === 'ArrowRight' || e.key === 'Enter') {
         e.preventDefault();
         const nextBtn = document.getElementById('next-btn');
         if (nextBtn && !nextBtn.disabled && nextBtn.style.display !== 'none') {
@@ -820,8 +982,12 @@ window.onpopstate = function(event) {
             selectBatch(event.state.batchId, event.state.batchName, false);
         } else if (event.state.view === 'chapters') {
             selectSubject(event.state.subjectId, event.state.subjectName, false);
-        } else if (event.state.view === 'quiz') {
+        } else if (event.state.view === 'question-types') {
             selectChapter(event.state.chapterId, event.state.chapterName, false);
+        } else if (event.state.view === 'quiz') {
+            if (event.state.questionType) {
+                selectQuestionType(event.state.questionType, event.state.questionTypeName, false);
+            }
         }
     }
 };
@@ -836,11 +1002,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const backBtnText = document.getElementById('backButtonText');
     if (backBtnText) {
-        if (USER_TYPE === 'student' || USER_TYPE === 'teacher' || USER_TYPE === 'admin') {
-            backBtnText.textContent = 'Dashboard';
-        } else {
-            backBtnText.textContent = 'Dashboard';
-        }
+        backBtnText.textContent = 'Dashboard';
     }
     
     loadBatches(true);
