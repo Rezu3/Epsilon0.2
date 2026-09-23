@@ -31,6 +31,17 @@ CLASS_MAPPING = {
     'nursing': 'gnm_anm',
 }
 
+# ===== QUESTION TYPE ORDER =====
+QUESTION_TYPES = [
+    {"type": "mcq",     "name": "MCQ"},
+    {"type": "saq",     "name": "SAQ"},
+    {"type": "marks_2", "name": "2 Marks"},
+    {"type": "marks_3", "name": "3 Marks"},
+    {"type": "marks_4", "name": "4 Marks"},
+    {"type": "marks_5", "name": "5 Marks"},
+]
+
+
 # ===== ডেটাবেস সংযোগ ফাংশন =====
 def get_db_connection():
     """Get database connection"""
@@ -276,6 +287,89 @@ def save_quiz_result_db(student_id, batch_id, subject_id, chapter_id, score, tot
     except Exception as e:
         print(f"❌ Error saving result: {e}")
         return False
+
+
+# ==========================================
+# QUESTION TYPES LIST API
+# (Question Type সবসময় unlocked থাকবে)
+# ==========================================
+@quiz_bp.route('/api/batches/<batch_id>/subjects/<subject_id>/chapters/<chapter_id>/question-types', methods=['GET'])
+@login_required
+def get_question_types(batch_id, subject_id, chapter_id):
+    """Chapter-এর ভিতরে MCQ, SAQ, 2/3/4/5 Marks — সবগুলোই unlocked থাকবে।
+       Lock শুধু Chapter-লেভেলে।"""
+    try:
+        data = load_all_quiz_data()
+        chapter = (data.get('batches', {})
+                   .get(batch_id, {})
+                   .get('subjects', {})
+                   .get(subject_id, {})
+                   .get('chapters', {})
+                   .get(chapter_id))
+
+        if not chapter:
+            return jsonify({'error': 'Chapter not found'}), 404
+
+        result = []
+        for qt in QUESTION_TYPES:
+            key = qt["type"]
+            questions_here = chapter.get(key, [])
+
+            result.append({
+                "type": key,
+                "name": qt["name"],
+                "is_locked": False,
+                "is_completed": False,
+                "total_questions": len(questions_here),
+            })
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+# ==========================================
+# QUESTIONS BY TYPE API
+# (কোনো lock check নেই)
+# ==========================================
+@quiz_bp.route('/api/batches/<batch_id>/subjects/<subject_id>/chapters/<chapter_id>/questions/<qtype>', methods=['GET'])
+@login_required
+def get_questions_by_type(batch_id, subject_id, chapter_id, qtype):
+    """নির্দিষ্ট type-এর (mcq / saq / marks_2 ...) প্রশ্ন ফেরত দেয় — কোনো lock নেই।"""
+    try:
+        data = load_all_quiz_data()
+        chapter = (data.get('batches', {})
+                   .get(batch_id, {})
+                   .get('subjects', {})
+                   .get(subject_id, {})
+                   .get('chapters', {})
+                   .get(chapter_id))
+
+        if not chapter:
+            return jsonify({'error': 'Chapter not found'}), 404
+
+        valid_types = [qt["type"] for qt in QUESTION_TYPES]
+        if qtype not in valid_types:
+            return jsonify({'error': 'Invalid question type'}), 400
+
+        questions = chapter.get(qtype, [])
+        formatted = []
+        for idx, q in enumerate(questions):
+            q_copy = dict(q)
+            q_copy['id'] = q_copy.get('id', idx + 1)
+            q_copy['chapter_name'] = chapter.get('name', '')
+            formatted.append(q_copy)
+
+        return jsonify(formatted), 200
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
 
 @quiz_bp.route('/')
 @login_required
@@ -566,6 +660,7 @@ def submit_result():
     batch_id = data.get('batch_id')
     subject_id = data.get('subject_id')
     chapter_id = data.get('chapter_id')
+    question_type = data.get('question_type', 'mcq')
     score = data.get('score', 0)
     total = data.get('total', 1)
     percentage = data.get('percentage', 0)
@@ -578,6 +673,7 @@ def submit_result():
     print(f"   Batch: {batch_id}")
     print(f"   Subject: {subject_id}")
     print(f"   Chapter: {chapter_id}")
+    print(f"   Type: {question_type}")
     print(f"   Score: {score}/{total} ({percentage}%)")
     
     # Check if chapter is already completed
@@ -611,9 +707,9 @@ def submit_result():
     
     if is_completed:
         # Check next chapter
-        data = load_all_quiz_data()
+        data_all = load_all_quiz_data()
         subject_chapters = []
-        for b_id, b_info in data.get('batches', {}).items():
+        for b_id, b_info in data_all.get('batches', {}).items():
             for s_id, s_info in b_info.get('subjects', {}).items():
                 if s_id == subject_id:
                     subject_chapters = list(s_info.get('chapters', {}).keys())
