@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』 - Fees Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fees.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="nav-item">
+                <i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_students') }}" class="nav-item">
+                <i class="fas fa-user-graduate"></i>
+                <span>All Students</span>
+            </a>
+            <a href="{{ url_for('admin_teachers') }}" class="nav-item">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>All Teachers</span>
+            </a>
+            <a href="{{ url_for('fees') }}" class="nav-item active">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Fees Management</span>
+            </a>
+            <a href="{{ url_for('exam') }}" class="nav-item">
+                <i class="fas fa-pencil-alt"></i>
+                <span>Exams</span>
+            </a>
+            <a href="{{ url_for('results') }}" class="nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>Results</span>
+            </a>
+            <a href="{{ url_for('rank') }}" class="nav-item">
+                <i class="fas fa-trophy"></i>
+                <span>Rank</span>
+            </a>
+            <a href="{{ url_for('logout') }}" class="nav-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="admin-info">
+                <div class="admin-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="admin-details">
+                    <h4>{{ session.get('username', 'Admin') }}</h4>
+                    <p>Administrator</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-btn" id="menuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="brand">
+                    <h1>Fees Management</h1>
+                    <span class="subtitle">Manage student fees & payments</span>
+                </div>
+            </div>
+            <div class="top-bar-right">
+                <div class="date-time">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="currentDateTime"></span>
+                </div>
+                <div class="admin-profile">
+                    <span class="admin-name">{{ session.get('username', 'Admin') }}</span>
+                    <img src="https://ui-avatars.com/api/?name={{ session.get('username', 'Admin') }}&background=667eea&color=fff&size=40" alt="Admin" class="profile-img">
+                </div>
+            </div>
+        </header>
+
+        <div id="flashContainer">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                            {{ message }}
+                            <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="fees-summary">
+            <div class="summary-card total">
+                <div class="summary-icon"><i class="fas fa-wallet"></i></div>
+                <div class="summary-info">
+                    <h3>Total Fees</h3>
+                    <p>₹<span id="totalFees">{{ "%.0f"|format(summary.total_fees or 0) }}</span></p>
+                </div>
+            </div>
+            <div class="summary-card collected">
+                <div class="summary-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="summary-info">
+                    <h3>Collected</h3>
+                    <p>₹<span id="totalCollected">{{ "%.0f"|format(summary.total_collected or 0) }}</span></p>
+                </div>
+            </div>
+            <div class="summary-card due">
+                <div class="summary-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="summary-info">
+                    <h3>Total Due</h3>
+                    <p>₹<span id="totalDue">{{ "%.0f"|format(summary.total_due or 0) }}</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="fees-toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search student by name, ID, or phone...">
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="due">Due</button>
+                <button class="filter-btn" data-filter="paid">Fully Paid</button>
+                <button class="filter-btn" data-filter="free">Free</button>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="fees-table-container">
+            <table class="fees-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Contact</th>
+                        <th>Base Fee</th>
+                        <th>Months</th>
+                        <th>Total Fee</th>
+                        <th>Paid</th>
+                        <th>Due</th>
+                        <th>Next Due</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="feesTableBody">
+                    {% for student in students %}
+                    <tr class="student-row" 
+                        data-id="{{ student.id }}"
+                        data-name="{{ student.name }}"
+                        data-phone="{{ student.phone or '' }}"
+                        data-total="{{ student.total_fee }}"
+                        data-paid="{{ student.paid_amount }}"
+                        data-due="{{ student.due_amount }}">
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <div class="student-cell">
+                                <div class="student-avatar">
+                                    {{ student.name[0]|upper }}
+                                </div>
+                                <div>
+                                    <strong>{{ student.name }}</strong>
+                                    <small>ID: {{ student.id }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if student.phone %}
+                                <a href="tel:{{ student.phone }}" class="phone-link">
+                                    <i class="fas fa-phone"></i> {{ student.phone }}
+                                </a>
+                            {% else %}
+                                <span class="no-data">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="base-fee">
+                            {% if student.base_fee > 0 %}
+                                ₹{{ "%.0f"|format(student.base_fee) }}
+                            {% else %}
+                                <span class="no-data">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="months-cell">
+                            {% if student.total_fee > 0 %}
+                                <span class="months-badge">{{ student.months_due }} ম</span>
+                            {% else %}
+                                <span class="no-data">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="fee-amount">₹{{ "%.0f"|format(student.total_fee) }}</td>
+                        <td class="paid-amount">₹{{ "%.0f"|format(student.paid_amount) }}</td>
+                        <td class="due-amount">₹{{ "%.0f"|format(student.due_amount) }}</td>
+                        <td class="next-due-cell">
+                            {% if student.next_due_date and student.total_fee > 0 %}
+                                <span class="next-due-badge">
+                                    <i class="far fa-calendar"></i> {{ student.next_due_date }}
+                                </span>
+                            {% else %}
+                                <span class="no-data">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if student.total_fee == 0 %}
+                                <span class="status-badge free">Free</span>
+                            {% elif student.due_amount == 0 %}
+                                <span class="status-badge paid">Paid</span>
+                            {% else %}
+                                <span class="status-badge due">Due</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <!-- Set Fee -->
+                                <button class="btn-icon btn-set-fee" 
+                                        title="Set Fee Structure"
+                                        data-action="set-fee"
+                                        data-id="{{ student.id }}"
+                                        data-name="{{ student.name }}"
+                                        data-fee="{{ student.base_fee or student.total_fee }}"
+                                        data-duration="{{ student.duration_days }}"
+                                        data-start="{{ student.start_date or '' }}">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                
+                                <!-- Edit Fee Amount -->
+                                {% if student.total_fee > 0 %}
+                                <button class="btn-icon btn-edit-fee" 
+                                        title="Edit Fee Amount"
+                                        data-action="edit-fee"
+                                        data-id="{{ student.id }}"
+                                        data-name="{{ student.name }}"
+                                        data-base="{{ student.base_fee }}"
+                                        data-total="{{ student.total_fee }}"
+                                        data-months="{{ student.months_due }}"
+                                        data-paid="{{ student.paid_amount }}"
+                                        data-due="{{ student.due_amount }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                {% endif %}
+                                
+                                <!-- Pay -->
+                                {% if student.total_fee > 0 and student.due_amount > 0 %}
+                                <button class="btn-icon btn-pay" 
+                                        title="Collect Payment"
+                                        data-action="pay"
+                                        data-id="{{ student.id }}"
+                                        data-name="{{ student.name }}"
+                                        data-due="{{ student.due_amount }}">
+                                    <i class="fas fa-hand-holding-usd"></i>
+                                </button>
+                                {% endif %}
+                                
+                                <!-- History -->
+                                <button class="btn-icon btn-history" 
+                                        title="Payment History"
+                                        data-action="history"
+                                        data-id="{{ student.id }}"
+                                        data-name="{{ student.name }}">
+                                    <i class="fas fa-history"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div id="noResults" class="no-results" style="display:none;">
+                <i class="fas fa-search"></i>
+                <p>No students found</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Set Fee Modal -->
+    <div class="modal-overlay" id="setFeeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> Set Fee Structure</h3>
+                <button class="modal-close" onclick="closeModal('setFeeModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-student-name">Student: <strong id="setFeeStudentName"></strong></p>
+                <div class="form-group">
+                    <label>Fee Amount per Duration (₹)</label>
+                    <input type="number" id="setFeeAmount" min="0" step="1" placeholder="Enter 0 for free student">
+                    <small>Enter 0 if the student is free</small>
+                </div>
+                <div class="form-group">
+                    <label>Duration</label>
+                    <select id="setFeeDuration">
+                        <option value="7">1 Week (7 days)</option>
+                        <option value="15">15 Days</option>
+                        <option value="30" selected>1 Month (30 days)</option>
+                        <option value="60">2 Months (60 days)</option>
+                        <option value="90">3 Months (90 days)</option>
+                        <option value="180">6 Months (180 days)</option>
+                        <option value="365">1 Year (365 days)</option>
+                    </select>
+                    <small>এই Duration শেষ হলে আবার Due হয়ে যাবে</small>
+                </div>
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" id="setFeeStartDate">
+                    <small>Fee শুরুর তারিখ (আজ থেকে ধরতে খালি রাখুন)</small>
+                </div>
+                <input type="hidden" id="setFeeStudentId">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('setFeeModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitSetFee()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Fee Modal -->
+    <div class="modal-overlay" id="editFeeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Edit Fee Amount</h3>
+                <button class="modal-close" onclick="closeModal('editFeeModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-student-name">Student: <strong id="editFeeStudentName"></strong></p>
+                
+                <div class="info-box">
+                    <div class="info-row">
+                        <span>Current Months Due:</span>
+                        <strong id="editFeeMonths">—</strong>
+                    </div>
+                    <div class="info-row">
+                        <span>Already Paid:</span>
+                        <strong id="editFeePaid">—</strong>
+                    </div>
+                    <div class="info-row">
+                        <span>Current Total Fee:</span>
+                        <strong id="editFeeTotal">—</strong>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>New Base Fee (Per Month/Duration) (₹)</label>
+                    <input type="number" id="editFeeAmount" min="0" step="1" placeholder="Enter new fee amount">
+                    <small>এই Amount × Months Due = New Total Fee</small>
+                </div>
+                
+                <div class="preview-box">
+                    <div class="preview-row">
+                        <span>New Total Fee:</span>
+                        <strong id="editFeeNewTotal">₹0</strong>
+                    </div>
+                    <div class="preview-row">
+                        <span>New Due Amount:</span>
+                        <strong id="editFeeNewDue" class="due">₹0</strong>
+                    </div>
+                </div>
+                
+                <input type="hidden" id="editFeeStudentId">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editFeeModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitEditFee()">
+                    <i class="fas fa-save"></i> Update Fee
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pay Fee Modal -->
+    <div class="modal-overlay" id="payModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-hand-holding-usd"></i> Collect Payment</h3>
+                <button class="modal-close" onclick="closeModal('payModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-student-name">Student: <strong id="payStudentName"></strong></p>
+                <div class="due-display">
+                    <span>Due Amount:</span>
+                    <strong id="payDueAmount">₹0</strong>
+                </div>
+                <div class="form-group">
+                    <label>Payment Amount (₹)</label>
+                    <input type="number" id="payAmount" min="1" step="1" placeholder="Enter amount">
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="payMethod">
+                        <option value="Cash">Cash</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Card">Card</option>
+                        <option value="Cheque">Cheque</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Remarks (Optional)</label>
+                    <input type="text" id="payRemarks" placeholder="Any note...">
+                </div>
+                <input type="hidden" id="payStudentId">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('payModal')">Cancel</button>
+                <button class="btn btn-success" onclick="submitPayment()">
+                    <i class="fas fa-check"></i> Confirm Payment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-history"></i> Payment History - <span id="historyStudentName"></span></h3>
+                <button class="modal-close" onclick="closeModal('historyModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="historyContent">
+                    <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div class="modal-overlay" id="receiptModal">
+        <div class="modal receipt-modal">
+            <div class="receipt" id="receiptContent">
+                <div class="receipt-header">
+                    <h2>𝕋𝕙𝕖 𝔼𝕡𝕤𝕚𝕝𝕠𝕟『𝜀』</h2>
+                    <p>Learning Management System</p>
+                    <p class="receipt-title">PAYMENT RECEIPT</p>
+                </div>
+                <div class="receipt-body">
+                    <div class="receipt-row"><span>Receipt No:</span><strong id="rcptId"></strong></div>
+                    <div class="receipt-row"><span>Date:</span><strong id="rcptDate"></strong></div>
+                    <div class="receipt-row"><span>Student Name:</span><strong id="rcptName"></strong></div>
+                    <div class="receipt-row"><span>Student ID:</span><strong id="rcptSid"></strong></div>
+                    <hr>
+                    <div class="receipt-row"><span>Total Fee:</span><strong id="rcptTotal"></strong></div>
+                    <div class="receipt-row"><span>Amount Paid:</span><strong class="paid" id="rcptPaid"></strong></div>
+                    <div class="receipt-row"><span>Total Paid:</span><strong id="rcptTotalPaid"></strong></div>
+                    <div class="receipt-row"><span>Due Amount:</span><strong class="due" id="rcptDue"></strong></div>
+                    <div class="receipt-row"><span>Payment Method:</span><strong id="rcptMethod"></strong></div>
+                    <hr>
+                    <p class="receipt-thanks">Thank you for your payment!</p>
+                </div>
+            </div>
+            <div class="modal-footer receipt-footer">
+                <button class="btn btn-secondary" onclick="closeModal('receiptModal')">
+                    <i class="fas fa-times"></i> Close
+                </button>
+                <button class="btn btn-print" onclick="printReceipt()">
+                    <i class="fas fa-print"></i> Print
+                </button>
+                <button class="btn btn-whatsapp" onclick="shareOnWhatsApp()">
+                    <i class="fab fa-whatsapp"></i> Send WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin_dashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/fees.js') }}"></script>
+</body>
+</html>
