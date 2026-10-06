@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, flash, url_for, jsonify, send_file
 import sqlite3
 import os
-from datetime import datetime
+from datetime import datetime,timedelta
 
 # ===== QUIZ BLUEPRINT IMPORT =====
 from quiz import quiz_bp
@@ -23,6 +23,59 @@ def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
+
+# ============ FEES DATABASE SETUP ============
+def init_fees_tables():
+    conn = sqlite3.connect('tution.db')
+    cursor = conn.cursor()
+    
+    # Main fees table - নতুন structure
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS fees (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER UNIQUE,
+            base_fee REAL DEFAULT 0,
+            total_fee REAL DEFAULT 0,
+            paid_amount REAL DEFAULT 0,
+            due_amount REAL DEFAULT 0,
+            duration_days INTEGER DEFAULT 30,
+            months_due INTEGER DEFAULT 1,
+            start_date TEXT,
+            next_due_date TEXT,
+            FOREIGN KEY (student_id) REFERENCES students(id)
+        )
+    ''')
+    
+    # Payment history table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS fee_payments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            amount REAL,
+            payment_method TEXT,
+            remarks TEXT,
+            payment_date TEXT,
+            FOREIGN KEY (student_id) REFERENCES students(id)
+        )
+    ''')
+    
+    # পুরনো table-এ নতুন কলাম যোগ করুন (যদি আগে থেকে থাকে)
+    for col_sql in [
+        "ALTER TABLE fees ADD COLUMN base_fee REAL DEFAULT 0",
+        "ALTER TABLE fees ADD COLUMN duration_days INTEGER DEFAULT 30",
+        "ALTER TABLE fees ADD COLUMN months_due INTEGER DEFAULT 1",
+        "ALTER TABLE fees ADD COLUMN start_date TEXT",
+        "ALTER TABLE fees ADD COLUMN next_due_date TEXT",
+    ]:
+        try:
+            cursor.execute(col_sql)
+        except:
+            pass
+    
+    conn.commit()
+    conn.close()
+
+init_fees_tables()
 
 def init_database():
     """Initialize database with all required tables"""
@@ -2147,6 +2200,332 @@ def get_all_notices_public():
         conn.close()
         return jsonify({'success': False, 'message': str(e)}), 500
 
+
+
+# ============================================================
+# FEES MANAGEMENT ROUTES
+# ============================================================
+
+@app.route('/fees')
+def fees():
+    if 'user_id' not in session:
+        flash('Please login first', 'error')
+        return redirect(url_for('login'))
+    
+    conn = sqlite3.connect('tution.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    # =========================================================
+    # AUTO-DUE CHECK
+    # Duration শেষ হলে months_due বাড়বে
+    # paid_amount অটুট থাকবে (হারাবে না)
+    # =========================================================
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    cursor.execute('''
+        SELECT * FROM fees 
+        WHERE next_due_date IS NOT NULL 
+          AND next_due_date <= ? 
+          AND duration_days > 0
+    ''', (today,))
+    expired_fees = cursor.fetchall()
+    
+    for f in expired_fees:
+        duration = f['duration_days'] or 30
+        last_due = datetime.strptime(f['next_due_date'], '%Y-%m-%d')
+        
+        days_passed = (datetime.now() - last_due).days
+        extra_cycles = 1 + (days_passed // duration)
+        
+        old_months = f['months_due'] or 1
+        new_months = old_months + extra_cycles
+        
+        # base_fee = প্রতি মাসের Fee
+        base = f['base_fee'] or (f['total_fee'] / old_months if old_months > 0 else f['total_fee'])
+        
+        new_total = base * new_months
+        new_due = new_total - (f['paid_amount'] or 0)
+        if new_due < 0:
+            new_due = 0
+        
+        new_next_due = last_due + timedelta(days=duration * extra_cycles)
+        
+        cursor.execute('''
+            UPDATE fees 
+            SET base_fee = ?,
+                months_due = ?,
+                total_fee = ?,
+                due_amount = ?,
+                next_due_date = ?
+            WHERE id = ?
+        ''', (base, new_months, new_total, new_due, 
+              new_next_due.strftime('%Y-%m-%d'), f['id']))
+    
+    if expired_fees:
+        conn.commit()
+    # =========================================================
+    
+    cursor.execute('''
+        SELECT s.*, 
+               COALESCE(f.total_fee, 0) as total_fee,
+               COALESCE(f.base_fee, 0) as base_fee,
+               COALESCE(f.paid_amount, 0) as paid_amount,
+               COALESCE(f.due_amount, 0) as due_amount,
+               COALESCE(f.duration_days, 30) as duration_days,
+               COALESCE(f.months_due, 1) as months_due,
+               f.start_date,
+               f.next_due_date,
+               f.id as fee_id
+        FROM students s
+        LEFT JOIN fees f ON s.id = f.student_id
+        ORDER BY s.name
+    ''')
+    students = cursor.fetchall()
+    
+    cursor.execute('''
+        SELECT 
+            COALESCE(SUM(total_fee), 0) as total_fees,
+            COALESCE(SUM(paid_amount), 0) as total_collected,
+            COALESCE(SUM(due_amount), 0) as total_due
+        FROM fees
+    ''')
+    summary = cursor.fetchone()
+    
+    conn.close()
+    return render_template('fees.html', students=students, summary=summary)
+
+
+@app.route('/set_fee/<int:student_id>', methods=['POST'])
+def set_fee(student_id):
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Please login first'}), 401
+    
+    data = request.get_json()
+    total_fee = float(data.get('total_fee', 0))
+    duration_days = int(data.get('duration_days', 30))
+    start_date = data.get('start_date')
+    
+    conn = sqlite3.connect('tution.db')
+    cursor = conn.cursor()
+    
+    if start_date:
+        start = datetime.strptime(start_date, '%Y-%m-%d')
+    else:
+        start = datetime.now()
+    next_due = start + timedelta(days=duration_days)
+    start_date_str = start.strftime('%Y-%m-%d')
+    next_due_str = next_due.strftime('%Y-%m-%d')
+    
+    cursor.execute('SELECT * FROM fees WHERE student_id = ?', (student_id,))
+    existing = cursor.fetchone()
+    
+    if existing:
+        # পুরনো paid_amount রাখুন
+        old_paid = existing[4] or 0  # paid_amount index
+        new_due = total_fee - old_paid
+        if new_due < 0:
+            new_due = 0
+        
+        cursor.execute('''
+            UPDATE fees 
+            SET base_fee = ?,
+                total_fee = ?, 
+                duration_days = ?, 
+                months_due = 1,
+                start_date = ?, 
+                next_due_date = ?,
+                due_amount = ?
+            WHERE student_id = ?
+        ''', (total_fee, total_fee, duration_days, start_date_str, 
+              next_due_str, new_due, student_id))
+    else:
+        cursor.execute('''
+            INSERT INTO fees 
+                (student_id, base_fee, total_fee, paid_amount, due_amount, 
+                 duration_days, months_due, start_date, next_due_date)
+            VALUES (?, ?, ?, 0, ?, ?, 1, ?, ?)
+        ''', (student_id, total_fee, total_fee, total_fee, 
+              duration_days, start_date_str, next_due_str))
+    
+    conn.commit()
+    conn.close()
+    
+    return jsonify({
+        'success': True, 
+        'message': f'Fee set for {duration_days} days. Next due: {next_due_str}'
+    })
+
+
+@app.route('/edit_fee/<int:student_id>', methods=['POST'])
+def edit_fee(student_id):
+    """শুধু Fee Amount পরিবর্তন করবে, paid_amount ও months_due অটুট থাকবে"""
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Please login first'}), 401
+    
+    data = request.get_json()
+    new_base_fee = float(data.get('base_fee', 0))
+    
+    conn = sqlite3.connect('tution.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT * FROM fees WHERE student_id = ?', (student_id,))
+    existing = cursor.fetchone()
+    
+    if not existing:
+        conn.close()
+        return jsonify({'success': False, 'message': 'Fee not set yet'})
+    
+    # existing structure: 0=id, 1=student_id, 2=base_fee, 3=total_fee, 4=paid_amount, 5=due_amount, 6=duration_days, 7=months_due
+    old_paid = existing[4] or 0
+    months_due = existing[7] or 1
+    
+    new_total = new_base_fee * months_due
+    new_due = new_total - old_paid
+    if new_due < 0:
+        new_due = 0
+    
+    cursor.execute('''
+        UPDATE fees 
+        SET base_fee = ?,
+            total_fee = ?,
+            due_amount = ?
+        WHERE student_id = ?
+    ''', (new_base_fee, new_total, new_due, student_id))
+    
+    conn.commit()
+    conn.close()
+    
+    return jsonify({
+        'success': True,
+        'message': f'Fee updated to ₹{new_base_fee:.0f}/month. Total: ₹{new_total:.0f}'
+    })
+
+
+@app.route('/pay_fee/<int:student_id>', methods=['POST'])
+def pay_fee(student_id):
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Please login first'}), 401
+    
+    data = request.get_json()
+    amount = float(data.get('amount', 0))
+    payment_method = data.get('payment_method', 'Cash')
+    remarks = data.get('remarks', '')
+    
+    if amount <= 0:
+        return jsonify({'success': False, 'message': 'Amount must be greater than 0'})
+    
+    conn = sqlite3.connect('tution.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT * FROM fees WHERE student_id = ?', (student_id,))
+    fee_record = cursor.fetchone()
+    
+    if not fee_record:
+        conn.close()
+        return jsonify({'success': False, 'message': 'Fee structure not set for this student'})
+    
+    # Column indices:
+    # 0=id, 1=student_id, 2=base_fee, 3=total_fee, 4=paid_amount, 5=due_amount
+    total_fee = fee_record[3] or 0
+    current_paid = fee_record[4] or 0
+    current_due = fee_record[5] or 0
+    
+    if amount > current_due:
+        conn.close()
+        return jsonify({
+            'success': False, 
+            'message': f'Amount exceeds due (Due: ₹{current_due:.0f})'
+        })
+    
+    new_paid = current_paid + amount
+    new_due = current_due - amount
+    
+    cursor.execute('''
+        UPDATE fees 
+        SET paid_amount = ?, due_amount = ?
+        WHERE student_id = ?
+    ''', (new_paid, new_due, student_id))
+    
+    cursor.execute('''
+        INSERT INTO fee_payments (student_id, amount, payment_method, remarks, payment_date)
+        VALUES (?, ?, ?, ?, datetime('now', 'localtime'))
+    ''', (student_id, amount, payment_method, remarks))
+    
+    cursor.execute('SELECT * FROM students WHERE id = ?', (student_id,))
+    student = cursor.fetchone()
+    
+    conn.commit()
+    conn.close()
+    
+    receipt = {
+        'student_name': student[1],
+        'student_id': student_id,
+        'amount_paid': amount,
+        'total_fee': total_fee,
+        'total_paid': new_paid,
+        'due_amount': new_due,
+        'payment_method': payment_method,
+        'payment_date': datetime.now().strftime('%d-%m-%Y %I:%M %p'),
+        'transaction_id': f"EPS{datetime.now().strftime('%Y%m%d%H%M%S')}{student_id}"
+    }
+    
+    return jsonify({
+        'success': True, 
+        'message': 'Payment recorded successfully',
+        'receipt': receipt
+    })
+
+
+@app.route('/fee_history/<int:student_id>')
+def fee_history(student_id):
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Please login first'}), 401
+    
+    conn = sqlite3.connect('tution.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        SELECT * FROM fee_payments 
+        WHERE student_id = ? 
+        ORDER BY payment_date DESC
+    ''', (student_id,))
+    payments = cursor.fetchall()
+    
+    conn.close()
+    
+    return jsonify({
+        'success': True,
+        'payments': [dict(p) for p in payments]
+    })
+
+
+@app.route('/fees_summary')
+def fees_summary():
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Please login first'}), 401
+    
+    conn = sqlite3.connect('tution.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        SELECT 
+            COALESCE(SUM(total_fee), 0),
+            COALESCE(SUM(paid_amount), 0),
+            COALESCE(SUM(due_amount), 0)
+        FROM fees
+    ''')
+    summary = cursor.fetchone()
+    
+    conn.close()
+    
+    return jsonify({
+        'success': True,
+        'total_fees': summary[0],
+        'total_collected': summary[1],
+        'total_due': summary[2]
+    })
 # ------------------------
 # Logout
 # ------------------------
