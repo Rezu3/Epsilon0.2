@@ -286,7 +286,6 @@ body {
     color: #4facfe;
 }
 
-/* Matched Batch Card */
 .card.matched-batch {
     border: 2px solid #4facfe;
     background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%);
@@ -353,7 +352,7 @@ body {
 }
 
 .question-text {
-    font-size: 1.15rem; /* Slightly larger */
+    font-size: 1.15rem;
     font-weight: 600;
     color: #2d3748;
     line-height: 1.7;
@@ -396,7 +395,7 @@ body {
     padding: 14px 18px;
     border-radius: 14px;
     text-align: left;
-    font-size: 1rem; /* Slightly larger */
+    font-size: 1rem;
     font-weight: 500;
     color: #2d3748;
     cursor: pointer;
@@ -439,7 +438,6 @@ body {
     color: white;
 }
 
-/* Correct Option */
 .option-btn.correct {
     background-color: #e6f4ea !important;
     border-color: #34a853 !important;
@@ -470,7 +468,6 @@ body {
     font-size: 12px;
 }
 
-/* Wrong Option */
 .option-btn.wrong {
     background-color: #fce8e6 !important;
     border-color: #ea4335 !important;
@@ -716,7 +713,7 @@ body {
     
     .quiz-header {
         padding: 10px 16px;
-        flex-direction: row; /* Keep horizontal on mobile */
+        flex-direction: row;
         flex-wrap: wrap;
         gap: 8px;
     }
@@ -726,7 +723,7 @@ body {
     }
     
     .quiz-footer {
-        flex-direction: row; /* Keep side by side on mobile */
+        flex-direction: row;
         gap: 12px;
         margin-top: 16px;
     }
@@ -758,7 +755,7 @@ body {
     }
     
     .question-text {
-        font-size: 1.05rem; /* Larger on mobile */
+        font-size: 1.05rem;
         padding: 12px 16px;
         line-height: 1.6;
         margin-bottom: 16px;
@@ -823,7 +820,7 @@ body {
     }
     
     .quiz-footer {
-        flex-direction: row; /* Keep side by side on very small */
+        flex-direction: row;
         gap: 8px;
     }
     
@@ -932,47 +929,137 @@ html {
 
 /* ========================================== */
 /* WRITTEN QUESTION (SAQ / Marks) STYLES      */
+/* MCQ — UNCHANGED. SAQ/Marks — WHITE BG      */
 /* ========================================== */
+
+/* Question block — transparent, ফাঁকা কম */
 .written-q-block {
-    background: #fff;
+    background: transparent;
     border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 0;
+    margin-bottom: 16px;
     line-height: 1.7;
 }
+
+/* Question text — হালকা box, blue border */
 .written-q-block .question-text {
-    font-size: 1.05rem;
+    font-size: 0.92rem;
     color: #2d3748;
-    margin-bottom: 10px;
-    line-height: 1.8;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.7;
+    padding: 12px 14px;
+    background: #f7fafc;
+    border-radius: 10px;
+    border-left: 4px solid #4facfe;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
+
+/* View Answer button */
 .view-answer-btn {
     background: #4facfe;
-    color: #fff;
+    color: #ffffff;
     border: none;
-    padding: 8px 18px;
+    padding: 7px 16px;
     border-radius: 8px;
     cursor: pointer;
-    margin-top: 12px;
+    margin-top: 4px;
+    margin-bottom: 8px;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 0.82rem;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, transform 0.15s ease;
+    touch-action: manipulation;
 }
+
 .view-answer-btn:hover {
     background: #3a8dde;
 }
+
+.view-answer-btn:active {
+    transform: scale(0.97);
+}
+
+/* Answer box — WHITE background, blue border (সবুজ নেই) */
 .written-answer {
-    margin-top: 12px;
-    padding: 14px 16px;
-    background: #f0fff4;
-    border-left: 4px solid #28a745;
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #4facfe;
     border-radius: 8px;
-    line-height: 1.8;
-    color: #22543d;
-    font-size: 0.98rem;
+    line-height: 1.7;
+    color: #2d3748;
+    font-size: 0.88rem;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+/* MathJax equation left-align (বাঁয়ে থাকবে) */
+.written-answer mjx-container[display="true"] {
+    display: block !important;
+    text-align: left !important;
+    margin: 8px 0 !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.written-answer mjx-container {
+    font-size: 100% !important;
+}
+
+/* ===== SAQ / Marks — Mobile (600px) ===== */
+@media (max-width: 600px) {
+    .written-q-block {
+        padding: 0;
+        margin-bottom: 12px;
+    }
+    .written-q-block .question-text {
+        font-size: 0.88rem;
+        line-height: 1.65;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+    }
+    .view-answer-btn {
+        padding: 6px 14px;
+        font-size: 0.78rem;
+        margin-top: 4px;
+    }
+    .written-answer {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+        line-height: 1.65;
+        margin-top: 8px;
+    }
+    .written-answer mjx-container {
+        font-size: 95% !important;
+    }
+}
+
+/* ===== SAQ / Marks — Small Mobile (400px) ===== */
+@media (max-width: 400px) {
+    .written-q-block {
+        margin-bottom: 10px;
+    }
+    .written-q-block .question-text {
+        font-size: 0.85rem;
+        line-height: 1.6;
+        padding: 9px 10px;
+    }
+    .view-answer-btn {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+    }
+    .written-answer {
+        padding: 10px;
+        font-size: 0.82rem;
+        line-height: 1.6;
+    }
+    .written-answer mjx-container {
+        font-size: 90% !important;
+    }
 }
