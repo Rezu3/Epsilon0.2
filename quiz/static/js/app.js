@@ -1,6 +1,7 @@
 // ==========================================
 // QUIZ SYSTEM WITH CHAPTER LOCK SYSTEM
 // + Question Type (MCQ / SAQ / 2,3,4,5 Marks)
+// + Dual Image Support (question_image / answer_image)
 // ==========================================
 
 // ===== CONFIGURATION =====
@@ -9,6 +10,10 @@ const STUDENT_ID = document.getElementById('studentId').value;
 const MATCHED_BATCH = JSON.parse(document.getElementById('matchedBatchData').value || 'null');
 const RETURN_URL = document.getElementById('returnUrl').value;
 const API_BASE = '/quiz/api';
+
+// ===== STATIC BASE URL =====
+// Blueprint static_url_path='/static' + url_prefix='/quiz' → /quiz/static
+const STATIC_BASE = '/quiz/static';
 
 // ===== STATE VARIABLES =====
 let currentBatchId = null;
@@ -27,12 +32,53 @@ let currentSubjectChapters = [];
 let isSubmitting = false;
 
 // ==========================================
+// IMAGE URL HELPER (Centralized)
+// ==========================================
+function getImageUrl(imageName) {
+    if (!imageName || imageName.trim() === '') return '';
+    imageName = imageName.trim();
+
+    // Full URL already
+    if (imageName.startsWith('http://') || imageName.startsWith('https://')) {
+        return imageName;
+    }
+    // Absolute path already
+    if (imageName.startsWith('/')) {
+        return imageName;
+    }
+    // "images/" prefix already
+    if (imageName.startsWith('images/')) {
+        return `${STATIC_BASE}/${imageName}`;
+    }
+    // Just filename
+    return `${STATIC_BASE}/images/${imageName}`;
+}
+
+// ==========================================
 // CELEBRATION
 // ==========================================
 function triggerCelebration() {
     if (typeof confetti === 'function') {
         confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
     }
+}
+
+// ==========================================
+// TEXT FORMATTER (\n → <br>, **bold** → <strong>)
+// ==========================================
+function formatText(text) {
+    if (!text) return '';
+
+    // Step 1: \n → <br>
+    let formatted = text.replace(/\n/g, '<br>');
+
+    // Step 2: **bold** → <strong>
+    formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+    // Step 3: *italic* → <em>
+    formatted = formatted.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
+
+    return formatted;
 }
 
 // ==========================================
@@ -64,13 +110,13 @@ async function loadBatches(pushHistory = true) {
                     <span style="font-size:0.7rem;color:#4facfe;display:block;margin-top:4px;">✅ Your Class</span>
                 </div>
             `;
-            
+
             setTimeout(() => {
                 if (MATCHED_BATCH && MATCHED_BATCH.id) {
                     selectBatch(MATCHED_BATCH.id, MATCHED_BATCH.name, true);
                 }
             }, 500);
-            
+
             showView('batches-view');
             updateBreadcrumb();
             return;
@@ -78,10 +124,10 @@ async function loadBatches(pushHistory = true) {
 
         const response = await fetch(`${API_BASE}/batches`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
+
         let batches = await response.json();
         batches = sortBatches(batches);
-        
+
         grid.innerHTML = '';
         if (batches && batches.length > 0) {
             batches.forEach(batch => {
@@ -133,7 +179,7 @@ async function selectBatch(batchId, batchName, pushHistory = true) {
     try {
         const response = await fetch(`${API_BASE}/batches/${batchId}/subjects`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
+
         const subjects = await response.json();
         const grid = document.getElementById('subjects-grid');
         if (!grid) return;
@@ -145,7 +191,7 @@ async function selectBatch(batchId, batchName, pushHistory = true) {
                 card.className = 'card';
                 const progress = subject.progress_percentage || 0;
                 const progressColor = progress === 100 ? '#28a745' : progress > 0 ? '#4facfe' : '#e2e8f0';
-                
+
                 card.innerHTML = `
                     <i class="fas fa-book"></i>
                     ${subject.name}
@@ -182,22 +228,22 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
     currentQuestionTypeName = '';
 
     if (pushHistory) {
-        history.pushState({ 
-            view: 'chapters', 
-            batchId: currentBatchId, 
-            batchName: currentBatchName, 
-            subjectId, 
-            subjectName 
+        history.pushState({
+            view: 'chapters',
+            batchId: currentBatchId,
+            batchName: currentBatchName,
+            subjectId,
+            subjectName
         }, '');
     }
 
     try {
         const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${subjectId}/chapters`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
+
         const chapters = await response.json();
         currentSubjectChapters = chapters;
-        
+
         const grid = document.getElementById('chapters-grid');
         if (!grid) return;
         grid.innerHTML = '';
@@ -206,15 +252,15 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
             chapters.forEach(chapter => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                
+
                 let statusIcon = '';
                 let statusText = '';
                 let statusColor = '';
-                
+
                 const isTeacher = USER_TYPE === 'teacher' || USER_TYPE === 'admin';
                 const isLocked = !isTeacher && chapter.is_locked;
                 const isCompleted = chapter.is_completed;
-                
+
                 if (isCompleted) {
                     statusIcon = '✅';
                     statusText = 'Completed';
@@ -232,7 +278,7 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
                     statusText = 'Open';
                     statusColor = '#4facfe';
                 }
-                
+
                 card.innerHTML = `
                     <i class="fas fa-${isLocked ? 'lock' : isCompleted ? 'check-circle' : 'play-circle'}" 
                        style="color:${statusColor};"></i>
@@ -241,11 +287,11 @@ async function selectSubject(subjectId, subjectName, pushHistory = true) {
                         ${statusIcon} ${statusText}
                     </span>
                 `;
-                
+
                 if (!isLocked || isTeacher) {
                     card.onclick = () => selectChapter(chapter.id, chapter.name);
                 }
-                
+
                 grid.appendChild(card);
             });
         } else {
@@ -282,7 +328,7 @@ async function selectChapter(chapterId, chapterName, pushHistory = true) {
 
     try {
         const response = await fetch(`${API_BASE}/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${chapterId}/question-types`);
-        
+
         if (response.status === 403) {
             const error = await response.json();
             const isTeacher = USER_TYPE === 'teacher' || USER_TYPE === 'admin';
@@ -291,9 +337,9 @@ async function selectChapter(chapterId, chapterName, pushHistory = true) {
                 return;
             }
         }
-        
+
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
+
         const types = await response.json();
         const grid = document.getElementById('question-types-grid');
         if (!grid) return;
@@ -374,9 +420,9 @@ async function selectQuestionType(type, typeName, pushHistory = true) {
         const isTeacher = USER_TYPE === 'teacher' || USER_TYPE === 'admin';
         const forceParam = isTeacher ? '?force=true' : '';
         const url = `${API_BASE}/batches/${currentBatchId}/subjects/${currentSubjectId}/chapters/${currentChapterId}/questions/${type}${forceParam}`;
-        
+
         const response = await fetch(url);
-        
+
         if (response.status === 403) {
             const error = await response.json();
             if (!isTeacher) {
@@ -384,9 +430,9 @@ async function selectQuestionType(type, typeName, pushHistory = true) {
                 return;
             }
         }
-        
+
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
+
         questions = await response.json();
 
         if (questions.length > 0) {
@@ -446,7 +492,7 @@ function showView(viewId) {
 }
 
 // ==========================================
-// QUIZ UI (MCQ)
+// QUIZ UI (MCQ LAYOUT)
 // ==========================================
 function restoreQuizLayout() {
     const quizCard = document.getElementById('quiz-card');
@@ -482,6 +528,9 @@ function restoreWrittenLayout() {
     `;
 }
 
+// ==========================================
+// WRITTEN QUESTION RENDER (SAQ / Marks)
+// ==========================================
 function showWrittenQuestion(index) {
     if (!questions || questions.length === 0) return;
     const q = questions[index];
@@ -493,24 +542,69 @@ function showWrittenQuestion(index) {
     const container = document.getElementById('written-question-container');
     if (!container) return;
 
+    // ===== Question-এর সাথে Image =====
+    // Support: question_image (new) OR image (old/legacy)
+    let questionImageHTML = '';
+    const questionImageName = q.question_image || q.image;
+    if (questionImageName) {
+        const imgUrl = getImageUrl(questionImageName);
+        console.log('🖼️ Question image:', imgUrl);
+        questionImageHTML = `
+            <div class="written-question-image" style="text-align: center; margin: 15px 0;">
+                <img src="${imgUrl}"
+                     alt="Question Image"
+                     style="max-width: 100%; max-height: 400px; border-radius: 10px;
+                            box-shadow: 0 2px 10px rgba(0,0,0,0.1); cursor: zoom-in;"
+                     onclick="openImageModal('${imgUrl}')"
+                     onerror="console.error('❌ Question image failed:', this.src); this.style.display='none';">
+            </div>
+        `;
+    }
+
+    // ===== Answer-এর সাথে Image =====
+    let answerImageHTML = '';
+    if (q.answer_image) {
+        const imgUrl = getImageUrl(q.answer_image);
+        console.log('🖼️ Answer image:', imgUrl);
+        answerImageHTML = `
+            <div class="written-answer-image" style="text-align: center; margin: 15px 0;">
+                <img src="${imgUrl}"
+                     alt="Answer Image"
+                     style="max-width: 100%; max-height: 500px; border-radius: 10px;
+                            box-shadow: 0 2px 10px rgba(0,0,0,0.1); cursor: zoom-in;"
+                     onclick="openImageModal('${imgUrl}')"
+                     onerror="console.error('❌ Answer image failed:', this.src); this.style.display='none';">
+            </div>
+        `;
+    }
+
+    // ===== HTML রেন্ডার =====
     container.innerHTML = `
         <div class="written-q-block">
-            <div class="question-text" id="written-q-text-${index}">
-                ${index + 1}. ${q.question || q.text || ''}
+            <div class="question-text mathjax" id="written-q-text-${index}">
+                ${index + 1}. ${formatText(q.question || q.text || '')}
             </div>
+            ${questionImageHTML}
             <button class="view-answer-btn" onclick="toggleAnswer(${index})">
                 <i class="fas fa-eye"></i> View Answer
             </button>
-            <div class="written-answer" id="written-answer-${index}" style="display:none;">
-                <strong>Answer:</strong><br>${q.answer || ''}
+            <div class="written-answer mathjax" id="written-answer-${index}" style="display:none;">
+                ${answerImageHTML}
+                <strong>Answer:</strong><br>${formatText(q.answer || '')}
             </div>
         </div>
     `;
 
+    // ===== MathJax রেন্ডার =====
     if (window.MathJax && window.MathJax.typesetPromise) {
-        window.MathJax.typesetPromise([container]).catch(() => {});
+        setTimeout(() => {
+            window.MathJax.typesetPromise([container]).catch((err) => {
+                console.warn('MathJax typeset error:', err);
+            });
+        }, 100);
     }
 
+    // ===== Navigation Buttons =====
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const isLast = index === questions.length - 1;
@@ -523,6 +617,7 @@ function showWrittenQuestion(index) {
             prevBtn.disabled = false;
             prevBtn.style.display = 'flex';
             prevBtn.style.opacity = '1';
+            prevBtn.onclick = prevQuestion;
         }
     }
 
@@ -543,6 +638,9 @@ function showWrittenQuestion(index) {
     }
 }
 
+// ==========================================
+// TOGGLE ANSWER
+// ==========================================
 function toggleAnswer(index) {
     const ans = document.getElementById(`written-answer-${index}`);
     if (!ans) return;
@@ -550,10 +648,57 @@ function toggleAnswer(index) {
     if (ans.style.display === 'none') {
         ans.style.display = 'block';
         if (btn) btn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Answer';
+        // Re-render MathJax inside answer (since it was hidden)
+        if (window.MathJax && window.MathJax.typesetPromise) {
+            window.MathJax.typesetPromise([ans]).catch(() => {});
+        }
     } else {
         ans.style.display = 'none';
         if (btn) btn.innerHTML = '<i class="fas fa-eye"></i> View Answer';
     }
+}
+
+// ==========================================
+// IMAGE MODAL (ক্লিক করলে বড় করে দেখাবে)
+// ==========================================
+function openImageModal(src) {
+    const oldModal = document.getElementById('imageModal');
+    if (oldModal) oldModal.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'imageModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        cursor: zoom-out;
+        padding: 20px;
+    `;
+    modal.onclick = () => modal.remove();
+
+    const img = document.createElement('img');
+    img.src = src;
+    img.style.cssText = `
+        max-width: 95%;
+        max-height: 95vh;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    `;
+
+    modal.appendChild(img);
+    document.body.appendChild(modal);
+
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
 }
 
 // ==========================================
@@ -568,12 +713,22 @@ function showQuestion(index) {
     if (progressElem) progressElem.innerText = `Question ${index + 1} / ${questions.length}`;
 
     const qTextElem = document.getElementById('question-text');
-    if (qTextElem) qTextElem.innerHTML = `${index + 1}. ${q.question || q.text || ''}`;
+    if (qTextElem) qTextElem.innerHTML = `${index + 1}. ${formatText(q.question || q.text || '')}`;
 
+    // ===== ইমেজ হ্যান্ডলিং (MCQ) =====
+    // Support: question_image (new) OR image (old/legacy)
     const imgContainer = document.getElementById('question-image-container');
     const imgElem = document.getElementById('question-image');
-    if (q.image && imgElem) {
-        imgElem.src = `quiz/static/images/${q.image}`;
+    const mcqImageName = q.question_image || q.image;
+
+    if (mcqImageName && imgElem) {
+        const imgUrl = getImageUrl(mcqImageName);
+        console.log('🖼️ MCQ image:', imgUrl);
+        imgElem.src = imgUrl;
+        imgElem.onerror = () => {
+            console.error('❌ MCQ image failed:', imgUrl);
+            if (imgContainer) imgContainer.style.display = 'none';
+        };
         if (imgContainer) imgContainer.style.display = 'block';
     } else if (imgContainer) {
         imgContainer.style.display = 'none';
@@ -585,12 +740,12 @@ function showQuestion(index) {
 
     if (q.options && Array.isArray(q.options)) {
         const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
-        
+
         q.options.forEach((optText, optIdx) => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
             btn.innerHTML = `<span class="option-label">${String.fromCharCode(65 + optIdx)}</span> ${optText}`;
-            
+
             if (userAnswers[index] !== undefined) {
                 btn.classList.add('disabled');
                 if (optIdx === correctAnswer) btn.classList.add('correct');
@@ -604,7 +759,7 @@ function showQuestion(index) {
 
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
-    
+
     if (prevBtn) {
         if (index === 0) {
             prevBtn.disabled = true;
@@ -613,20 +768,21 @@ function showQuestion(index) {
             prevBtn.disabled = false;
             prevBtn.style.display = 'flex';
             prevBtn.style.opacity = '1';
+            prevBtn.onclick = prevQuestion;
         }
     }
-    
+
     if (nextBtn) {
         nextBtn.disabled = false;
         nextBtn.style.display = 'flex';
         nextBtn.style.opacity = '1';
         nextBtn.style.visibility = 'visible';
-        
+
         const answeredCount = Object.keys(userAnswers).length;
         const totalQuestions = questions.length;
         const allAnswered = answeredCount === totalQuestions;
         const isLastQuestion = index === totalQuestions - 1;
-        
+
         if (isLastQuestion && allAnswered) {
             nextBtn.innerHTML = '📤 Submit';
             nextBtn.onclick = submitQuiz;
@@ -657,7 +813,7 @@ function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
 
     const totalQuestions = questions.length;
     const answeredCount = Object.keys(userAnswers).length;
-    
+
     if (answeredCount === totalQuestions) {
         const nextBtn = document.getElementById('next-btn');
         if (nextBtn) {
@@ -678,19 +834,19 @@ function handleAnswer(selectedIndex, correctAnswer, questionIndex) {
 async function submitQuiz() {
     if (isSubmitting) return;
     isSubmitting = true;
-    
+
     let correct = 0;
     questions.forEach((q, idx) => {
         const correctAnswer = q.answer !== undefined ? q.answer : q.correct_answer;
         if (userAnswers[idx] === correctAnswer) correct++;
     });
-    
+
     const total = questions.length;
     const percentage = Math.round((correct / total) * 100);
-    
+
     const nextBtn = document.getElementById('next-btn');
     const prevBtn = document.getElementById('prev-btn');
-    
+
     if (nextBtn) {
         nextBtn.disabled = true;
         nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
@@ -698,7 +854,7 @@ async function submitQuiz() {
     if (prevBtn) {
         prevBtn.disabled = true;
     }
-    
+
     try {
         const response = await fetch('/quiz/api/submit_result', {
             method: 'POST',
@@ -713,15 +869,15 @@ async function submitQuiz() {
                 percentage: percentage
             })
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
             triggerCelebration();
-            
+
             const quizCard = document.getElementById('quiz-card');
             const footer = document.getElementById('quizFooter');
-            
+
             let nextChapterHTML = '';
             if (result.next_chapter_unlocked) {
                 nextChapterHTML = `
@@ -735,7 +891,7 @@ async function submitQuiz() {
                     </div>
                 `;
             }
-            
+
             quizCard.innerHTML = `
                 <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
                     <div style="font-size: 60px; margin-bottom: 10px;">🎉</div>
@@ -755,10 +911,10 @@ async function submitQuiz() {
                 </div>
             `;
             if (footer) footer.style.display = 'none';
-            
+
         } else {
             const quizCard = document.getElementById('quiz-card');
-            
+
             if (result.already_completed) {
                 quizCard.innerHTML = `
                     <div class="quiz-results" style="text-align: center; padding: 30px 20px;">
@@ -790,13 +946,13 @@ async function submitQuiz() {
                 if (footer) footer.style.display = 'none';
             }
         }
-        
+
         isSubmitting = false;
-        
+
     } catch (error) {
         console.error('❌ Error submitting quiz:', error);
         showError('Failed to submit. Please try again.');
-        
+
         const nextBtn = document.getElementById('next-btn');
         const prevBtn = document.getElementById('prev-btn');
         if (nextBtn) {
@@ -818,24 +974,24 @@ function resetQuiz() {
     userAnswers = {};
     currentQuestionIndex = 0;
     isSubmitting = false;
-    
+
     restoreQuizLayout();
     showQuestion(0);
-    
+
     const footer = document.getElementById('quizFooter');
     if (footer) {
         footer.style.display = 'flex';
         footer.style.visibility = 'visible';
         footer.style.opacity = '1';
     }
-    
+
     const prevBtn = document.getElementById('prev-btn');
     if (prevBtn) {
         prevBtn.disabled = true;
         prevBtn.style.display = 'none';
         prevBtn.style.opacity = '1';
     }
-    
+
     const nextBtn = document.getElementById('next-btn');
     if (nextBtn) {
         nextBtn.disabled = false;
@@ -846,12 +1002,12 @@ function resetQuiz() {
         nextBtn.onclick = nextQuestion;
         nextBtn.style.background = '#4facfe';
     }
-    
+
     const progressElem = document.getElementById('quiz-progress');
     if (progressElem) {
         progressElem.innerText = `Question 1 / ${questions.length}`;
     }
-    
+
     if (window.MathJax && window.MathJax.typesetPromise) {
         const qTextElem = document.getElementById('question-text');
         const optionsGrid = document.getElementById('options-container');
@@ -859,17 +1015,17 @@ function resetQuiz() {
             window.MathJax.typesetPromise([qTextElem, optionsGrid]).catch(() => {});
         }
     }
-    
+
     const quizView = document.getElementById('quiz-view');
     if (quizView) {
         quizView.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    
+
     console.log('🔄 Quiz reset successfully');
 }
 
 // ==========================================
-// NAVIGATION
+// NAVIGATION (Next / Prev)
 // ==========================================
 function nextQuestion() {
     if (currentQuestionIndex < questions.length - 1) {
@@ -907,8 +1063,8 @@ function goBackToDashboard() {
         return;
     }
     const referrer = document.referrer;
-    if (referrer && (referrer.includes('/student_dashboard') || 
-                   referrer.includes('/teacher_home') || 
+    if (referrer && (referrer.includes('/student_dashboard') ||
+                   referrer.includes('/teacher_home') ||
                    referrer.includes('/admin_dashboard'))) {
         window.location.href = referrer;
         return;
@@ -999,11 +1155,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (RETURN_URL) {
         sessionStorage.setItem('dashboardUrl', RETURN_URL);
     }
-    
+
     const backBtnText = document.getElementById('backButtonText');
     if (backBtnText) {
         backBtnText.textContent = 'Dashboard';
     }
-    
+
     loadBatches(true);
 });
