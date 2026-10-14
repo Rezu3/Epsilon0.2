@@ -7,7 +7,7 @@ from datetime import datetime
 quiz_bp = Blueprint('quiz', __name__, 
                     template_folder='templates',
                     static_folder='static',
-                    static_url_path='/quiz/static')
+                    static_url_path='/static')
 
 # Simple In-Memory Cache
 _DATA_CACHE = None
