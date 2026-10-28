@@ -1,244 +1,279 @@
-const questions = [
-    {
-        id: 1,
-        question: `$x^2 + 7x + K = (x+4)(x+3)$ হলে, $K$-এর মান কত?`,
-        image: null,
-        options: [
-            `$7$`,
-            `$22$`,
-            `$12$`,
-            `$15$`
-        ],
-        correct: 2
-    },
-    {
-        id: 2,
-        question: `$\\triangle ABC$-এর $AB = BC$ এবং $\\angle ABC = 33^\\circ$ হলে, $\\angle CAD = ?$`,
-        image: "q2.png",
-        options: [
-            `$33^\\circ$`,
-            `$147^\\circ$`,
-            `$155^\\circ$`,
-            `$80^\\circ$`
-        ],
-        correct: 1
-    },
-    {
-        id: 3,
-        question: `যদি একটি সংখ্যার $35\\%$ সংখ্যাটির $50\\%$ অপেক্ষা $12$ কম হয়, তবে সংখ্যাটি কত?`,
-        image: null,
-        options: [
-            `$40$`,
-            `$50$`,
-            `$60$`,
-            `$80$`
-        ],
-        correct: 3
-    },
-    {
-        id: 4,
-        question: `$10$ জন ব্যক্তি $20$ দিনে একটি কাজ করতে পারে। দ্বিগুণ দক্ষতার $20$ জন ব্যক্তি একই কাজ করতে কত দিন সময় নেবে?`,
-        image: null,
-        options: [
-            `$5$ দিন`,
-            `$10$ দিন`,
-            `$20$ দিন`,
-            `$4$ দিন`
-        ],
-        correct: 0
-    },
-    {
-        id: 5,
-        question: `$600\\text{ g}$ চিনির দ্রবণে $40\\%$ চিনি আছে। দ্রবণটিতে আরও কত চিনি মেশালে চিনির পরিমাণ $50\\%$ হবে?`,
-        image: null,
-        options: [
-            `$60\\text{ g}$`,
-            `$90\\text{ g}$`,
-            `$120\\text{ g}$`,
-            `$150\\text{ g}$`
-        ],
-        correct: 2
-    },
-    {
-        id: 6,
-        question: `$10648$-এর ঘনমূল কত?`,
-        image: null,
-        options: [
-            `$20$`,
-            `$12$`,
-            `$24$`,
-            `$22$`
-        ],
-        correct: 3
-    },
-    {
-        id: 7,
-        question: `$a^3 + b^3 + c^3 = 3abc$ হলে, $a + b + c = ?$`,
-        image: null,
-        options: [
-            `$3$`,
-            `$5$`,
-            `$1$`,
-            `$0$`
-        ],
-        correct: 3
-    },
-    {
-        id: 8,
-        question: `শ্রী রতন বাবুর বেতন প্রথমে $25\\%$ বৃদ্ধি পেয়ে পরে $25\\%$ হ্রাস পেল। তাঁর বেতনের শতকরা কী পরিবর্তন হলো?`,
-        image: null,
-        options: [
-            `$7.25\\%$ বৃদ্ধি`,
-            `$6.25\\%$ হ্রাস`,
-            `$7.15\\%$ হ্রাস`,
-            `$6.25\\%$ বৃদ্ধি`
-        ],
-        correct: 1
-    },
-    {
-        id: 9,
-        question: `$x + \\frac{1}{x} = -1$ হলে, $x^3 - 1$-এর মান কত?`,
-        image: null,
-        options: [
-            `$1$`,
-            `$-1$`,
-            `$0$`,
-            `$-2$`
-        ],
-        correct: 2
-    },
-    {
-        id: 10,
-        question: `জলমিশ্রিত দুধের একটি পাত্রে $\\frac{2}{7}$ অংশ জল আছে। মিশ্রণে জল ও দুধের অনুপাত কত?`,
-        image: null,
-        options: [
-            `$2:7$`,
-            `$7:2$`,
-            `$2:5$`,
-            `$5:2$`
-        ],
-        correct: 2
-    },
-    {
-        id: 11,
-        question: `$4\\text{ kg}$ ভরের কোনো বস্তুর ওজন চাঁদের পৃষ্ঠে কত হবে?`,
-        image: null,
-        options: [
-            `$5.56\\text{ N}$`,
-            `$6.44\\text{ N}$`,
-            `$6.53\\text{ N}$`,
-            `$7.64\\text{ N}$`
-        ],
-        correct: 2
-    },
-    {
-        id: 12,
-        question: `$100\\text{ g}$ জলকে $20^\\circ\\text{C}$ উষ্ণতা থেকে স্ফুটনাঙ্কে পৌঁছাতে কত তাপের প্রয়োজন হবে?`,
-        image: null,
-        options: [
-            `$4000$ ক্যালোরি`,
-            `$6000$ ক্যালোরি`,
-            `$2000$ ক্যালোরি`,
-            `$8000$ ক্যালোরি`
-        ],
-        correct: 3
-    },
-    {
-        id: 13,
-        question: `চুনাপাথরে লঘু হাইড্রোক্লোরিক অ্যাসিড দিলে কোন গ্যাস নির্গত হয়?`,
-        image: null,
-        options: [
-            `ক্লোরিন`,
-            `হাইড্রোজেন`,
-            `$\\text{CO}_2$`,
-            `$\\text{O}_2$`
-        ],
-        correct: 2
-    },
-    {
-        id: 14,
-        question: `প্রদত্ত কোনটি উভধর্মী অক্সাইড?`,
-        image: null,
-        options: [
-            `$\\text{Na}_2\\text{O}$`,
-            `$\\text{ZnO}$`,
-            `$\\text{CO}_2$`,
-            `$\\text{Fe}_2\\text{O}_3$`
-        ],
-        correct: 1
-    },
-    {
-        id: 15,
-        question: `কোনো আলোক রশ্মি সংকট কোণে আপতিত হলে প্রতিসরণ কোণ কত হবে?`,
-        image: null,
-        options: [
-            `$30^\\circ$`,
-            `$60^\\circ$`,
-            `$90^\\circ$`,
-            `$100^\\circ$`
-        ],
-        correct: 2
-    },
-    {
-        id: 16,
-        question: `যদি বায়ুতে কোনো বস্তুর ওজন $w_1$ ও তরলে নিমজ্জিত হলে তার উপর ক্রিয়াশীল প্লবতা $w_2$ হয়, তবে প্রদত্ত কোনটি ভাসনের শর্ত?`,
-        image: null,
-        options: [
-            `$w_1 > w_2$`,
-            `$w_1 = w_2$`,
-            `$w_1 < w_2$`,
-            `$w_1 \\neq w_2$`
-        ],
-        correct: 1
-    },
-    {
-        id: 17,
-        question: `\${}_7^{14}\\text{N}$ ও \${}_6^{14}\\text{C}$ পরস্পর —`,
-        image: null,
-        options: [
-            `আইসোটোপ`,
-            `আইসোমার`,
-            `আইসোটোন`,
-            `আইসোবার`
-        ],
-        correct: 3
-    },
-    {
-        id: 18,
-        question: `আলোক রশ্মির চ্যুতি কোণ $60^\\circ$ হলে সমতল দর্পণে কোনো রশ্মির আপাতন কোণ কত হবে?`,
-        image: null,
-        options: [
-            `$120^\\circ$`,
-            `$60^\\circ$`,
-            `$30^\\circ$`,
-            `$45^\\circ$`
-        ],
-        correct: 1
-    },
-    {
-        id: 19,
-        question: `পারদ ব্যারোমিটারে প্রমাণ বায়ুচাপ $76\\text{ cmHg}$ হলে জল ব্যারোমিটারে প্রমাণ বায়ুচাপ কত দেখাবে?`,
-        image: null,
-        options: [
-            `$12.33\\text{ m}$`,
-            `$10.33\\text{ m}$`,
-            `$11.33\\text{ m}$`,
-            `$14.33\\text{ m}$`
-        ],
-        correct: 1
-    },
-    {
-        id: 20,
-        question: `কোন পদার্থের আপেক্ষিক তাপ সর্বাধিক?`,
-        image: null,
-        options: [
-            `জল`,
-            `দুধ`,
-            `তামা`,
-            `লোহা`
-        ],
-        correct: 0
-    }
+ const questions = [
+  // ================= Section A: Physics (Force & Pressure) — ১০টি =================
+  {
+    id: 1,
+    question: `The dimensional formula of force is:`,
+    image: null,
+    options: [`$[MLT^{-1}]$`, `$[MLT^{-2}]$`, `$[ML^2T^{-2}]$`, `$[M^0LT^{-2}]$`],
+    correct: 1
+  },
+  {
+    id: 2,
+    question: `1 Newton is equal to:`,
+    image: null,
+    options: [`$10^3$ dyne`, `$10^4$ dyne`, `$10^5$ dyne`, `$10^6$ dyne`],
+    correct: 2
+  },
+  {
+    id: 3,
+    question: `The dimensional formula of pressure is:`,
+    image: null,
+    options: [`$[MLT^{-2}]$`, `$[ML^{-1}T^{-2}]$`, `$[ML^2T^{-2}]$`, `$[M^0LT^{-2}]$`],
+    correct: 1
+  },
+  {
+    id: 4,
+    question: `For a constant force, if area is halved, pressure becomes:`,
+    image: null,
+    options: [`Half`, `Double`, `Same`, `Zero`],
+    correct: 1
+  },
+  {
+    id: 5,
+    question: `The pressure at a point inside a liquid at a given depth is:`,
+    image: null,
+    options: [`Same in all directions`, `Different in different directions`, `Zero`, `Infinite`],
+    correct: 0
+  },
+  {
+    id: 6,
+    question: `If force is 100 N and area is $2\\text{ m}^2$, pressure is:`,
+    image: null,
+    options: [`25 Pa`, `50 Pa`, `100 Pa`, `200 Pa`],
+    correct: 1
+  },
+  {
+    id: 7,
+    question: `1 atmosphere (atm) is equal to:`,
+    image: null,
+    options: [`101,325 Pa`, `1,013.25 Pa`, `10,132.5 Pa`, `1,013,250 Pa`],
+    correct: 0
+  },
+  {
+    id: 8,
+    question: `The pressure exerted by a liquid depends on:`,
+    image: null,
+    options: [`Its depth`, `Its density`, `Acceleration due to gravity`, `All of the above`],
+    correct: 3
+  },
+  {
+    id: 9,
+    question: `If a force of 10 N and 5 N act in opposite directions, net force is:`,
+    image: null,
+    options: [`5 N`, `10 N`, `15 N`, `50 N`],
+    correct: 0
+  },
+  {
+    id: 10,
+    question: `Atmospheric pressure:`,
+    image: null,
+    options: [`Increases with altitude`, `Decreases with altitude`, `Remains constant with altitude`, `Becomes zero at high altitude`],
+    correct: 1
+  },
+
+  // ================= Section B: Mathematics (Rational Numbers) — ১০টি =================
+  {
+    id: 11,
+    question: `Out of the following rational numbers, which is the smallest?`,
+    image: null,
+    options: [`$\\frac{2}{7}$`, `$-\\frac{5}{7}$`, `$-\\frac{4}{7}$`, `$\\frac{3}{7}$`],
+    correct: 1
+  },
+   {
+  id: 12,
+  question: `Which of the following is not true?`,
+  image: null,
+  options: [
+    `$\\frac{8}{7}+\\frac{3}{8}=\\frac{3}{8}+\\frac{8}{7}$`,
+    `$\\frac{8}{7}\\times\\frac{3}{8}=\\frac{3}{8}\\times\\frac{8}{7}$`,
+    `$\\frac{8}{7}\\div\\frac{3}{8}=\\frac{8}{7}\\times\\frac{8}{3}$`,
+    `$\\frac{8}{7}-\\frac{3}{8}=\\frac{3}{8}-\\frac{8}{7}$`
+  ],
+  correct: 3
+},
+  {
+    id: 13,
+    question: `Which one of the following rational numbers is the additive identity for rational numbers?`,
+    image: null,
+    options: [`0`, `2`, `1`, `3`],
+    correct: 0
+  },
+  {
+    id: 14,
+    question: `$\\frac{3}{4}$ of $\\frac{2}{7}$ of $\\frac{1}{5}$ of $560=?$`,
+    image: null,
+    options: [`28`, `24`, `32`, `36`],
+    correct: 1
+  },
+  {
+    id: 15,
+    question: `A rational number between $-\\frac{2}{3}$ and $\\frac{3}{4}$ is`,
+    image: null,
+    options: [`2`, `-2`, `-1`, `1`],
+    correct: 2
+  },
+  {
+    id: 16,
+    question: `The value of $1\\div[1+1\\div\\{1+1\\div(1+1\\div2)\\}]$ is:`,
+    image: null,
+    options: [`$\\frac{5}{8}$`, `$\\frac{8}{5}$`, `$\\frac{3}{8}$`, `$\\frac{3}{5}$`],
+    correct: 1
+  },
+  {
+    id: 17,
+    question: `The number expression $\\frac{3}{8}+\\frac{(-5)}{7}=\\frac{-19}{56}$ shows:`,
+    image: null,
+    options: [
+      `rational numbers are closed under addition.`,
+      `rational numbers are not closed under addition.`,
+      `rational numbers are closed under multiplication.`,
+      `addition of rational numbers is not commutative.`
+    ],
+    correct: 0
+  },
+  {
+    id: 18,
+    question: `The product of $\\frac{3}{4}$, $\\frac{2}{5}$ and $\\frac{25}{3}$ is:`,
+    image: null,
+    options: [`$\\frac{3}{2}$`, `$\\frac{5}{2}$`, `$\\frac{5}{4}$`, `$\\frac{3}{4}$`],
+    correct: 1
+  },
+  {
+    id: 19,
+    question: `If $157z234$ is divisible by 3, then the value of $z$ can be:`,
+    image: null,
+    options: [`2`, `5`, `8`, `0`],
+    correct: 1
+  },
+  {
+    id: 20,
+    question: `Which number is divisible by 5 and 9?`,
+    image: null,
+    options: [`585`, `285`, `389`, `560`],
+    correct: 0
+  },
+
+  // ================= Section C: English (Advanced Present Tense Translation) — ১০টি =================
+  {
+    id: 21,
+    question: `নদীর জল ধীরে ধীরে শুকিয়ে যাচ্ছে।`,
+    image: null,
+    options: [
+      `The river water is slowly drying up.`,
+      `The river water slowly dries up.`,
+      `The river water has slowly dried up.`,
+      `The river water is slowly dried up.`
+    ],
+    correct: 0
+  },
+  {
+    id: 22,
+    question: `সকাল থেকে অবিরাম বৃষ্টি হচ্ছে।`,
+    image: null,
+    options: [
+      `It is raining continuously since morning.`,
+      `It has been raining continuously since morning.`,
+      `It rains continuously from the morning.`,
+      `It has rained continuously since morning.`
+    ],
+    correct: 1
+  },
+  {
+    id: 23,
+    question: `এই কিতাবটি সবার দ্বারাই পঠিত হয়।`,
+    image: null,
+    options: [
+      `Everyone reads this book.`,
+      `This book is being read by all.`,
+      `This book is read by everyone.`,
+      `This book has been read by all.`
+    ],
+    correct: 2
+  },
+  {
+    id: 24,
+    question: `চোরটিকে হাতেনাতে ধরা হয়েছে।`,
+    image: null,
+    options: [
+      `The thief is caught red-handed.`,
+      `The thief has been caught red-handed.`,
+      `The thief is being caught red-handed.`,
+      `They caught the thief red-handed.`
+    ],
+    correct: 1
+  },
+  {
+    id: 25,
+    question: `সূর্য ওঠার আগেই আমরা আমাদের কাজ শেষ করে ফেলেছি।`,
+    image: null,
+    options: [
+      `We finish our work before the sun rises.`,
+      `We have finished our work before the sun rises.`,
+      `We had finished our work before the sun rose.`,
+      `We are finishing our work before the sun rises.`
+    ],
+    correct: 2
+  },
+  {
+    id: 26,
+    question: `সে কি ইদানিং নিয়মিত পড়াশোনা করছে?`,
+    image: null,
+    options: [
+      `Does he study regularly nowadays?`,
+      `Is he studying regularly nowadays?`,
+      `Has he studied regularly nowadays?`,
+      `Is he studied regularly nowadays?`
+    ],
+    correct: 1
+  },
+  {
+    id: 27,
+    question: `গাছটিতে নতুন পাতা গজিয়েছে।`,
+    image: null,
+    options: [
+      `New leaves grow on the tree.`,
+      `New leaves are growing on the tree.`,
+      `New leaves have sprouted on the tree.`,
+      `New leaves had sprouted on the tree.`
+    ],
+    correct: 2
+  },
+  {
+    id: 28,
+    question: `অভিজ্ঞতা মানুষকে বিচক্ষণ করে তোলে।`,
+    image: null,
+    options: [
+      `Experience makes a man wise.`,
+      `Experience is making a man wise.`,
+      `Experience has made a man wise.`,
+      `Experience made a man wise.`
+    ],
+    correct: 0
+  },
+  {
+    id: 29,
+    question: `তারা গত তিন বছর ধরে এই প্রতিষ্ঠানে কাজ করছে।`,
+    image: null,
+    options: [
+      `They are working in this institution for three years.`,
+      `They have worked in this institution for three years.`,
+      `They have been working in this institution for three years.`,
+      `They work in this institution for three years.`
+    ],
+    correct: 2
+  },
+  {
+    id: 30,
+    question: `সততাই সর্বোত্তম পন্থা---এ কথাটি সর্বজনবিদিত।`,
+    image: null,
+    options: [
+      `Honesty is the best policy---this is universally known.`,
+      `Honesty is being the best policy---this is universally known.`,
+      `Honesty has been the best policy---this was universally known.`,
+      `Honesty was the best policy---this is universally known.`
+    ],
+    correct: 0
+  }
 ];
 
 
