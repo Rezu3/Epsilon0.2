@@ -37,8 +37,7 @@ QUESTION_TYPES = [
     {"type": "saq",     "name": "SAQ"},
     {"type": "marks_2", "name": "2 Marks"},
     {"type": "marks_3", "name": "3 Marks"},
-    {"type": "marks_4", "name": "4 Marks"},
-    {"type": "marks_5", "name": "5 Marks"},
+     
 ]
 
 
