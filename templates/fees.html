@@ -108,7 +108,9 @@
             {% endwith %}
         </div>
 
-        <!-- Summary Cards -->
+        <!-- ============================================= -->
+        <!-- SUMMARY CARDS (5টি — Expense ও Balance সহ)   -->
+        <!-- ============================================= -->
         <div class="fees-summary">
             <div class="summary-card total">
                 <div class="summary-icon"><i class="fas fa-wallet"></i></div>
@@ -129,6 +131,24 @@
                 <div class="summary-info">
                     <h3>Total Due</h3>
                     <p>₹<span id="totalDue">{{ "%.0f"|format(summary.total_due or 0) }}</span></p>
+                </div>
+            </div>
+
+            <!-- নতুন: Expense Card (ক্লিক করলে Expense Modal খুলবে) -->
+            <div class="summary-card expense" id="expenseCard" title="Click to manage expenses" style="cursor:pointer;">
+                <div class="summary-icon"><i class="fas fa-receipt"></i></div>
+                <div class="summary-info">
+                    <h3>Total Expense</h3>
+                    <p>₹<span id="totalExpense">{{ "%.0f"|format(summary.total_expense or 0) }}</span></p>
+                </div>
+            </div>
+
+            <!-- নতুন: Cash in Hand Card -->
+            <div class="summary-card balance">
+                <div class="summary-icon"><i class="fas fa-hand-holding-usd"></i></div>
+                <div class="summary-info">
+                    <h3>Cash in Hand</h3>
+                    <p>₹<span id="netBalance">{{ "%.0f"|format(summary.net_balance or 0) }}</span></p>
                 </div>
             </div>
         </div>
@@ -293,7 +313,9 @@
         </div>
     </div>
 
-    <!-- Set Fee Modal -->
+    <!-- ============================================= -->
+    <!-- SET FEE MODAL                                  -->
+    <!-- ============================================= -->
     <div class="modal-overlay" id="setFeeModal">
         <div class="modal">
             <div class="modal-header">
@@ -336,7 +358,9 @@
         </div>
     </div>
 
-    <!-- Edit Fee Modal -->
+    <!-- ============================================= -->
+    <!-- EDIT FEE MODAL                                 -->
+    <!-- ============================================= -->
     <div class="modal-overlay" id="editFeeModal">
         <div class="modal">
             <div class="modal-header">
@@ -389,7 +413,9 @@
         </div>
     </div>
 
-    <!-- Pay Fee Modal -->
+    <!-- ============================================= -->
+    <!-- PAY FEE MODAL                                  -->
+    <!-- ============================================= -->
     <div class="modal-overlay" id="payModal">
         <div class="modal">
             <div class="modal-header">
@@ -431,7 +457,9 @@
         </div>
     </div>
 
-    <!-- History Modal -->
+    <!-- ============================================= -->
+    <!-- HISTORY MODAL                                  -->
+    <!-- ============================================= -->
     <div class="modal-overlay" id="historyModal">
         <div class="modal modal-lg">
             <div class="modal-header">
@@ -446,7 +474,9 @@
         </div>
     </div>
 
-    <!-- Receipt Modal -->
+    <!-- ============================================= -->
+    <!-- RECEIPT MODAL                                  -->
+    <!-- ============================================= -->
     <div class="modal-overlay" id="receiptModal">
         <div class="modal receipt-modal">
             <div class="receipt" id="receiptContent">
@@ -480,6 +510,61 @@
                 <button class="btn btn-whatsapp" onclick="shareOnWhatsApp()">
                     <i class="fab fa-whatsapp"></i> Send WhatsApp
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- 🔥 EXPENSE MODAL (নতুন)                       -->
+    <!-- ============================================= -->
+    <div class="modal-overlay" id="expenseModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-receipt"></i> Expense Management</h3>
+                <button class="modal-close" onclick="closeModal('expenseModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Add Expense Form -->
+                <div class="expense-form">
+                    <h4><i class="fas fa-plus-circle"></i> Add New Expense</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Amount (₹) *</label>
+                            <input type="number" id="expenseAmount" min="1" step="1" placeholder="Enter amount">
+                        </div>
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <select id="expenseCategory">
+                                <option value="Salary">Salary / বেতন</option>
+                                <option value="Rent">Rent / ভাড়া</option>
+                                <option value="Utility">Utility / বিদ্যুৎ-পানি</option>
+                                <option value="Stationery">Stationery / স্টেশনারি</option>
+                                <option value="Maintenance">Maintenance / মেরামত</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Other">Other / অন্যান্য</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date *</label>
+                            <input type="date" id="expenseDate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Note / Description</label>
+                        <input type="text" id="expenseNote" placeholder="যেমন: শিক্ষকদের বেতন, বিদ্যুৎ বিল...">
+                    </div>
+                    <button class="btn btn-primary" onclick="submitExpense()">
+                        <i class="fas fa-save"></i> Add Expense
+                    </button>
+                </div>
+
+                <hr style="margin: 24px 0; border-color: #e5e7eb;">
+
+                <!-- Expense List -->
+                <h4><i class="fas fa-list"></i> Recent Expenses</h4>
+                <div id="expenseList">
+                    <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+                </div>
             </div>
         </div>
     </div>
