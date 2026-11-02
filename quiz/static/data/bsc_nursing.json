@@ -907,12 +907,13 @@
             }
           }
         },
+
+
         "general_studies": {
           "name": "General Studies (সাধারণ জ্ঞান)",
           "chapters": {
             "01": {
-              "name": {
-  "name": "Indian History (ভারতের ইতিহাস)",
+              "name":"Indian History (ভারতের ইতিহাস)",
   "mcq": [
     {
       "id": 1,
@@ -2603,5 +2604,4 @@
       }
     }
   }
-}
 }
