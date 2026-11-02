@@ -211,7 +211,7 @@ function updateStudentRow(studentId, amountPaid) {
     if (paidCell) paidCell.textContent = '₹' + Math.round(paid);
     if (dueCell) dueCell.textContent = '₹' + Math.round(due);
 
-    // Status column (index 9 — 11 columns: #, Student, Contact, Base, Months, Total, Paid, Due, Next Due, Status, Actions)
+    // Status column (index 9 — 11 columns)
     const statusCell = row.children[9];
     if (statusCell) {
         if (due <= 0) {
@@ -233,8 +233,16 @@ async function refreshSummary() {
             document.getElementById('totalFees').textContent = Math.round(data.total_fees);
             document.getElementById('totalCollected').textContent = Math.round(data.total_collected);
             document.getElementById('totalDue').textContent = Math.round(data.total_due);
+
+            // ✅ নতুন: Expense ও Balance আপডেট
+            const expEl = document.getElementById('totalExpense');
+            const balEl = document.getElementById('netBalance');
+            if (expEl) expEl.textContent = Math.round(data.total_expense || 0);
+            if (balEl) balEl.textContent = Math.round(data.net_balance || 0);
         }
-    } catch (err) { /* silent */ }
+    } catch (err) {
+        console.warn('Summary refresh failed:', err);
+    }
 }
 
 // ==================== HISTORY ====================
@@ -468,3 +476,143 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTime();
     setInterval(updateTime, 1000);
 });
+
+// ============================================================
+// 🔥 EXPENSE MANAGEMENT (নতুন)
+// ============================================================
+
+function openExpenseModal() {
+    // আজকের তারিখ ডিফল্ট
+    document.getElementById('expenseDate').value =
+        new Date().toISOString().split('T')[0];
+    document.getElementById('expenseAmount').value = '';
+    document.getElementById('expenseNote').value = '';
+    document.getElementById('expenseCategory').value = 'Salary';
+
+    loadExpenseList();
+    openModal('expenseModal');
+}
+
+// Expense Card এ ক্লিক করলে modal খুলবে
+document.addEventListener('DOMContentLoaded', () => {
+    const card = document.getElementById('expenseCard');
+    if (card) {
+        card.addEventListener('click', openExpenseModal);
+    }
+});
+
+async function loadExpenseList() {
+    const container = document.getElementById('expenseList');
+    if (!container) return;
+
+    try {
+        const res = await fetch('/expenses');
+        const data = await res.json();
+
+        if (!data.success || !data.expenses || data.expenses.length === 0) {
+            container.innerHTML = `
+                <div class="no-history">
+                    <i class="fas fa-receipt"></i>
+                    <p>No expenses recorded yet</p>
+                </div>`;
+            return;
+        }
+
+        let html = '';
+        let total = 0;
+        data.expenses.forEach(e => {
+            total += e.amount;
+            html += `
+                <div class="expense-list-item">
+                    <div class="exp-left">
+                        <strong>− ₹${Math.round(e.amount)}</strong>
+                        <small>${e.note || e.category}</small>
+                    </div>
+                    <div class="exp-right" style="display:flex;align-items:center;gap:8px;">
+                        <div>
+                            <span class="cat-badge">${e.category}</span>
+                            <small><i class="far fa-calendar"></i> ${formatDate(e.expense_date)}</small>
+                        </div>
+                        <button class="btn-delete-expense" onclick="deleteExpense(${e.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>`;
+        });
+
+        html += `
+            <div class="expense-total-row">
+                <span>Total (shown above):</span>
+                <span>₹${Math.round(total)}</span>
+            </div>`;
+
+        container.innerHTML = html;
+    } catch (err) {
+        container.innerHTML = `
+            <div class="no-history">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Failed to load expenses</p>
+            </div>`;
+    }
+}
+
+async function submitExpense() {
+    const amount = parseFloat(document.getElementById('expenseAmount').value);
+    const category = document.getElementById('expenseCategory').value;
+    const date = document.getElementById('expenseDate').value;
+    const note = document.getElementById('expenseNote').value.trim();
+
+    if (!amount || amount <= 0) {
+        showToast('Please enter a valid amount', 'error');
+        return;
+    }
+    if (!date) {
+        showToast('Please select a date', 'error');
+        return;
+    }
+
+    try {
+        const res = await fetch('/add_expense', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: amount,
+                category: category,
+                expense_date: date,
+                note: note
+            })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            showToast('Expense added successfully', 'success');
+            document.getElementById('expenseAmount').value = '';
+            document.getElementById('expenseNote').value = '';
+            loadExpenseList();
+            refreshSummary();
+        } else {
+            showToast(data.message || 'Failed to add expense', 'error');
+        }
+    } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+    }
+}
+
+async function deleteExpense(expenseId) {
+    if (!confirm('Delete this expense? / এই খরচটি মুছে ফেলবেন?')) return;
+
+    try {
+        const res = await fetch(`/delete_expense/${expenseId}`, { method: 'POST' });
+        const data = await res.json();
+
+        if (data.success) {
+            showToast('Expense deleted', 'success');
+            loadExpenseList();
+            refreshSummary();
+        } else {
+            showToast(data.message || 'Delete failed', 'error');
+        }
+    } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+    }
+}
