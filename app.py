@@ -46,7 +46,7 @@ def init_fees_tables():
         )
     ''')
     
-    # Payment history table
+        # Payment history table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS fee_payments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,6 +58,20 @@ def init_fees_tables():
             FOREIGN KEY (student_id) REFERENCES students(id)
         )
     ''')
+    
+    # ✅ নতুন: Expense table - খরচ ট্র্যাকিং
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            amount REAL NOT NULL,
+            category TEXT NOT NULL,
+            expense_date TEXT NOT NULL,
+            note TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    # পুরনো table-এ নতুন কলাম যোগ করুন (যদি আগে থেকে থাকে)
     
     # পুরনো table-এ নতুন কলাম যোগ করুন (যদি আগে থেকে থাকে)
     for col_sql in [
@@ -2202,7 +2216,7 @@ def get_all_notices_public():
 
 
 
-# ============================================================
+ # ============================================================
 # FEES MANAGEMENT ROUTES
 # ============================================================
 
@@ -2283,6 +2297,7 @@ def fees():
     ''')
     students = cursor.fetchall()
     
+    # ===== Fees Summary =====
     cursor.execute('''
         SELECT 
             COALESCE(SUM(total_fee), 0) as total_fees,
@@ -2290,7 +2305,20 @@ def fees():
             COALESCE(SUM(due_amount), 0) as total_due
         FROM fees
     ''')
-    summary = cursor.fetchone()
+    summary_row = cursor.fetchone()
+    
+    # ===== ✅ নতুন: Expense ও Net Balance =====
+    cursor.execute('SELECT COALESCE(SUM(amount), 0) as total FROM expenses')
+    total_expense = cursor.fetchone()['total']
+    
+    # summary কে dict বানান (Jinja-তে summary.total_expense ব্যবহারের জন্য)
+    summary = {
+        'total_fees': summary_row['total_fees'],
+        'total_collected': summary_row['total_collected'],
+        'total_due': summary_row['total_due'],
+        'total_expense': total_expense,
+        'net_balance': summary_row['total_collected'] - total_expense,
+    }
     
     conn.close()
     return render_template('fees.html', students=students, summary=summary)
@@ -2518,14 +2546,106 @@ def fees_summary():
     ''')
     summary = cursor.fetchone()
     
+    # ===== ✅ নতুন: Expense total =====
+    cursor.execute('SELECT COALESCE(SUM(amount), 0) FROM expenses')
+    total_expense = cursor.fetchone()[0]
+    
     conn.close()
     
     return jsonify({
         'success': True,
         'total_fees': summary[0],
         'total_collected': summary[1],
-        'total_due': summary[2]
+        'total_due': summary[2],
+        'total_expense': total_expense,                    # নতুন
+        'net_balance': summary[1] - total_expense,         # নতুন
     })
+
+
+# ============================================================
+# ✅ নতুন: EXPENSE MANAGEMENT ROUTES
+# ============================================================
+
+@app.route('/add_expense', methods=['POST'])
+def add_expense():
+    """নতুন খরচ যোগ করুন"""
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Please login first'}), 401
+    
+    data = request.get_json()
+    if not data:
+        return jsonify({'success': False, 'message': 'Invalid request'}), 400
+    
+    try:
+        amount = float(data.get('amount', 0))
+    except (ValueError, TypeError):
+        return jsonify({'success': False, 'message': 'Invalid amount'}), 400
+    
+    category = data.get('category', 'Other')
+    expense_date = data.get('expense_date')
+    note = data.get('note', '')
+    
+    if amount <= 0:
+        return jsonify({'success': False, 'message': 'Amount must be greater than 0'})
+    if not expense_date:
+        return jsonify({'success': False, 'message': 'Date is required'})
+    
+    conn = sqlite3.connect('tution.db')
+    cursor = conn.cursor()
+    try:
+        cursor.execute('''
+            INSERT INTO expenses (amount, category, expense_date, note)
+            VALUES (?, ?, ?, ?)
+        ''', (amount, category, expense_date, note))
+        conn.commit()
+        conn.close()
+        return jsonify({'success': True, 'message': 'Expense added successfully'})
+    except Exception as e:
+        conn.close()
+        print(f"❌ Error adding expense: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/expenses')
+def get_expenses():
+    """সব খরচের লিস্ট"""
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Please login first'}), 401
+    
+    conn = sqlite3.connect('tution.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    try:
+        cursor.execute('SELECT * FROM expenses ORDER BY expense_date DESC, id DESC')
+        rows = cursor.fetchall()
+        conn.close()
+        return jsonify({
+            'success': True,
+            'expenses': [dict(r) for r in rows]
+        })
+    except Exception as e:
+        conn.close()
+        print(f"❌ Error loading expenses: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/delete_expense/<int:expense_id>', methods=['POST'])
+def delete_expense(expense_id):
+    """খরচ ডিলিট করুন"""
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Please login first'}), 401
+    
+    conn = sqlite3.connect('tution.db')
+    cursor = conn.cursor()
+    try:
+        cursor.execute('DELETE FROM expenses WHERE id = ?', (expense_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({'success': True, 'message': 'Expense deleted'})
+    except Exception as e:
+        conn.close()
+        print(f"❌ Error deleting expense: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
 # ------------------------
 # Logout
 # ------------------------
