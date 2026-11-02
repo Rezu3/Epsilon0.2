@@ -2,7 +2,7 @@
 
 .fees-summary {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
     margin: 25px 30px;
 }
@@ -28,6 +28,10 @@
 .summary-card.collected { border-color: #2ecc71; }
 .summary-card.due { border-color: #e74c3c; }
 
+/* ✅ নতুন: Expense & Balance Card */
+.summary-card.expense { border-color: #f5576c; }
+.summary-card.balance { border-color: #43e97b; }
+
 .summary-icon {
     width: 60px;
     height: 60px;
@@ -44,6 +48,10 @@
 .summary-card.collected .summary-icon { background: linear-gradient(135deg, #2ecc71, #27ae60); }
 .summary-card.due .summary-icon { background: linear-gradient(135deg, #e74c3c, #c0392b); }
 
+/* ✅ নতুন: Expense & Balance icon */
+.summary-card.expense .summary-icon { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.summary-card.balance .summary-icon { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+
 .summary-info h3 {
     font-size: 13px;
     color: #888;
@@ -57,6 +65,19 @@
     font-size: 26px;
     font-weight: 700;
     color: #2d3436;
+}
+
+/* ✅ নতুন: Expense & Balance এর সংখ্যার রং */
+.summary-card.expense .summary-info p { color: #c0392b; }
+.summary-card.balance .summary-info p { color: #1e8449; }
+
+/* Expense Card হোভার ইফেক্ট আরও স্পষ্ট */
+.summary-card.expense {
+    cursor: pointer;
+}
+.summary-card.expense:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 35px rgba(245, 87, 108, 0.25);
 }
 
 /* Toolbar */
@@ -325,7 +346,7 @@
     animation: slideUp 0.3s ease;
 }
 
-.modal-lg { max-width: 700px; }
+.modal-lg { max-width: 750px; }
 
 @keyframes slideUp {
     from { transform: translateY(30px); opacity: 0; }
@@ -646,6 +667,130 @@
     flex-wrap: wrap;
 }
 
+/* ==================== ✅ EXPENSE MODAL STYLES ==================== */
+
+.expense-form h4,
+.modal-body h4 {
+    margin-bottom: 16px;
+    color: #374151;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.expense-form h4 i,
+.modal-body h4 i {
+    color: #667eea;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 4px;
+}
+
+.expense-form .form-group {
+    margin-bottom: 14px;
+}
+
+.expense-form .btn-primary {
+    width: 100%;
+    justify-content: center;
+    padding: 13px 24px;
+    font-size: 15px;
+}
+
+/* Expense List Item */
+.expense-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: #f9fafb;
+    border-left: 4px solid #f5576c;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+}
+
+.expense-list-item:hover {
+    background: #fef2f2;
+    transform: translateX(3px);
+}
+
+.expense-list-item .exp-left strong {
+    display: block;
+    color: #e74c3c;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.expense-list-item .exp-left small {
+    color: #6b7280;
+    font-size: 12.5px;
+}
+
+.expense-list-item .exp-right {
+    text-align: right;
+}
+
+.expense-list-item .exp-right .cat-badge {
+    display: inline-block;
+    background: #e0e7ff;
+    color: #4338ca;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.expense-list-item .exp-right small {
+    display: block;
+    color: #9ca3af;
+    font-size: 11.5px;
+    margin-top: 3px;
+}
+
+.btn-delete-expense {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-left: 8px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+}
+
+.btn-delete-expense:hover {
+    background: #dc2626;
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.expense-total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #fef2f2, #fde8e8);
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    color: #c0392b;
+    margin-top: 14px;
+    border: 2px dashed #f5576c;
+}
+
 /* Toast */
 .toast-notification {
     position: fixed;
@@ -679,6 +824,10 @@
     .summary-info p { font-size: 22px; }
     .modal { max-width: 95%; }
     .receipt-footer { justify-content: center; }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ==================== PRINT - শুধু Receipt, ১ পেজে ==================== */
