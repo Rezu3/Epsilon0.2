@@ -40,11 +40,12 @@
                 ignoreHtmlClass: 'no-mathjax',
                 processHtmlClass: 'mathjax'
             },
-            svg: {
-                fontCache: 'global'
+            chtml: {
+                mtextInheritFont: true
             },
-            loader: {
-                load: ['[tex]/ams', '[tex]/physics', '[tex]/cancel']
+            svg: {
+                fontCache: 'global',
+                mtextInheritFont: true
             }
         };
     </script>
